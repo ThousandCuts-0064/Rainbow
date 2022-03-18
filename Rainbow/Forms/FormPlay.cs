@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace Rainbow
 {
-    public partial class FormPlay : Form
+    public partial class FormPlay : Form, IScene
     {
         private readonly int _level;
         public static FormPlay Get { get; private set; }
@@ -21,7 +21,7 @@ namespace Rainbow
             _level = level;
             Get = this;
         }
-
+        
         private void FormPlay_Load(object sender, EventArgs e)
         {
             Manager.Initialize(_level, ClientRectangle);

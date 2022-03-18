@@ -75,10 +75,14 @@ namespace Rainbow
             //Calculation
             TileWidth = screen.Width * PlayAreaWidthRatio / level;
             TileHeight = screen.Height * TileHeightRatio;
-            PlayArea = new RectangleF(new PointF(screen.Width * (1 - PlayAreaWidthRatio) / 2, 0), new SizeF(screen.Width * PlayAreaWidthRatio, screen.Height));
+            PlayArea = new RectangleF(
+                new PointF(screen.Width * (1 - PlayAreaWidthRatio) / 2, 0),
+                new SizeF(screen.Width * PlayAreaWidthRatio, screen.Height));
 
             //UIElements
-            new Bar(Color.Red, new RectangleF(new PointF(PlayArea.Right, PlayArea.Top), new SizeF(TileWidth, TileHeight)));
+            new Bar(Color.Red,
+                new RectangleF(new PointF(PlayArea.Right, PlayArea.Top),
+                new SizeF(TileWidth, TileHeight)));
 
             //Leftmost boarder
             var bottomLeft = new PointF(PlayArea.Left, PlayArea.Bottom);
@@ -97,8 +101,12 @@ namespace Rainbow
                 var tileOffset = new SizeF(TileWidth * (i + 1), 0);
                 var finishOffset = new SizeF(0, -TileHeight * 2);
                 //Lines are automaticaly added to the draw list
-                _boarders[i + 1] = new Line(_borderColor, PlayArea.Location + tileOffset, bottomLeft + tileOffset);
-                _finishes[i] = new Line(_finishColor, bottomLeft + finishOffset, bottomLeft + finishOffset + tileOffset);
+                _boarders[i + 1] = new Line(_borderColor,
+                    PlayArea.Location + tileOffset,
+                    bottomLeft + tileOffset);
+                _finishes[i] = new Line(_finishColor,
+                    bottomLeft + finishOffset,
+                    bottomLeft + finishOffset + tileOffset);
             }
 
             _timer.Start();
@@ -113,7 +121,7 @@ namespace Rainbow
             ManageLives();
             foreach (var update in _updates) update();
             Spawner();
-            FormPlay.Get.Refresh();
+            FormPlay.Get.Invoke(new Action(FormPlay.Get.Refresh));
         }
 
         private static void ManageLives()

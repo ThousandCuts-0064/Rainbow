@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\IScene.cs" />
     <Compile Include="IDrawable\Bar.cs" />
     <Compile Include="IDrawable\IDrawable.cs" />
     <Compile Include="Forms\FormDim.cs">

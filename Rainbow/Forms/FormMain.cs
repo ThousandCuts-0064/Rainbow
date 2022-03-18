@@ -23,7 +23,7 @@ namespace Rainbow
 
         private void FormMain_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Escape) new FormPause(this).Show();
+            if (!typeof(IScene).IsAssignableFrom(OwnedForms[0].GetType()) && e.KeyCode == Keys.Escape) new FormPause(this).Show();
         }
     }
 }

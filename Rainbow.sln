@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32106.194
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow", "Rainbow\Rainbow.csproj", "{B4A5F0E6-A902-4419-8BA4-CCFE87BCB94C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B4A5F0E6-A902-4419-8BA4-CCFE87BCB94C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4A5F0E6-A902-4419-8BA4-CCFE87BCB94C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4A5F0E6-A902-4419-8BA4-CCFE87BCB94C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4A5F0E6-A902-4419-8BA4-CCFE87BCB94C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DFDD25F3-C169-42DC-AF02-6206307DAB9A}
+	EndGlobalSection
+EndGlobal

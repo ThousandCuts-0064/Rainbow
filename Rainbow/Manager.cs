@@ -78,7 +78,7 @@ namespace Rainbow
             PlayArea = new RectangleF(new PointF(screen.Width * (1 - PlayAreaWidthRatio) / 2, 0), new SizeF(screen.Width * PlayAreaWidthRatio, screen.Height));
 
             //UIElements
-            new Bar(Color.Black, new RectangleF(new PointF(PlayArea.Right, PlayArea.Top), new SizeF(TileWidth, TileHeight)));
+            new Bar(Color.Red, new RectangleF(new PointF(PlayArea.Right, PlayArea.Top), new SizeF(TileWidth, TileHeight)));
 
             //Leftmost boarder
             var bottomLeft = new PointF(PlayArea.Left, PlayArea.Bottom);

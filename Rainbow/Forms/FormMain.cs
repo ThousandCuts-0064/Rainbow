@@ -12,18 +12,27 @@ namespace Rainbow
 {
     public partial class FormMain : Form
     {
-        public FormMain() => InitializeComponent();
+        public FormMain()
+        {
+            InitializeComponent();
+        }
 
         private void FormMain_Load(object sender, EventArgs e)
         {
             var form = new FormLevelSelection() { Owner = this };
+            //Pause can be called from there
             form.KeyDown += FormMain_KeyDown;
             form.Show();
         }
 
         private void FormMain_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!typeof(IScene).IsAssignableFrom(OwnedForms[0].GetType()) && e.KeyCode == Keys.Escape) new FormPause(this).Show();
+            if (e.KeyCode == Keys.Escape) new FormPause(this).Show();
+        }
+
+        private void FormMain_Enter(object sender, EventArgs e)
+        {
+            if (Game.FormPlay != null) Game.FormPlay.Focus();
         }
     }
 }

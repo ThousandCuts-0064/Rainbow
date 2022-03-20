@@ -14,14 +14,14 @@ namespace Rainbow
         public GameplayElement()
         {
             _update = Update;
-            Manager.GameplayElements.Add(this);
-            Manager.AddUpdateCallback(_update);
+            Game.GameplayElements.Add(this);
+            Game.AddToUpdateCallback(_update);
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
-            Manager.GameplayElements.Remove(this);
-            Manager.RemoveUpdateCallback(_update);
+            Game.GameplayElements.Remove(this);
+            Game.RemoveFromUpdateCallback(_update);
         }
 
         public abstract void Draw(Graphics graphics);

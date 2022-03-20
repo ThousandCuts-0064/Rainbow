@@ -9,9 +9,9 @@ namespace Rainbow
 {
     public abstract class UIElement : IDrawable
     {
-        public UIElement() => Manager.UIElements.Add(this);
+        public UIElement() => Game.UIElements.Add(this);
 
-        public void Dispose() => Manager.UIElements.Remove(this);
+        public virtual void Dispose() => Game.UIElements.Remove(this);
 
         public abstract void Draw(Graphics graphics);
     }

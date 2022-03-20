@@ -9,7 +9,7 @@ namespace Rainbow
 {
     public abstract class MapElement : IDrawable
     {
-        public MapElement() => Manager.MapElements.Add(this);
+        public MapElement() => Game.MapElements.Add(this);
 
         public abstract void Draw(Graphics graphics);
     }

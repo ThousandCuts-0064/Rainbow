@@ -38,7 +38,6 @@ namespace Rainbow
             this.BackColor = System.Drawing.Color.Fuchsia;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(600, 366);
-            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -53,7 +52,6 @@ namespace Rainbow
             this.TransparencyKey = System.Drawing.Color.Fuchsia;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.FormPlay_Load);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.FormPlay_Paint);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormPlay_KeyDown);
             this.ResumeLayout(false);
 

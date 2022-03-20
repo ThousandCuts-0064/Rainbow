@@ -17,7 +17,7 @@ namespace Rainbow
         {
             First = first;
             Second = second;
-            Pen = new Pen(color);
+            Pen = new Pen(color, Game.Unit / 5);
         }
 
         public void Move(SizeF size)

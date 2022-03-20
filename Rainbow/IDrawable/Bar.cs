@@ -24,7 +24,13 @@ namespace Rainbow
         {
             graphics.FillRectangle(_solidBrush, RectangleF);
             graphics.DrawRectangle(_pen, RectangleF.X, RectangleF.Y, RectangleF.Width, RectangleF.Height);
-            graphics.DrawString("EEEEEEEEEEEEEE", SystemFonts.DefaultFont, _solidBrush, RectangleF);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _pen.Dispose();
+            _solidBrush.Dispose();
         }
     }
 }

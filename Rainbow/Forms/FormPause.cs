@@ -22,8 +22,7 @@ namespace Rainbow
             _formDim.Owner = owner;
             _formDim.Show();
             Owner = _formDim;
-            if (typeof(IScene).IsAssignableFrom(Owner.Owner.GetType())) 
-                Manager.IsPaused = true;
+            if (Game.FormPlay != null) Game.IsPaused = true;
         }
 
         private void FormPause_Load(object sender, EventArgs e) => CenterToParent();
@@ -31,14 +30,14 @@ namespace Rainbow
         private void buttonQuit_Click(object sender, EventArgs e) => Application.Exit();
         private void FormPause_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (typeof(IScene).IsAssignableFrom(Owner.Owner.GetType())) 
-                Manager.IsPaused = false;
-            Owner.Owner.Focus();
+            if (Game.FormPlay == null) return;
+            Game.IsPaused = false;
+            Game.FormPlay.Focus();
         }
 
         private void FormPause_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Escape) 
+            if (e.KeyCode == Keys.Escape)
                 _formDim.Close();
         }
     }

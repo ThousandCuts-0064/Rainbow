@@ -10,7 +10,7 @@ namespace Rainbow
     public class Tile : GameplayElement
     {
         private readonly SolidBrush _solidBrush;
-        private readonly Pen _pen = new Pen(Color.Black);
+        private readonly Pen _pen = new Pen(Color.Black, Game.Unit);
         public Color Color { get; private set; }
         public PointF Location { get; private set; }
 
@@ -23,12 +23,21 @@ namespace Rainbow
 
         public override void Draw(Graphics graphics)
         {
-            RectangleF rectangleF = new RectangleF(Location.X, Location.Y, Manager.TileWidth, Manager.TileHeight);
+            RectangleF rectangleF = new RectangleF(Location.X, Location.Y, Game.TileWidth, Game.TileHeight);
             Fill(graphics, rectangleF);
+            rectangleF.Inflate(-Game.Unit / 2, -Game.Unit / 2);
             Border(graphics, rectangleF);
         }
 
-        protected override void Update() => Location = new PointF(Location.X, Location.Y + Manager.GameSpeed);
+        public override void Dispose()
+        {
+            base.Dispose();
+            _solidBrush.Dispose();
+            _pen.Dispose();
+        }
+
+        protected override void Update() => Location = new PointF(Location.X, 
+            Location.Y + Game.TileSpeed * Game.Unit * Game.DeltaTime);
 
         protected virtual void Fill(Graphics graphics, RectangleF rectangleF) =>
             graphics.FillRectangle(_solidBrush, rectangleF);

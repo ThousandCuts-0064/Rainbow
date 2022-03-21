@@ -25,7 +25,7 @@ namespace Rainbow
         {
             RectangleF rectangleF = new RectangleF(Location.X, Location.Y, Game.TileWidth, Game.TileHeight);
             Fill(graphics, rectangleF);
-            rectangleF.Inflate(-Game.Unit / 2, -Game.Unit / 2);
+            rectangleF.Inflate(-Game.HalfUnit, -Game.HalfUnit);
             Border(graphics, rectangleF);
         }
 
@@ -37,7 +37,7 @@ namespace Rainbow
         }
 
         protected override void Update() => Location = new PointF(Location.X, 
-            Location.Y + Game.TileSpeed * Game.Unit * Game.DeltaTime);
+            Location.Y + Game.TileUnitsPerSecond * Game.Unit * Game.DeltaTime);
 
         protected virtual void Fill(Graphics graphics, RectangleF rectangleF) =>
             graphics.FillRectangle(_solidBrush, rectangleF);

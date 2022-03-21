@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Rainbow
 {
     /// <summary>
-    /// 3 primary colors of a model are named as rome numbers. Underscore is addition
+    /// 3 primary colors of a model are named as single rome number. Underscore is addition.
     /// </summary>
     [Flags]
     public enum ColorCode

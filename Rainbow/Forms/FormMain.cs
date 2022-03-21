@@ -32,7 +32,7 @@ namespace Rainbow
 
         private void FormMain_Enter(object sender, EventArgs e)
         {
-            if (Game.FormPlay != null) Game.FormPlay.Focus();
+            if (Game.IsLoaded) Game.FocusFormPlay();
         }
     }
 }

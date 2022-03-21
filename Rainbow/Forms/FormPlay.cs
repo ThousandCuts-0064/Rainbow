@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,9 +19,11 @@ namespace Rainbow
         {
             InitializeComponent();
             _level = level;
-            SetStyle(ControlStyles.UserPaint, true);
-            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-            SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            SetStyle(
+                ControlStyles.UserPaint |
+                ControlStyles.OptimizedDoubleBuffer |
+                ControlStyles.AllPaintingInWmPaint, 
+                true);
             UpdateStyles();
         }
         
@@ -37,12 +40,15 @@ namespace Rainbow
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighSpeed;
-            base.OnPaint(e);
+            var g = e.Graphics;
 
-            foreach (var item in Game.GameplayElements) item.Draw(e.Graphics);
-            foreach (var item in Game.MapElements) item.Draw(e.Graphics);
-            foreach (var item in Game.UIElements) item.Draw(e.Graphics);
+            g.InterpolationMode = InterpolationMode.NearestNeighbor;
+            g.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+
+            base.OnPaint(e);
+            foreach (var item in Game.GameplayElements) item.Draw(g);
+            foreach (var item in Game.MapElements) item.Draw(g);
+            foreach (var item in Game.UIElements) item.Draw(g);
         }
     }
 }

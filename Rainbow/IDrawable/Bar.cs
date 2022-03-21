@@ -9,21 +9,32 @@ namespace Rainbow
 {
     class Bar : UIElement
     {
-        private readonly Pen _pen = new Pen(Color.Black);
+        private readonly Pen _pen = new Pen(Color.Black, Game.Unit);
         private readonly SolidBrush _solidBrush;
+        public RectangleF RectangleF { get; }
+        public Resource Resource { get; }
         public Color Color { get => _solidBrush.Color; set => _solidBrush.Color = value; }
-        public RectangleF RectangleF { get; set; }
 
-        public Bar(Color color, RectangleF rectangleF)
+        public Bar(Color color, RectangleF rectangleF, float max)
         {
             _solidBrush = new SolidBrush(color);
             RectangleF = rectangleF;
+            Resource = new Resource(max);
         }
 
         public override void Draw(Graphics graphics)
         {
-            graphics.FillRectangle(_solidBrush, RectangleF);
-            graphics.DrawRectangle(_pen, RectangleF.X, RectangleF.Y, RectangleF.Width, RectangleF.Height);
+            var fillRectangle = RectangleF.Inflate(RectangleF, -Game.HalfUnit, -Game.HalfUnit);
+            graphics.FillRectangle(_solidBrush,
+                fillRectangle.X,
+                fillRectangle.Y,
+                fillRectangle.Width * Resource.GetPercent(),
+                fillRectangle.Height);
+            graphics.DrawRectangle(_pen,
+                RectangleF.X + Game.HalfUnit,
+                RectangleF.Y + Game.HalfUnit,
+                RectangleF.Width - Game.Unit,
+                RectangleF.Height - Game.Unit);
         }
 
         public override void Dispose()

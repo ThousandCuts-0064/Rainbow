@@ -13,7 +13,7 @@ namespace Rainbow
         /// <summary>
         /// % of screen height. Range: [0, 1].
         /// </summary>
-        private const float unitRatio = 0.01f;
+        private const float unitHightRatio = 0.01f;
         /// <summary>
         /// Number of units
         /// </summary>
@@ -25,10 +25,13 @@ namespace Rainbow
         private static Line[] _boarders;//
         private static Line[] _finishes;//
         private static PointF[] _spawns;//
-        private static IColorModel _colorModel;
-        private static Timer _timer;
-        private static Update _updateScreen;
         private static Tile _lastSpawned;
+        private static Update _updateScreen;
+
+        private static IColorModel _colorModel;
+        private static Stats _stats;
+        private static Timer _timer;
+        private static FormPlay _formPlay;
 
         /// <summary>
         /// Time interval between ticks in seconds
@@ -47,50 +50,55 @@ namespace Rainbow
         public static List<MapElement> MapElements { get; private set; }
         public static List<UIElement> UIElements { get; private set; }
 
-        public static FormPlay FormPlay { get; private set; }
         public static Random Random { get; private set; } = new Random();
         public static RectangleF PlayArea { get; private set; }
 
         public static ulong Ticks { get; private set; } = 0;
-        public static float TileSpeed { get; private set; } = 10f;
+        public static float TileUnitsPerSecond { get; private set; } = 10f;
         public static float Unit { get; private set; }
+        public static float HalfUnit { get; private set; }
+        public static float UIElementWidth { get; private set; }
         public static float TileWidth { get; private set; }
         public static float TileHeight { get; private set; }
         public static int Level { get; private set; }
-        public static int Lives { get; private set; } = 10;
         public static bool IsPaused { get => !_timer.Enabled; set => _timer.Enabled = !value; }
+        public static bool IsLoaded { get ;  private set; }
 
         public static void Initialize(FormPlay formPlay, IColorModel colorModel, int level)
         {
             //Direct initializations
-            Level = level;
-            FormPlay = formPlay;
+            _formPlay = formPlay;
             _colorModel = colorModel;
-            MapElements = new List<MapElement>();
-            GameplayElements = new HashSet<GameplayElement>();
-            UIElements = new List<UIElement>();
+            Level = level;
+            IsLoaded = true;
+            formPlay.KeyDown += ManageInput;
+
+            //Direct object Creation
             _tiles = new Queue<Tile>[level];
             _updates = new HashSet<Update>();
             _boarders = new Line[level + 1];
             _finishes = new Line[level];
             _spawns = new PointF[level];
+            MapElements = new List<MapElement>();
+            GameplayElements = new HashSet<GameplayElement>();
+            UIElements = new List<UIElement>();
+            _updateScreen = new Update(formPlay.Refresh);
             _timer = new Timer(DeltaTime * 1000);
             _timer.Elapsed += (object sender, ElapsedEventArgs e) => GameTick();
-            _updateScreen = new Update(FormPlay.Refresh);
 
             //Calculation
-            var screen = FormPlay.ClientRectangle;
-            Unit = screen.Height * unitRatio;
+            var screen = formPlay.ClientRectangle;
+            Unit = screen.Height * unitHightRatio;
+            HalfUnit = Unit / 2;
             TileHeight = tileHightUnits * Unit;
             TileWidth = screen.Width * PlayAreaWidthRatio / level;
+            UIElementWidth = screen.Width * (1 - PlayAreaWidthRatio) / 2;
             PlayArea = new RectangleF(
                 new PointF(screen.Width * (1 - PlayAreaWidthRatio) / 2, 0),
                 new SizeF(screen.Width * PlayAreaWidthRatio, screen.Height));
 
-            //UIElements
-            new Bar(Color.Red,
-                new RectangleF(new PointF(PlayArea.Right, PlayArea.Top),
-                new SizeF(TileWidth, TileHeight)));
+            //Dependant object creation
+            _stats = new Stats(colorModel); //Depends on UIElements, Calculation
 
             //Leftmost boarder
             var bottomLeft = new PointF(PlayArea.Left, PlayArea.Bottom);
@@ -117,13 +125,14 @@ namespace Rainbow
                     bottomLeft + finishOffset + tileOffset);
             }
 
-            //First Spawn. Spawner needs one spawn to chain spawn
+            //First Spawn. Spawner needs one spawn to chain spawn.
             Spawn();
 
             //Start Game
             _timer.Start();
         }
 
+        public static void FocusFormPlay() => _formPlay.Focus();
         public static void AddToUpdateCallback(Update action) => _updates.Add(action);
         public static void RemoveFromUpdateCallback(Update action) => _updates.Remove(action);
 
@@ -133,9 +142,15 @@ namespace Rainbow
             ManageLives();
             foreach (var update in _updates) update();
             Spawner();
-            //Sometimes exceptions is thrown on closing the program
-            try { FormPlay.Invoke(_updateScreen); }
+            //Sometimes exceptions is thrown on closing the program.
+            try { _formPlay.Invoke(_updateScreen); }
             catch (ObjectDisposedException) { }
+            catch (InvalidOperationException) { }
+        }
+
+        private static void ManageInput(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            throw new Exception(e.KeyCode.ToString());
         }
 
         private static void ManageLives()
@@ -145,16 +160,16 @@ namespace Rainbow
                 if (_tiles[i].Count != 0 &&
                     _tiles[i].Peek().Location.Y > Boarders[i].Second.Y)
                 {
-                    _tiles[i].Dequeue().Dispose();
-                    Lives--;
-                    //if (Lives == 0)
+                    var tile = _tiles[i].Dequeue();
+                    _stats.TakeTile(tile);
+                    tile.Dispose();
                 }
             }
         }
 
         private static void Spawner()
         {
-            //Hack: Compensates for 1 pixel stuttering, background won't flicker between touching tiles in same column
+            //Hack: Compensates for 1 pixel stuttering, background won't flicker between touching tiles in same column.
             if (_lastSpawned.Location.Y >= -1) 
                 Spawn();
         }
@@ -162,9 +177,11 @@ namespace Rainbow
         private static void Spawn()
         {
             int spawnLocationIndex = Random.Next(Level);
-            //ColorCode.0 is invalid
-            int colorCode = Random.Next((int)ColorCode.All);
-            _lastSpawned = new Tile(_colorModel[(ColorCode)(colorCode + 1)], SpawnLocations[spawnLocationIndex]);
+            var randomColorCode = (ColorCode)(Random.Next((int)ColorCode.All) + 1);
+
+            _lastSpawned = new Tile(
+                _colorModel[randomColorCode], 
+                SpawnLocations[spawnLocationIndex]);
             _tiles[spawnLocationIndex].Enqueue(_lastSpawned);
         }
     }

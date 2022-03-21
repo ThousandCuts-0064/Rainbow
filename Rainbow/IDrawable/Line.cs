@@ -20,12 +20,6 @@ namespace Rainbow
             Pen = new Pen(color, Game.Unit / 5);
         }
 
-        public void Move(SizeF size)
-        {
-            First += size;
-            Second += size;
-        }
-
         public override void Draw(Graphics graphics) => graphics.DrawLine(Pen, First, Second);
     }
 }

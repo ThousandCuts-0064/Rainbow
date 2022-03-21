@@ -22,7 +22,7 @@ namespace Rainbow
             _formDim.Owner = owner;
             _formDim.Show();
             Owner = _formDim;
-            if (Game.FormPlay != null) Game.IsPaused = true;
+            if (Game.IsLoaded) Game.IsPaused = true;
         }
 
         private void FormPause_Load(object sender, EventArgs e) => CenterToParent();
@@ -30,9 +30,9 @@ namespace Rainbow
         private void buttonQuit_Click(object sender, EventArgs e) => Application.Exit();
         private void FormPause_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (Game.FormPlay == null) return;
+            if (!Game.IsLoaded) return;
             Game.IsPaused = false;
-            Game.FormPlay.Focus();
+            Game.FocusFormPlay();
         }
 
         private void FormPause_KeyDown(object sender, KeyEventArgs e)

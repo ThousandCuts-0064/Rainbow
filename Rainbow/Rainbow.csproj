@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -82,6 +83,7 @@
     <Compile Include="IDrawable\MapElement.cs" />
     <Compile Include="IDrawable\Line.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="Resource.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\FormPause.cs">
@@ -93,6 +95,7 @@
     <Compile Include="IDrawable\UIElement.cs" />
     <Compile Include="IColorModel\RGB.cs" />
     <Compile Include="IColorModel\RYB.cs" />
+    <Compile Include="Stats.cs" />
     <Compile Include="Update.cs" />
     <Compile Include="IDrawable\Tile.cs" />
     <EmbeddedResource Include="Forms\FormDim.resx">

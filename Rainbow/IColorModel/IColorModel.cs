@@ -20,9 +20,8 @@ namespace Rainbow
         Color II_III { get; }
         Color All { get; }
 
-        Color this[ColorCode cc] { get; }
-        ColorCode this[Color c] { get; }
-
+        Color CodeToColor(ColorCode cc);
+        ColorCode ColorToCode(Color c);
         Color Combine(Color c1, Color c2);
     }
 }

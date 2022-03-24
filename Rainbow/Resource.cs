@@ -10,13 +10,13 @@ namespace Rainbow
     {
         private float _max;
         private float _current;
-        public event Action OnEmptyEvent;
+        public event Action Empty;
         public float Max 
         { 
             get => _max;
             set
             {
-                if (value <= 0) OnEmptyEvent?.Invoke();
+                if (value <= 0) Empty?.Invoke();
                 _max = value;
             }
         }
@@ -28,7 +28,7 @@ namespace Rainbow
                 _current = value;
                 if (_current > 0) return;
                 _current = 0;
-                OnEmptyEvent?.Invoke();
+                Empty?.Invoke();
             }
         }
 

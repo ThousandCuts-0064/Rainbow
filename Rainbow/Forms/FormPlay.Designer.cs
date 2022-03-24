@@ -33,14 +33,14 @@ namespace Rainbow
             // 
             // FormPlay
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Fuchsia;
+            this.BackColor = System.Drawing.Color.Gray;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(600, 366);
+            this.ClientSize = new System.Drawing.Size(800, 450);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.KeyPreview = true;
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormPlay";
@@ -49,9 +49,8 @@ namespace Rainbow
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Tag = "Scene";
             this.Text = "Play";
-            this.TransparencyKey = System.Drawing.Color.Fuchsia;
+            this.TransparencyKey = System.Drawing.Color.Gray;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.FormPlay_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormPlay_KeyDown);
             this.ResumeLayout(false);
 

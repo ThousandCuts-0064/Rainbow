@@ -73,7 +73,7 @@ namespace Rainbow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Fuchsia;
+            this.BackColor = System.Drawing.Color.Gray;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(250, 250);
             this.Controls.Add(this.buttonQuit);
@@ -90,7 +90,7 @@ namespace Rainbow
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Settings";
-            this.TransparencyKey = System.Drawing.Color.Fuchsia;
+            this.TransparencyKey = System.Drawing.Color.Gray;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormPause_FormClosed);
             this.Load += new System.EventHandler(this.FormPause_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormPause_KeyDown);

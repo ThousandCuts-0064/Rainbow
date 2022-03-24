@@ -44,14 +44,14 @@ namespace Rainbow
 
             //Hack: Game is just paused on Game Over
             var a = new Action(() => Game.IsPaused = true);
-            _lifeI.Resource.OnEmptyEvent += a;
-            _lifeII.Resource.OnEmptyEvent += a;
-            _lifeIII.Resource.OnEmptyEvent += a;
+            _lifeI.Resource.Empty += a;
+            _lifeII.Resource.Empty += a;
+            _lifeIII.Resource.Empty += a;
         }
 
         public void TakeTile(Tile tile)
         {
-            var colorCode = _colorModel[tile.Color];
+            var colorCode = _colorModel.ColorToCode(tile.Color);
 
             if (colorCode.HasFlag(ColorCode.I)) _lifeI.Resource.Current--;
             if (colorCode.HasFlag(ColorCode.II)) _lifeII.Resource.Current--;

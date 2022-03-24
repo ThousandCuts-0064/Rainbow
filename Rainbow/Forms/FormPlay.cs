@@ -13,24 +13,20 @@ namespace Rainbow
 {
     public partial class FormPlay : Form
     {
-        private readonly int _level;
-
-        public FormPlay(int level)
+        public FormPlay(IColorModel colorModel, int level)
         {
             InitializeComponent();
-            _level = level;
+
             SetStyle(
                 ControlStyles.UserPaint |
                 ControlStyles.OptimizedDoubleBuffer |
                 ControlStyles.AllPaintingInWmPaint, 
                 true);
             UpdateStyles();
-        }
-        
-        private void FormPlay_Load(object sender, EventArgs e)
-        {
-            //Manager is initialized here because the ClientRectangle isn't updated in the constructor
-            Game.Initialize(this, new RGB(), _level);
+
+            Height = Screen.PrimaryScreen.Bounds.Height;
+            Width = Screen.PrimaryScreen.Bounds.Width;
+            Game.Initialize(this, colorModel, level);
         }
 
         private void FormPlay_KeyDown(object sender, KeyEventArgs e)
@@ -41,7 +37,7 @@ namespace Rainbow
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
-
+            
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode = PixelOffsetMode.HighSpeed;
 

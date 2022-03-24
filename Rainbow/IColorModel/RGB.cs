@@ -9,7 +9,7 @@ namespace Rainbow
 {
     class RGB : IColorModel
     {
-        private readonly Dictionary<Color, ColorCode> _colorToColorCode = new Dictionary<Color, ColorCode>()
+        private static readonly Dictionary<Color, ColorCode> _colorToColorCode = new Dictionary<Color, ColorCode>()
         {
             { Color.Red, ColorCode.I },
             { Color.Green, ColorCode.II },
@@ -19,7 +19,7 @@ namespace Rainbow
             { Color.Cyan, ColorCode.II_III },
             { Color.White, ColorCode.All },
         };
-        private readonly Dictionary<ColorCode, Color> _colorCodeToColor = new Dictionary<ColorCode, Color>()
+        private static readonly Dictionary<ColorCode, Color> _colorCodeToColor = new Dictionary<ColorCode, Color>()
         {
             { ColorCode.I, Color.Red },
             { ColorCode.II, Color.Green},
@@ -38,8 +38,8 @@ namespace Rainbow
         public Color II_III => Color.Cyan;
         public Color All => Color.White;
 
-        public Color this[ColorCode cc] => _colorCodeToColor[cc];
-        public ColorCode this[Color c] => _colorToColorCode[c];
+        public Color CodeToColor(ColorCode cc) => _colorCodeToColor[cc];
+        public ColorCode ColorToCode(Color c) => _colorToColorCode[c];
 
         public Color Combine(Color c1, Color c2) => Color.FromArgb((c1.R + c2.R) / 2, (c1.G + c2.G) / 2, (c1.B + c2.B) / 2);
     }

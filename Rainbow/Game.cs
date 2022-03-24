@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
-using System.Timers;
+using System.Windows.Forms;
 
 namespace Rainbow
 {
@@ -20,18 +20,19 @@ namespace Rainbow
         private const int tileHightUnits = 10;
         private static readonly Color _borderColor = Color.Black;
         private static readonly Color _finishColor = Color.Black;
-        private static Queue<Tile>[] _tiles;
+        private static Queue<Tile>[] _tileQueues;
         private static HashSet<Update> _updates;
         private static Line[] _boarders;//
         private static Line[] _finishes;//
         private static PointF[] _spawns;//
         private static Tile _lastSpawned;
-        private static Update _updateScreen;
 
         private static IColorModel _colorModel;
-        private static Stats _stats;
-        private static Timer _timer;
         private static FormPlay _formPlay;
+        private static Timer _timer;
+        private static Stats _stats;
+        private static InputManager _inputManager;
+
 
         /// <summary>
         /// Time interval between ticks in seconds
@@ -62,7 +63,7 @@ namespace Rainbow
         public static float TileHeight { get; private set; }
         public static int Level { get; private set; }
         public static bool IsPaused { get => !_timer.Enabled; set => _timer.Enabled = !value; }
-        public static bool IsLoaded { get ;  private set; }
+        public static bool IsLoaded { get; private set; }
 
         public static void Initialize(FormPlay formPlay, IColorModel colorModel, int level)
         {
@@ -71,10 +72,9 @@ namespace Rainbow
             _colorModel = colorModel;
             Level = level;
             IsLoaded = true;
-            formPlay.KeyDown += ManageInput;
 
             //Direct object Creation
-            _tiles = new Queue<Tile>[level];
+            _tileQueues = new Queue<Tile>[level];
             _updates = new HashSet<Update>();
             _boarders = new Line[level + 1];
             _finishes = new Line[level];
@@ -82,9 +82,14 @@ namespace Rainbow
             MapElements = new List<MapElement>();
             GameplayElements = new HashSet<GameplayElement>();
             UIElements = new List<UIElement>();
-            _updateScreen = new Update(formPlay.Refresh);
-            _timer = new Timer(DeltaTime * 1000);
-            _timer.Elapsed += (object sender, ElapsedEventArgs e) => GameTick();
+            _timer = new Timer { Interval = (int)(DeltaTime * 1000) };
+            _inputManager = new InputManager(level);
+
+            //Miscellaneous
+            _inputManager.ColorInput += OnColorInput;
+            _timer.Tick += GameTick;
+            formPlay.KeyDown += _inputManager.OnKeyDown;
+            formPlay.KeyUp += _inputManager.OnKeyUp;
 
             //Calculation
             var screen = formPlay.ClientRectangle;
@@ -108,7 +113,7 @@ namespace Rainbow
             for (int i = 0; i < level; i++)
             {
                 //Tile queues
-                _tiles[i] = new Queue<Tile>();
+                _tileQueues[i] = new Queue<Tile>();
 
                 //Spawn locations
                 _spawns[i] = new PointF(PlayArea.Location.X + TileWidth * i, -TileHeight);
@@ -136,31 +141,35 @@ namespace Rainbow
         public static void AddToUpdateCallback(Update action) => _updates.Add(action);
         public static void RemoveFromUpdateCallback(Update action) => _updates.Remove(action);
 
-        private static void GameTick()
+        private static void OnColorInput(ColorCode colorCode, int column)
+        {
+            var tileQueue = _tileQueues[column];
+            if (tileQueue.Count == 0) return;
+            var firstTile = tileQueue.Peek();
+            if (firstTile.Location.Y + TileHeight < Finishes[column].First.Y ||
+                firstTile.Color != _colorModel.CodeToColor(colorCode)) 
+                return;
+            tileQueue.Dequeue().Dispose();
+        }
+
+        private static void GameTick(object sender, EventArgs e)
         {
             Ticks++;
             ManageLives();
+            _inputManager.OnTick();
             foreach (var update in _updates) update();
             Spawner();
-            //Sometimes exceptions is thrown on closing the program.
-            try { _formPlay.Invoke(_updateScreen); }
-            catch (ObjectDisposedException) { }
-            catch (InvalidOperationException) { }
-        }
-
-        private static void ManageInput(object sender, System.Windows.Forms.KeyEventArgs e)
-        {
-            throw new Exception(e.KeyCode.ToString());
+            _formPlay.Refresh();
         }
 
         private static void ManageLives()
         {
             for (int i = 0; i < Level; i++)
             {
-                if (_tiles[i].Count != 0 &&
-                    _tiles[i].Peek().Location.Y > Boarders[i].Second.Y)
+                if (_tileQueues[i].Count != 0 &&
+                    _tileQueues[i].Peek().Location.Y > Boarders[i].Second.Y)
                 {
-                    var tile = _tiles[i].Dequeue();
+                    var tile = _tileQueues[i].Dequeue();
                     _stats.TakeTile(tile);
                     tile.Dispose();
                 }
@@ -170,7 +179,7 @@ namespace Rainbow
         private static void Spawner()
         {
             //Hack: Compensates for 1 pixel stuttering, background won't flicker between touching tiles in same column.
-            if (_lastSpawned.Location.Y >= -1) 
+            if (_lastSpawned.Location.Y >= -1)
                 Spawn();
         }
 
@@ -180,9 +189,9 @@ namespace Rainbow
             var randomColorCode = (ColorCode)(Random.Next((int)ColorCode.All) + 1);
 
             _lastSpawned = new Tile(
-                _colorModel[randomColorCode], 
+                _colorModel.CodeToColor(randomColorCode),
                 SpawnLocations[spawnLocationIndex]);
-            _tiles[spawnLocationIndex].Enqueue(_lastSpawned);
+            _tileQueues[spawnLocationIndex].Enqueue(_lastSpawned);
         }
     }
 }

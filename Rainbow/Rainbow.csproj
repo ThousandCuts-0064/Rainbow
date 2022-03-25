@@ -48,6 +48,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameModifiers.cs" />
     <Compile Include="IColorModel\ColorCode.cs" />
     <Compile Include="IColorModel\ColorComplexity.cs" />
     <Compile Include="IColorModel\CMY.cs" />

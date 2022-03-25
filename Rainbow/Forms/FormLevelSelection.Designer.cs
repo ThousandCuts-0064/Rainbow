@@ -85,7 +85,7 @@ namespace Rainbow
             this.radioButtonLevel1.Text = "Level 1";
             this.radioButtonLevel1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel1.UseVisualStyleBackColor = false;
-            this.radioButtonLevel1.Click += new System.EventHandler(this.ButtonLevelClicked);
+            this.radioButtonLevel1.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel2
             // 
@@ -100,7 +100,7 @@ namespace Rainbow
             this.radioButtonLevel2.Text = "Level 2";
             this.radioButtonLevel2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel2.UseVisualStyleBackColor = false;
-            this.radioButtonLevel2.Click += new System.EventHandler(this.ButtonLevelClicked);
+            this.radioButtonLevel2.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel3
             // 
@@ -115,7 +115,7 @@ namespace Rainbow
             this.radioButtonLevel3.Text = "Level 3";
             this.radioButtonLevel3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel3.UseVisualStyleBackColor = false;
-            this.radioButtonLevel3.Click += new System.EventHandler(this.ButtonLevelClicked);
+            this.radioButtonLevel3.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel4
             // 
@@ -130,7 +130,7 @@ namespace Rainbow
             this.radioButtonLevel4.Text = "Level 4";
             this.radioButtonLevel4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel4.UseVisualStyleBackColor = false;
-            this.radioButtonLevel4.Click += new System.EventHandler(this.ButtonLevelClicked);
+            this.radioButtonLevel4.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel5
             // 
@@ -145,7 +145,7 @@ namespace Rainbow
             this.radioButtonLevel5.Text = "Level 5";
             this.radioButtonLevel5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel5.UseVisualStyleBackColor = false;
-            this.radioButtonLevel5.Click += new System.EventHandler(this.ButtonLevelClicked);
+            this.radioButtonLevel5.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
             // 
             // checkBoxShowButtons
             // 
@@ -157,9 +157,10 @@ namespace Rainbow
             this.checkBoxShowButtons.Name = "checkBoxShowButtons";
             this.checkBoxShowButtons.Size = new System.Drawing.Size(100, 100);
             this.checkBoxShowButtons.TabIndex = 15;
-            this.checkBoxShowButtons.Text = "Show Buttons";
+            this.checkBoxShowButtons.Text = "Hint Buttons";
             this.checkBoxShowButtons.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBoxShowButtons.UseVisualStyleBackColor = false;
+            this.checkBoxShowButtons.CheckedChanged += new System.EventHandler(this.checkBoxHintButtons_CheckedChanged);
             // 
             // checkBoxDoubleTiles
             // 
@@ -216,7 +217,7 @@ namespace Rainbow
             this.radioButtonLevel10.Text = "Level 10";
             this.radioButtonLevel10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel10.UseVisualStyleBackColor = false;
-            this.radioButtonLevel10.Click += new System.EventHandler(this.ButtonLevelClicked);
+            this.radioButtonLevel10.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel9
             // 
@@ -231,7 +232,7 @@ namespace Rainbow
             this.radioButtonLevel9.Text = "Level 9";
             this.radioButtonLevel9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel9.UseVisualStyleBackColor = false;
-            this.radioButtonLevel9.Click += new System.EventHandler(this.ButtonLevelClicked);
+            this.radioButtonLevel9.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel8
             // 
@@ -246,7 +247,7 @@ namespace Rainbow
             this.radioButtonLevel8.Text = "Level 8";
             this.radioButtonLevel8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel8.UseVisualStyleBackColor = false;
-            this.radioButtonLevel8.Click += new System.EventHandler(this.ButtonLevelClicked);
+            this.radioButtonLevel8.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel7
             // 
@@ -261,7 +262,7 @@ namespace Rainbow
             this.radioButtonLevel7.Text = "Level 7";
             this.radioButtonLevel7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel7.UseVisualStyleBackColor = false;
-            this.radioButtonLevel7.Click += new System.EventHandler(this.ButtonLevelClicked);
+            this.radioButtonLevel7.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel6
             // 
@@ -276,7 +277,7 @@ namespace Rainbow
             this.radioButtonLevel6.Text = "Level 6";
             this.radioButtonLevel6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel6.UseVisualStyleBackColor = false;
-            this.radioButtonLevel6.Click += new System.EventHandler(this.ButtonLevelClicked);
+            this.radioButtonLevel6.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
             // 
             // checkBox1
             // 
@@ -302,7 +303,7 @@ namespace Rainbow
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(100, 100);
             this.checkBox2.TabIndex = 25;
-            this.checkBox2.Text = "Inverted Colors";
+            this.checkBox2.Text = "Color Distortion";
             this.checkBox2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox2.UseVisualStyleBackColor = false;
             // 

@@ -25,13 +25,15 @@ namespace Rainbow
         private static Line[] _boarders;//
         private static Line[] _finishes;//
         private static PointF[] _spawns;//
-        private static Tile _lastSpawned;
 
-        private static IColorModel _colorModel;
-        private static FormPlay _formPlay;
         private static Timer _timer;
         private static Stats _stats;
+        private static Spawner _spawner;
         private static InputManager _inputManager;
+        private static FormPlay _formPlay;
+        private static IColorModel _colorModel;
+        private static GameModifiers _gameModifiers;
+        private static int _level;
 
 
         /// <summary>
@@ -61,16 +63,16 @@ namespace Rainbow
         public static float UIElementWidth { get; private set; }
         public static float TileWidth { get; private set; }
         public static float TileHeight { get; private set; }
-        public static int Level { get; private set; }
         public static bool IsPaused { get => !_timer.Enabled; set => _timer.Enabled = !value; }
         public static bool IsLoaded { get; private set; }
 
-        public static void Initialize(FormPlay formPlay, IColorModel colorModel, int level)
+        public static void Initialize(FormPlay formPlay, IColorModel colorModel, GameModifiers gameModifiers, int level)
         {
             //Direct initializations
             _formPlay = formPlay;
             _colorModel = colorModel;
-            Level = level;
+            _gameModifiers = gameModifiers;
+            _level = level;
             IsLoaded = true;
 
             //Direct object Creation
@@ -102,9 +104,6 @@ namespace Rainbow
                 new PointF(screen.Width * (1 - PlayAreaWidthRatio) / 2, 0),
                 new SizeF(screen.Width * PlayAreaWidthRatio, screen.Height));
 
-            //Dependant object creation
-            _stats = new Stats(colorModel); //Depends on UIElements, Calculation
-
             //Leftmost boarder
             var bottomLeft = new PointF(PlayArea.Left, PlayArea.Bottom);
             _boarders[0] = new Line(_borderColor, PlayArea.Location, bottomLeft);
@@ -130,8 +129,9 @@ namespace Rainbow
                     bottomLeft + finishOffset + tileOffset);
             }
 
-            //First Spawn. Spawner needs one spawn to chain spawn.
-            Spawn();
+            //Dependant object creation
+            _stats = new Stats(colorModel); //Depends on UIElements, Calculation
+            _spawner = new Spawner(_tileQueues, colorModel, gameModifiers, level); // Depends on SpawnLocations, Random
 
             //Start Game
             _timer.Start();
@@ -158,13 +158,13 @@ namespace Rainbow
             ManageLives();
             _inputManager.OnTick();
             foreach (var update in _updates) update();
-            Spawner();
+            _spawner.OnTick();
             _formPlay.Refresh();
         }
 
         private static void ManageLives()
         {
-            for (int i = 0; i < Level; i++)
+            for (int i = 0; i < _level; i++)
             {
                 if (_tileQueues[i].Count != 0 &&
                     _tileQueues[i].Peek().Location.Y > Boarders[i].Second.Y)
@@ -174,24 +174,6 @@ namespace Rainbow
                     tile.Dispose();
                 }
             }
-        }
-
-        private static void Spawner()
-        {
-            //Hack: Compensates for 1 pixel stuttering, background won't flicker between touching tiles in same column.
-            if (_lastSpawned.Location.Y >= -1)
-                Spawn();
-        }
-
-        private static void Spawn()
-        {
-            int spawnLocationIndex = Random.Next(Level);
-            var randomColorCode = (ColorCode)(Random.Next((int)ColorCode.All) + 1);
-
-            _lastSpawned = new Tile(
-                _colorModel.CodeToColor(randomColorCode),
-                SpawnLocations[spawnLocationIndex]);
-            _tileQueues[spawnLocationIndex].Enqueue(_lastSpawned);
         }
     }
 }

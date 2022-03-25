@@ -13,7 +13,7 @@ namespace Rainbow
 {
     public partial class FormPlay : Form
     {
-        public FormPlay(IColorModel colorModel, int level)
+        public FormPlay(IColorModel colorModel, GameModifiers gameModifiers, int level)
         {
             InitializeComponent();
 
@@ -26,7 +26,7 @@ namespace Rainbow
 
             Height = Screen.PrimaryScreen.Bounds.Height;
             Width = Screen.PrimaryScreen.Bounds.Width;
-            Game.Initialize(this, colorModel, level);
+            Game.Initialize(this, colorModel, gameModifiers, level);
         }
 
         private void FormPlay_KeyDown(object sender, KeyEventArgs e)

@@ -10,6 +10,7 @@ namespace Rainbow
     public enum GameModifiers
     {
         None = 0,
-        HintButtons = 1
+        HintButtons = 1,
+        DoubleTiles = 2,
     }
 }

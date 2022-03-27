@@ -46,13 +46,16 @@ namespace Rainbow
         }
 
         private void checkBoxHintButtons_CheckedChanged(object sender, EventArgs e) => _gameModifiers ^= GameModifiers.HintButtons;
+        private void checkBoxDoubleTiles_CheckedChanged(object sender, EventArgs e) => _gameModifiers ^= GameModifiers.DoubleTiles;
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
             if (_selectedLevel == 0 || _colorModel == null) return;
+            if (_selectedLevel == 1 && _gameModifiers.HasFlag(GameModifiers.DoubleTiles)) return;
             //FormPlay.Owner = this.Owner
             new FormPlay(_colorModel, _gameModifiers, _selectedLevel) { Owner = Owner }.Show();
             Close();
         }
+
     }
 }

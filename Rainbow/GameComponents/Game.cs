@@ -13,11 +13,11 @@ namespace Rainbow
         /// <summary>
         /// % of screen height. Range: [0, 1].
         /// </summary>
-        private const float unitHightRatio = 0.01f;
+        private const float UNIT_HIGHT_RATIO = 0.01f;
         /// <summary>
         /// Number of units
         /// </summary>
-        private const int tileHightUnits = 10;
+        private const int TILE_HIGHT_UNITS = 10;
         private static readonly Color _borderColor = Color.Black;
         private static readonly Color _finishColor = Color.Black;
         private static Queue<Tile>[] _tileQueues;
@@ -95,9 +95,9 @@ namespace Rainbow
 
             //Calculation
             var screen = formPlay.ClientRectangle;
-            Unit = screen.Height * unitHightRatio;
+            Unit = screen.Height * UNIT_HIGHT_RATIO;
             HalfUnit = Unit / 2;
-            TileHeight = tileHightUnits * Unit;
+            TileHeight = TILE_HIGHT_UNITS * Unit;
             TileWidth = screen.Width * PlayAreaWidthRatio / level;
             UIElementWidth = screen.Width * (1 - PlayAreaWidthRatio) / 2;
             PlayArea = new RectangleF(
@@ -108,7 +108,7 @@ namespace Rainbow
             var bottomLeft = new PointF(PlayArea.Left, PlayArea.Bottom);
             _boarders[0] = new Line(_borderColor, PlayArea.Location, bottomLeft);
 
-            //Scale to level
+            //Level scale
             for (int i = 0; i < level; i++)
             {
                 //Tile queues
@@ -130,7 +130,7 @@ namespace Rainbow
             }
 
             //Dependant object creation
-            _stats = new Stats(colorModel); //Depends on UIElements, Calculation
+            _stats = new Stats(_tileQueues, colorModel, level); //Depends on UIElements, Calculation, Boarders
             _spawner = new Spawner(_tileQueues, colorModel, gameModifiers, level); // Depends on SpawnLocations, Random
 
             //Start Game
@@ -141,39 +141,25 @@ namespace Rainbow
         public static void AddToUpdateCallback(Update action) => _updates.Add(action);
         public static void RemoveFromUpdateCallback(Update action) => _updates.Remove(action);
 
-        private static void OnColorInput(ColorCode colorCode, int column)
-        {
-            var tileQueue = _tileQueues[column];
-            if (tileQueue.Count == 0) return;
-            var firstTile = tileQueue.Peek();
-            if (firstTile.Location.Y + TileHeight < Finishes[column].First.Y ||
-                firstTile.Color != _colorModel.CodeToColor(colorCode)) 
-                return;
-            tileQueue.Dequeue().Dispose();
-        }
-
         private static void GameTick(object sender, EventArgs e)
         {
             Ticks++;
-            ManageLives();
+            _stats.OnTick();
             _inputManager.OnTick();
             foreach (var update in _updates) update();
             _spawner.OnTick();
             _formPlay.Refresh();
         }
 
-        private static void ManageLives()
+        private static void OnColorInput(ColorCode colorCode, int column)
         {
-            for (int i = 0; i < _level; i++)
-            {
-                if (_tileQueues[i].Count != 0 &&
-                    _tileQueues[i].Peek().Location.Y > Boarders[i].Second.Y)
-                {
-                    var tile = _tileQueues[i].Dequeue();
-                    _stats.TakeTile(tile);
-                    tile.Dispose();
-                }
-            }
+            var tileQueue = _tileQueues[column];
+            if (tileQueue.Count == 0) return;
+            var firstTile = tileQueue.Peek();
+            if (firstTile.Location.Y + TileHeight < Finishes[column].First.Y ||
+                firstTile.ColorCode != colorCode)
+                return;
+            tileQueue.Dequeue().Dispose();
         }
     }
 }

@@ -9,20 +9,40 @@ namespace Rainbow
 {
     public class Tile : GameplayElement
     {
-        private static readonly Brush _textBrush = new SolidBrush(Color.DarkGray);
+        private static readonly StringFormat _stringFormat = new StringFormat()
+        {
+            Alignment = StringAlignment.Center,
+            LineAlignment = StringAlignment.Center
+        };
+        private static readonly Brush _brushText = new SolidBrush(Color.DarkGray);
+        private readonly Font _font;
         private readonly SolidBrush _solidBrush;
         private readonly Pen _pen = new Pen(Color.Black, Game.Unit);
-        private readonly Font _font = new Font(FontFamily.GenericSansSerif, Math.Min(Game.TileHeight * 0.6f, Game.TileWidth * 0.25f));
         private readonly string _text;
-        public Color Color { get; private set; }
+        private readonly int _column;
+        public readonly IColorModel _colorModel;
+        public ColorCode ColorCode { get; }
+        public Color Color { get; }
         public PointF Location { get; private set; }
 
-        public Tile(Color fill, PointF location, bool hintButtons)
+        public Tile(IColorModel colorModel, ColorCode colorCode, int column, bool hintButtons)
         {
-            Color = fill;
-            _solidBrush = new SolidBrush(fill);
-            Location = location;
-            _text = hintButtons ? "Hello!" : null;
+            _colorModel = colorModel;
+            ColorCode = colorCode;
+            Color = colorModel.CodeToColor(colorCode);
+            _solidBrush = new SolidBrush(Color);
+            _column = column;
+            Location = Game.SpawnLocations[column];
+            if (!hintButtons) return;
+            if (colorCode.HasFlag(ColorCode.I)) 
+                _text += InputManager.MapKeys.Reverse[(ColorCode.I, column)].ToString();
+            if (colorCode.HasFlag(ColorCode.II)) 
+                _text += InputManager.MapKeys.Reverse[(ColorCode.II, column)].ToString();
+            if (colorCode.HasFlag(ColorCode.III)) 
+                _text += InputManager.MapKeys.Reverse[(ColorCode.III, column)].ToString();
+            _font = new Font(
+                FontFamily.GenericMonospace, // Chars are same width and calculations are easy
+                Math.Min(Game.TileHeight * 0.5f, Game.TileWidth / _text.Length));
         }
 
         public override void Draw(Graphics graphics)
@@ -32,8 +52,8 @@ namespace Rainbow
 
             rectangleF.Inflate(-Game.HalfUnit, -Game.HalfUnit);
             graphics.DrawRectangle(_pen, rectangleF.X, rectangleF.Y, rectangleF.Width, rectangleF.Height);
-            
-            graphics.DrawString(_text, _font, _textBrush, rectangleF.X, rectangleF.Y);
+
+            graphics.DrawString(_text, _font, _brushText, rectangleF.X + rectangleF.Width * 0.5f, rectangleF.Y + rectangleF.Height * 0.5f, _stringFormat);
         }
 
         public override void Dispose()
@@ -41,10 +61,11 @@ namespace Rainbow
             base.Dispose();
             _solidBrush.Dispose();
             _pen.Dispose();
+            _font?.Dispose();
         }
 
-        protected override void Update() => Location = new PointF(Location.X, 
-            Location.Y + Game.TileUnitsPerSecond * Game.Unit * Game.DeltaTime);  
+        protected override void Update() => Location = new PointF(Location.X,
+            Location.Y + Game.TileUnitsPerSecond * Game.Unit * Game.DeltaTime);
     }
 }
 

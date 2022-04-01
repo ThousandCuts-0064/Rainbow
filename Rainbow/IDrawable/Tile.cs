@@ -14,32 +14,33 @@ namespace Rainbow
             Alignment = StringAlignment.Center,
             LineAlignment = StringAlignment.Center
         };
-        private static readonly Brush _brushText = new SolidBrush(Color.DarkGray);
+        private static readonly SolidBrush _brushText = new SolidBrush(Color.DarkGray);
+        private static readonly Color _colorBlend = Color.Gray;
         private readonly Font _font;
         private readonly SolidBrush _solidBrush;
         private readonly Pen _pen = new Pen(Color.Black, Game.Unit);
         private readonly string _text;
+        private readonly GameModifiers _gameModifiers;
         private readonly int _column;
         public readonly IColorModel _colorModel;
+        private float _blendRation;
         public ColorCode ColorCode { get; }
-        public Color Color { get; }
+        public Color Color => _solidBrush.Color;
         public PointF Location { get; private set; }
 
-        public Tile(IColorModel colorModel, ColorCode colorCode, int column, bool hintButtons)
+        public Tile(IColorModel colorModel, ColorCode colorCode, GameModifiers gameModifiers, int column)
         {
             _colorModel = colorModel;
             ColorCode = colorCode;
-            Color = colorModel.CodeToColor(colorCode);
-            _solidBrush = new SolidBrush(Color);
             _column = column;
+            _gameModifiers = gameModifiers;
+            _solidBrush = new SolidBrush(colorModel.CodeToColor(colorCode));
+            _blendRation = 0;
             Location = Game.SpawnLocations[column];
-            if (!hintButtons) return;
-            if (colorCode.HasFlag(ColorCode.I)) 
-                _text += InputManager.MapKeys.Reverse[(ColorCode.I, column)].ToString();
-            if (colorCode.HasFlag(ColorCode.II)) 
-                _text += InputManager.MapKeys.Reverse[(ColorCode.II, column)].ToString();
-            if (colorCode.HasFlag(ColorCode.III)) 
-                _text += InputManager.MapKeys.Reverse[(ColorCode.III, column)].ToString();
+            if (!gameModifiers.HasFlag(GameModifiers.HintButtons)) return;
+            if (colorCode.HasFlag(ColorCode.I)) _text += InputManager.MapKeys.Reverse[(ColorCode.I, column)].ToString();
+            if (colorCode.HasFlag(ColorCode.II)) _text += InputManager.MapKeys.Reverse[(ColorCode.II, column)].ToString();
+            if (colorCode.HasFlag(ColorCode.III)) _text += InputManager.MapKeys.Reverse[(ColorCode.III, column)].ToString();
             _font = new Font(
                 FontFamily.GenericMonospace, // Chars are same width and calculations are easy
                 Math.Min(Game.TileHeight * 0.5f, Game.TileWidth / _text.Length));
@@ -47,6 +48,18 @@ namespace Rainbow
 
         public override void Draw(Graphics graphics)
         {
+            Color colorBase = _solidBrush.Color;
+
+            if (_gameModifiers.HasFlag(GameModifiers.FadingColors))
+            {
+                _solidBrush.Color = Color.Blend(_colorBlend, _blendRation);
+                _blendRation += _blendRation < 1 ? 0.002f : 0;
+                _brushText.Color = _colorBlend;
+            }
+
+            if (_gameModifiers.HasFlag(GameModifiers.InvertedColors))
+                _solidBrush.Color = _solidBrush.Color.Invert();
+
             RectangleF rectangleF = new RectangleF(Location.X, Location.Y, Game.TileWidth, Game.TileHeight);
             graphics.FillRectangle(_solidBrush, rectangleF);
 
@@ -54,6 +67,8 @@ namespace Rainbow
             graphics.DrawRectangle(_pen, rectangleF.X, rectangleF.Y, rectangleF.Width, rectangleF.Height);
 
             graphics.DrawString(_text, _font, _brushText, rectangleF.X + rectangleF.Width * 0.5f, rectangleF.Y + rectangleF.Height * 0.5f, _stringFormat);
+
+            _solidBrush.Color = colorBase;
         }
 
         public override void Dispose()

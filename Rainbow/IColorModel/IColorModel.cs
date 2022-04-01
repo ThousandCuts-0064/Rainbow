@@ -12,14 +12,6 @@ namespace Rainbow
     /// </summary>
     public interface IColorModel
     {
-        Color I { get; }
-        Color II { get; }
-        Color III { get; }
-        Color I_II { get; }
-        Color I_III { get; }
-        Color II_III { get; }
-        Color All { get; }
-
         Color CodeToColor(ColorCode cc);
         ColorCode ColorToCode(Color c);
         Color Combine(Color c1, Color c2);

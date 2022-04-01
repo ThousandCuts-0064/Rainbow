@@ -48,6 +48,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IColorModel\ARC.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="GameComponents\GameModifiers.cs" />
     <Compile Include="IColorModel\ColorCode.cs" />
@@ -99,7 +100,7 @@
     </Compile>
     <Compile Include="IDrawable\UIElement.cs" />
     <Compile Include="IColorModel\RGB.cs" />
-    <Compile Include="IColorModel\RYB.cs" />
+    <Compile Include="IColorModel\OSV.cs" />
     <Compile Include="GameComponents\Spawner.cs" />
     <Compile Include="GameComponents\Stats.cs" />
     <Compile Include="Update.cs" />

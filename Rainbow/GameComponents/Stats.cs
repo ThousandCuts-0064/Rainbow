@@ -28,19 +28,22 @@ namespace Rainbow
             var width = Game.UIElementWidth;
             var hight = Game.TileHeight;
 
-            _lifeI = new Bar(_colorModel.I,
+            _lifeI = new Bar(
+                colorModel.CodeToColor(ColorCode.I),
                 new RectangleF(
                     new PointF(playArea.Right, playArea.Top),
                     new SizeF(width, hight)),
                 DEFAULT_MAX_LIFES);
 
-            _lifeII = new Bar(_colorModel.II,
+            _lifeII = new Bar(
+                colorModel.CodeToColor(ColorCode.II),
                 new RectangleF(
                     new PointF(playArea.Right, playArea.Top + hight),
                     new SizeF(width, hight)),
                 DEFAULT_MAX_LIFES);
 
-            _lifeIII = new Bar(_colorModel.III,
+            _lifeIII = new Bar(
+                colorModel.CodeToColor(ColorCode.III),
                 new RectangleF(
                     new PointF(playArea.Right, playArea.Top + hight * 2),
                     new SizeF(width, hight)),

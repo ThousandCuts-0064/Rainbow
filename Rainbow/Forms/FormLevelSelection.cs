@@ -27,35 +27,31 @@ namespace Rainbow
                 _selectedLevel = int.Parse(button.Text.Split(' ').Last());
         }
 
-        private void radioButtonRGB_CheckedChanged(object sender, EventArgs e)
+        private void radioButtonColorModel_CheckedChanged(object sender, EventArgs e)
         {
             if (radioButtonRGB.Checked)
                 _colorModel = new RGB();
-        }
-
-        private void radioButtonRYB_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButtonRYB.Checked)
-                _colorModel = new RYB();
-        }
-
-        private void radioButtonCMY_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButtonCMY.Checked)
+            else if (radioButtonCMY.Checked)
                 _colorModel = new CMY();
+            else if (radioButtonOSV.Checked)
+                _colorModel = new OSV();
+            else if (radioButtonARC.Checked)
+                _colorModel = new ARC();
         }
 
-        private void checkBoxHintButtons_CheckedChanged(object sender, EventArgs e) => _gameModifiers ^= GameModifiers.HintButtons;
-        private void checkBoxDoubleTiles_CheckedChanged(object sender, EventArgs e) => _gameModifiers ^= GameModifiers.DoubleTiles;
+        private void checkBoxGameModifier_CheckedChanged(object sender, EventArgs e) =>
+            _gameModifiers ^= (GameModifiers)Enum.Parse(
+                typeof(GameModifiers), 
+                string.Concat(((Control)sender).Text.Split(' ')));
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
             if (_selectedLevel == 0 || _colorModel == null) return;
             if (_selectedLevel == 1 && _gameModifiers.HasFlag(GameModifiers.DoubleTiles)) return;
+            if (_selectedLevel <= 2 && _gameModifiers.HasFlag(GameModifiers.TripleTiles)) return;
             //FormPlay.Owner = this.Owner
             new FormPlay(_colorModel, _gameModifiers, _selectedLevel) { Owner = Owner }.Show();
             Close();
         }
-
     }
 }

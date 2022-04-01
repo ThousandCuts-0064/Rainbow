@@ -8,7 +8,8 @@ namespace Rainbow
 {
     class Spawner
     {
-        private const int SECOND_TILE_CHANCE = 3; // Actual chance is 1 / SECOND_TILE_CHANCE
+        private const int DOUBLE_TILES_CHANCE = 33; // % chance
+        private const int TRIPLE_TILES_CHANCE = 20; // % chance
         private readonly IColorModel _colorModel;
         private readonly GameModifiers _gameModifiers;
         private readonly int _level;
@@ -31,27 +32,52 @@ namespace Rainbow
             //Hack: Compensates for 1 pixel stuttering, background won't flicker between touching tiles in same column.
             if (_lastSpawned.Location.Y < -1) return;
 
-            int spawnLocationIndex = Game.Random.Next(_level);
-            Spawn(spawnLocationIndex);
+            int chance = Game.Random.Next(100);
 
-            if (!_gameModifiers.HasFlag(GameModifiers.DoubleTiles)) return;
-            if (Game.Random.Next(SECOND_TILE_CHANCE) != 0) return;
+            if (_gameModifiers.HasFlag(GameModifiers.DoubleTiles))
+            {
+                if (chance >= DOUBLE_TILES_CHANCE) // Chance must be between 0 and DOUBLE_TILES_CHANCE
+                    chance -= DOUBLE_TILES_CHANCE;
+                else
+                {
+                    int index1 = Game.Random.Next(_level);
+                    Spawn(index1);
+                    int index2 = Game.Random.Next(_level - 1);
+                    if (index2 >= index1) index2++;
+                    Spawn(index2);
+                    chance = 100;
+                }
+            }
 
-            int newSpawnLocationIndex = Game.Random.Next(_level - 1);
-            if (newSpawnLocationIndex >= spawnLocationIndex) newSpawnLocationIndex++;
-            if (newSpawnLocationIndex == _level - 1) newSpawnLocationIndex = 0;
-            Spawn(newSpawnLocationIndex);
+            if (_gameModifiers.HasFlag(GameModifiers.TripleTiles))
+            {
+                if (chance >= TRIPLE_TILES_CHANCE) // Chance must be between 0 and TRIPLE_TILES_CHANCE
+                    chance -= TRIPLE_TILES_CHANCE;
+                else
+                {
+                    int index1 = Game.Random.Next(_level);
+                    Spawn(index1);
+                    int index2 = Game.Random.Next(_level - 1);
+                    if (index2 >= index1) index2++;
+                    Spawn(index2);
+                    int index3 = Game.Random.Next(_level - 2);
+                    if (index3 >= index1) index3++;
+                    if (index3 >= index2) index3++;
+                    if (index3 == index1) index3++;
+                    Spawn(index3);
+                    chance = 100;
+                }
+            }
+
+            if (chance < 100)
+                Spawn(Game.Random.Next(_level));
         }
 
         private void Spawn(int spawnLocationIndex)
         {
             var randomColorCode = (ColorCode)(Game.Random.Next((int)ColorCode.All) + 1);
 
-            _lastSpawned = new Tile(
-                _colorModel,
-                randomColorCode,
-                spawnLocationIndex,
-                _gameModifiers.HasFlag(GameModifiers.HintButtons));
+            _lastSpawned = new Tile(_colorModel, randomColorCode, _gameModifiers, spawnLocationIndex);
             _tileQueues[spawnLocationIndex].Enqueue(_lastSpawned);
         }
     }

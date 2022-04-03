@@ -33,10 +33,10 @@ namespace Rainbow
                 _colorModel = new RGB();
             else if (radioButtonCMY.Checked)
                 _colorModel = new CMY();
-            else if (radioButtonOSV.Checked)
-                _colorModel = new OSV();
             else if (radioButtonARC.Checked)
                 _colorModel = new ARC();
+            else if (radioButtonOSV.Checked)
+                _colorModel = new OSV();
         }
 
         private void checkBoxGameModifier_CheckedChanged(object sender, EventArgs e) =>

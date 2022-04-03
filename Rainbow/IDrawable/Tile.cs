@@ -23,7 +23,8 @@ namespace Rainbow
         private readonly GameModifiers _gameModifiers;
         private readonly int _column;
         public readonly IColorModel _colorModel;
-        private float _blendRation;
+        private Color _colorDistortion;
+        private float _fadeRatio;
         public ColorCode ColorCode { get; }
         public Color Color => _solidBrush.Color;
         public PointF Location { get; private set; }
@@ -35,8 +36,11 @@ namespace Rainbow
             _column = column;
             _gameModifiers = gameModifiers;
             _solidBrush = new SolidBrush(colorModel.CodeToColor(colorCode));
-            _blendRation = 0;
+            _fadeRatio = 0;
             Location = Game.SpawnLocations[column];
+
+            _colorDistortion = Color.FromArgb(Game.Random.Next(128), Game.Random.Next(128), Game.Random.Next(128));
+
             if (!gameModifiers.HasFlag(GameModifiers.HintButtons)) return;
             if (colorCode.HasFlag(ColorCode.I)) _text += InputManager.MapKeys.Reverse[(ColorCode.I, column)].ToString();
             if (colorCode.HasFlag(ColorCode.II)) _text += InputManager.MapKeys.Reverse[(ColorCode.II, column)].ToString();
@@ -50,10 +54,17 @@ namespace Rainbow
         {
             Color colorBase = _solidBrush.Color;
 
+            if (_gameModifiers.HasFlag(GameModifiers.ColorDistortion))
+            {
+                _solidBrush.Color = _colorModel.Combine(
+                    _solidBrush.Color,
+                    _colorDistortion);
+            }
+
             if (_gameModifiers.HasFlag(GameModifiers.FadingColors))
             {
-                _solidBrush.Color = Color.Blend(_colorBlend, _blendRation);
-                _blendRation += _blendRation < 1 ? 0.002f : 0;
+                _solidBrush.Color = Color.Blend(_colorBlend, _fadeRatio);
+                _fadeRatio += _fadeRatio < 1 ? 0.002f : 0;
                 _brushText.Color = _colorBlend;
             }
 

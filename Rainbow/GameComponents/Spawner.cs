@@ -29,7 +29,7 @@ namespace Rainbow
 
         public void OnTick()
         {
-            //Hack: Compensates for 1 pixel stuttering, background won't flicker between touching tiles in same column.
+            //Hack: Compensates for 1 or 2 pixel stuttering, background won't flicker between touching tiles in same column.
             if (_lastSpawned.Location.Y < -1) return;
 
             int chance = Game.Random.Next(100);

@@ -12,6 +12,8 @@ namespace Rainbow
     /// </summary>
     public interface IColorModel
     {
+        string Name { get; }
+
         Color CodeToColor(ColorCode cc);
         ColorCode ColorToCode(Color c);
         Color Combine(Color c1, Color c2);

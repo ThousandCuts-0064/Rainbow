@@ -89,6 +89,7 @@ namespace Rainbow
 
             //Miscellaneous
             _inputManager.ColorInput += OnColorInput;
+            _inputManager.Shotgun += OnShotGun;
             _timer.Tick += GameTick;
             formPlay.KeyDown += _inputManager.OnKeyDown;
             formPlay.KeyUp += _inputManager.OnKeyUp;
@@ -160,6 +161,11 @@ namespace Rainbow
                 firstTile.ColorCode != colorCode)
                 return;
             tileQueue.Dequeue().Dispose();
+        }
+
+        private static void OnShotGun()
+        {
+
         }
     }
 }

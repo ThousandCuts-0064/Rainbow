@@ -8,7 +8,7 @@ namespace Rainbow
 {
     public enum ColorComplexity
     {
-        Invalid,
+        None,
         Primary,
         Secondary,
         All

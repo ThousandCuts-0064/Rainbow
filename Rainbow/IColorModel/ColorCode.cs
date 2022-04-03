@@ -12,7 +12,7 @@ namespace Rainbow
     [Flags]
     public enum ColorCode
     {
-        Invalid = 0,
+        None = 0,
         I = 1,
         II = 2,
         I_II = I | II, // 3

@@ -26,6 +26,7 @@ namespace Rainbow
             { Keys.P, (ColorCode.I, 9) }, { Keys.Oem1, (ColorCode.II, 9) }, { Keys.OemQuestion,(ColorCode.III, 9) }, // Oem1 = ';'   OemQuestion = '/'
         };
         public event Action<ColorCode, int> ColorInput;
+        public event Action Shotgun;
 
         public InputManager(int level)
         {
@@ -55,7 +56,7 @@ namespace Rainbow
         {
             private readonly InputManager _inputManager;
             private readonly int _column;
-            private ColorCode _colorCodeInput = ColorCode.Invalid;
+            private ColorCode _colorCodeInput = ColorCode.None;
             private ulong _tickChainStarter;
 
             public Column(InputManager inputManager, int column)
@@ -66,17 +67,25 @@ namespace Rainbow
 
             public void OnTick()
             {
-                if (_colorCodeInput != ColorCode.Invalid &&
+                if (_colorCodeInput != ColorCode.None &&
                     Game.Ticks == _tickChainStarter + CHAIN_TICKS_WINDOW)
-                    _inputManager.ColorInput(_colorCodeInput, _column);
+                    _inputManager.ColorInput?.Invoke(_colorCodeInput, _column);
 
                 if (Game.Ticks > _tickChainStarter + CHAIN_TICKS_WINDOW)
-                    _colorCodeInput = ColorCode.Invalid;
+                    _colorCodeInput = ColorCode.None;
             }
 
             public void OnKeyDown(Keys key)
             {
-                if (_colorCodeInput == ColorCode.Invalid) _tickChainStarter = Game.Ticks;
+                if (key == Keys.Space)
+                {
+                    _inputManager.ColorInput?.Invoke(_colorCodeInput, _column);
+                    _colorCodeInput = ColorCode.None;
+                    _inputManager.Shotgun?.Invoke();
+                    return;
+                }
+
+                if (_colorCodeInput == ColorCode.None) _tickChainStarter = Game.Ticks;
                 _colorCodeInput |= MapKeys.Forward[key].colorCode;
             }
         }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Rainbow
 {
@@ -31,6 +32,7 @@ namespace Rainbow
         private static Spawner _spawner;
         private static InputManager _inputManager;
         private static FormPlay _formPlay;
+        private static UIImage _colorDiagram;
         private static IColorModel _colorModel;
         private static GameModifiers _gameModifiers;
         private static int _level;
@@ -87,13 +89,6 @@ namespace Rainbow
             _timer = new Timer { Interval = (int)(DeltaTime * 1000) };
             _inputManager = new InputManager(level);
 
-            //Miscellaneous
-            _inputManager.ColorInput += OnColorInput;
-            _inputManager.Shotgun += OnShotGun;
-            _timer.Tick += GameTick;
-            formPlay.KeyDown += _inputManager.OnKeyDown;
-            formPlay.KeyUp += _inputManager.OnKeyUp;
-
             //Calculation
             var screen = formPlay.ClientRectangle;
             Unit = screen.Height * UNIT_HIGHT_RATIO;
@@ -121,6 +116,7 @@ namespace Rainbow
                 //Rest of boarders and finish lines
                 var tileOffset = new SizeF(TileWidth * (i + 1), 0);
                 var finishOffset = new SizeF(0, -TileHeight * 2);
+
                 //Lines are automaticaly added to the draw list
                 _boarders[i + 1] = new Line(_borderColor,
                     PlayArea.Location + tileOffset,
@@ -133,6 +129,30 @@ namespace Rainbow
             //Dependant object creation
             _stats = new Stats(_tileQueues, colorModel, level); //Depends on UIElements, Calculation, Boarders
             _spawner = new Spawner(_tileQueues, colorModel, gameModifiers, level); // Depends on SpawnLocations, Random
+            try
+            {
+                _colorDiagram = gameModifiers.HasFlag(GameModifiers.ColorWheel)
+                    ? new UIImage(
+                        Image.FromFile(
+                            Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).FullName).FullName +
+                            @"\Resources\ColorWheel.png"),
+                        new RectangleF(
+                            new PointF(
+                                Boarders.Last().Second.X,
+                                Boarders.Last().Second.Y - TileHeight * 3),
+                            new SizeF(
+                                UIElementWidth,
+                                TileHeight * 3)))
+                    : null;
+            }
+            catch { }
+
+            //Events
+            _inputManager.ColorInput += OnColorInput;
+            _inputManager.Shotgun += _stats.UseShotgun;
+            _timer.Tick += GameTick;
+            formPlay.KeyDown += _inputManager.OnKeyDown;
+            formPlay.KeyUp += _inputManager.OnKeyUp;
 
             //Start Game
             _timer.Start();
@@ -161,11 +181,6 @@ namespace Rainbow
                 firstTile.ColorCode != colorCode)
                 return;
             tileQueue.Dequeue().Dispose();
-        }
-
-        private static void OnShotGun()
-        {
-
         }
     }
 }

@@ -36,10 +36,13 @@ namespace Rainbow
             _column = column;
             _gameModifiers = gameModifiers;
             _solidBrush = new SolidBrush(colorModel.CodeToColor(colorCode));
-            _fadeRatio = 0;
             Location = Game.SpawnLocations[column];
 
-            _colorDistortion = Color.FromArgb(Game.Random.Next(128), Game.Random.Next(128), Game.Random.Next(128));
+            _fadeRatio = 0;
+            _colorDistortion = Color.FromArgb(
+                Game.Random.Next(64),
+                Game.Random.Next(64),
+                Game.Random.Next(64));
 
             if (!gameModifiers.HasFlag(GameModifiers.HintButtons)) return;
             if (colorCode.HasFlag(ColorCode.I)) _text += InputManager.MapKeys.Reverse[(ColorCode.I, column)].ToString();
@@ -94,29 +97,3 @@ namespace Rainbow
             Location.Y + Game.TileUnitsPerSecond * Game.Unit * Game.DeltaTime);
     }
 }
-
-//private void DrawText()
-//{
-
-//    // text and font
-//    string text = "one two three four five six seven eight nine ten eleven twelve";
-
-//    Font font = new System.Drawing.Font("Arial", 30, FontStyle.Regular, GraphicsUnit.Point);
-
-//    switch (i)
-//    {
-//        case 0:
-//            picbox.Image = TextDrawing.DrawTextToBitmap(text, font, Color.Red, TextDrawing.DrawMethod.AutosizeAccordingToText, new RectangleF(0, 0, picbox.Width, picbox.Height));
-//            break;
-//        case 1:
-//            picbox.Image = TextDrawing.DrawTextToBitmap(text, font, Color.Red, TextDrawing.DrawMethod.AutoFitInConstantRectangleWithoutWarp, new RectangleF(0, 0, picbox.Width, picbox.Height));
-//            break;
-//        case 2:
-//            picbox.Image = TextDrawing.DrawTextToBitmap(text, font, Color.Red, TextDrawing.DrawMethod.AutoWarpInConstantRectangle, new RectangleF(0, 0, picbox.Width, picbox.Height));
-//            break;
-//        case 3:
-//            picbox.Image = TextDrawing.DrawTextToBitmap(text, font, Color.Red, TextDrawing.DrawMethod.AutoFitInConstantRectangleWithWarp, new RectangleF(0, 0, picbox.Width, picbox.Height));
-//            break;
-//    }
-//    this.Text = ((TextDrawing.DrawMethod)(i)).ToString() + "                      Please resize window size by mouse to see drawing methods differences";
-//}

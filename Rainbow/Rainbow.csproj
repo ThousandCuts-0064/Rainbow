@@ -66,6 +66,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IColorModel\ARC.cs" />
+    <Compile Include="IDrawable\Birdy.cs" />
+    <Compile Include="IDrawable\UIImage.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="GameComponents\GameModifiers.cs" />
     <Compile Include="IColorModel\ColorCode.cs" />

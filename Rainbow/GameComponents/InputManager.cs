@@ -44,6 +44,13 @@ namespace Rainbow
         public void OnKeyDown(object sender, KeyEventArgs e)
         {
             var key = e.KeyCode;
+            if (key == Keys.Space)
+            {
+                foreach (var column in _columns)
+                    column.FireColorInput();
+                Shotgun?.Invoke();
+                return;
+            }
             if (MapKeys.Forward.TryGetValue(key, out var tuple) &&
                 tuple.column < _columns.Length &&
                 _pressedKeys.Add(key)) // Send input once per key press
@@ -69,7 +76,10 @@ namespace Rainbow
             {
                 if (_colorCodeInput != ColorCode.None &&
                     Game.Ticks == _tickChainStarter + CHAIN_TICKS_WINDOW)
-                    _inputManager.ColorInput?.Invoke(_colorCodeInput, _column);
+                {
+                    FireColorInput();
+                    return;
+                }
 
                 if (Game.Ticks > _tickChainStarter + CHAIN_TICKS_WINDOW)
                     _colorCodeInput = ColorCode.None;
@@ -77,16 +87,14 @@ namespace Rainbow
 
             public void OnKeyDown(Keys key)
             {
-                if (key == Keys.Space)
-                {
-                    _inputManager.ColorInput?.Invoke(_colorCodeInput, _column);
-                    _colorCodeInput = ColorCode.None;
-                    _inputManager.Shotgun?.Invoke();
-                    return;
-                }
-
                 if (_colorCodeInput == ColorCode.None) _tickChainStarter = Game.Ticks;
                 _colorCodeInput |= MapKeys.Forward[key].colorCode;
+            }
+
+            public void FireColorInput()
+            {
+                _inputManager.ColorInput?.Invoke(_colorCodeInput, _column);
+                _colorCodeInput = ColorCode.None;
             }
         }
     }

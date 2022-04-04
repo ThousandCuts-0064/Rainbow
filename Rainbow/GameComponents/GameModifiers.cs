@@ -16,5 +16,7 @@ namespace Rainbow
         FadingColors = 8,
         InvertedColors = 16,
         HintButtons = 32,
+        ColorWheel = 64,
+        ShotgunTiles = 128,
     }
 }

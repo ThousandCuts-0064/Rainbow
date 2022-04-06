@@ -29,7 +29,7 @@ namespace Rainbow
 
             _normalState = new NormalState(this);
             _shotgunState = new ShotgunState(this);
-            _spawnerState = _normalState;
+            SetState(_normalState);
 
             //First Spawn. Spawner needs one spawn to chain spawn.
             NormalSpawn(Game.Random.Next(_level));
@@ -47,64 +47,19 @@ namespace Rainbow
                         chance -= SHOTGUN_TILES_CHANCE;
                     else
                     {
-                        _spawnerState = _shotgunState.Set();
+                        SetState(_shotgunState);
                         chance = chanceCap;
                     }
                 }
 
                 if (chance < chanceCap)
-                    _spawnerState = _normalState.Set();
+                    SetState(_normalState);
             }
 
             _spawnerState.OnTick();
         }
 
-        private void StandartSpawning()
-        {
-            //Hack: Compensates for 1 or 2 pixel stuttering, background won't flicker between touching tiles in same column.
-            if (_lastSpawned.Location.Y < -1) return;
-
-            int chanceCap = 100;
-            int chance = Game.Random.Next(chanceCap);
-
-            if (_gameModifiers.HasFlag(GameModifiers.DoubleTiles))
-            {
-                if (chance >= DOUBLE_TILES_CHANCE) // Chance must be between 0 and DOUBLE_TILES_CHANCE
-                    chance -= DOUBLE_TILES_CHANCE;
-                else
-                {
-                    int index1 = Game.Random.Next(_level);
-                    NormalSpawn(index1);
-                    int index2 = Game.Random.Next(_level - 1);
-                    if (index2 >= index1) index2++;
-                    NormalSpawn(index2);
-                    chance = chanceCap;
-                }
-            }
-
-            if (_gameModifiers.HasFlag(GameModifiers.TripleTiles))
-            {
-                if (chance >= TRIPLE_TILES_CHANCE) // Chance must be between 0 and TRIPLE_TILES_CHANCE
-                    chance -= TRIPLE_TILES_CHANCE;
-                else
-                {
-                    int index1 = Game.Random.Next(_level);
-                    NormalSpawn(index1);
-                    int index2 = Game.Random.Next(_level - 1);
-                    if (index2 >= index1) index2++;
-                    NormalSpawn(index2);
-                    int index3 = Game.Random.Next(_level - 2);
-                    if (index3 >= index1) index3++;
-                    if (index3 >= index2) index3++;
-                    if (index3 == index1) index3++;
-                    NormalSpawn(index3);
-                    chance = chanceCap;
-                }
-            }
-
-            if (chance < chanceCap)
-                NormalSpawn(Game.Random.Next(_level));
-        }
+        private void SetState(SpawnerState state) => _spawnerState = state.OnSet();
 
         private void NormalSpawn(int spawnLocationIndex)
         {
@@ -125,7 +80,7 @@ namespace Rainbow
 
             public SpawnerState(Spawner spawner) => Spawner = spawner;
 
-            public SpawnerState Set()
+            public SpawnerState OnSet()
             {
                 OnStateSet();
                 return this;
@@ -189,10 +144,7 @@ namespace Rainbow
                 AllowSwap = true;
             }
 
-            protected override void OnStateSet()
-            {
-                AllowSwap = false;
-            }
+            protected override void OnStateSet() => AllowSwap = false;
         }
 
         private class ShotgunState : SpawnerState
@@ -253,6 +205,21 @@ namespace Rainbow
                 _waitSpace = true;
                 _finishedCycle = false;
                 _rowCount = 0;
+            }
+        }
+
+        private class DiamondState : SpawnerState
+        {
+            public DiamondState(Spawner spawner) : base(spawner) { }
+
+            public override void OnTick()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnStateSet()
+            {
+                throw new NotImplementedException();
             }
         }
     }

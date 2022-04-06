@@ -56,7 +56,6 @@ namespace Rainbow
             this.checkBox6 = new System.Windows.Forms.CheckBox();
             this.panelColorModels = new System.Windows.Forms.Panel();
             this.radioButtonARC = new System.Windows.Forms.RadioButton();
-            this.labelDiscription = new System.Windows.Forms.Label();
             this.panelLevels.SuspendLayout();
             this.panelColorModels.SuspendLayout();
             this.SuspendLayout();
@@ -492,26 +491,13 @@ namespace Rainbow
             this.radioButtonARC.UseVisualStyleBackColor = false;
             this.radioButtonARC.CheckedChanged += new System.EventHandler(this.radioButtonColorModel_CheckedChanged);
             // 
-            // labelDiscription
-            // 
-            this.labelDiscription.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.labelDiscription.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelDiscription.Location = new System.Drawing.Point(12, 540);
-            this.labelDiscription.Name = "labelDiscription";
-            this.labelDiscription.Size = new System.Drawing.Size(524, 100);
-            this.labelDiscription.TabIndex = 25;
-            this.labelDiscription.Text = "You have to choose a Level and\r\na Color Model (RGB, CMY, ARC, OSV)\r\nLevel 1 is in" +
-    "compatable with Double Tiles\r\nLevels 1 and 2 are incompatable with Triple Tiles";
-            this.labelDiscription.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // FormLevelSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Gray;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(550, 650);
-            this.Controls.Add(this.labelDiscription);
+            this.ClientSize = new System.Drawing.Size(660, 550);
             this.Controls.Add(this.panelColorModels);
             this.Controls.Add(this.checkBoxColorWheel);
             this.Controls.Add(this.checkBox4);
@@ -571,6 +557,5 @@ namespace Rainbow
         private System.Windows.Forms.CheckBox checkBox6;
         private System.Windows.Forms.Panel panelColorModels;
         private System.Windows.Forms.RadioButton radioButtonARC;
-        private System.Windows.Forms.Label labelDiscription;
     }
 }

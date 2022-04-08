@@ -9,7 +9,7 @@ namespace Rainbow
 {
     class UIImage : UIElement
     {
-        private Image _image;
+        private readonly Image _image;
         private RectangleF _rectangleF;
 
         public UIImage(Image image, RectangleF rectangleF)

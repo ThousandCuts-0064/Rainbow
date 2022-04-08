@@ -176,11 +176,21 @@ namespace Rainbow
         {
             var tileQueue = _tileQueues[column];
             if (tileQueue.Count == 0) return;
+
             var firstTile = tileQueue.Peek();
             if (firstTile.Location.Y + TileHeight < Finishes[column].First.Y ||
                 firstTile.ColorCode != colorCode)
                 return;
-            tileQueue.Dequeue().Dispose();
+
+            firstTile.Click();
+            if (firstTile.Lives <= 0)
+                tileQueue.Dequeue();
+
+            //firstTile = tileQueue.Peek();
+            //while(firstTile.Location.Y + TileHeight > Finishes[column].First.Y)
+            //{
+            //    if (firstTile.ColorCode != colorCode) continue;
+            //}
         }
     }
 }

@@ -20,14 +20,14 @@ namespace Rainbow
 
         private void FormLevelSelection_Load(object sender, EventArgs e) => CenterToParent();
 
-        private void radioButtonsLevel_CheckedChanged(object sender, EventArgs e)
+        private void RadioButtonsLevel_CheckedChanged(object sender, EventArgs e)
         {
             var button = (RadioButton)sender;
             if (button.Checked)
                 _selectedLevel = int.Parse(button.Text.Split(' ').Last());
         }
 
-        private void radioButtonColorModel_CheckedChanged(object sender, EventArgs e)
+        private void RadioButtonColorModel_CheckedChanged(object sender, EventArgs e)
         {
             if (radioButtonRGB.Checked)
                 _colorModel = new RGB();
@@ -39,15 +39,19 @@ namespace Rainbow
                 _colorModel = new OSV();
         }
 
-        private void checkBoxGameModifier_CheckedChanged(object sender, EventArgs e) =>
+        private void CheckBoxGameModifier_CheckedChanged(object sender, EventArgs e) =>
             _gameModifiers ^= (GameModifiers)Enum.Parse(
-                typeof(GameModifiers), 
+                typeof(GameModifiers),
                 string.Concat(((Control)sender).Text.Split(' ')));
 
-        private void buttonStart_Click(object sender, EventArgs e)
+        private void ButtonStart_Click(object sender, EventArgs e)
         {
             if (_selectedLevel == 0 || _colorModel == null) return;
-            if (_selectedLevel == 1 && _gameModifiers.HasFlag(GameModifiers.DoubleTiles)) return;
+            if (_selectedLevel == 1)
+            {
+                if (_gameModifiers.HasFlag(GameModifiers.DoubleTiles)) return;
+                if (_gameModifiers.HasFlag(GameModifiers.ChessEvent)) return;
+            }
             if (_selectedLevel <= 2 && _gameModifiers.HasFlag(GameModifiers.TripleTiles)) return;
             //FormPlay.Owner = this.Owner
             new FormPlay(_colorModel, _gameModifiers, _selectedLevel) { Owner = Owner }.Show();

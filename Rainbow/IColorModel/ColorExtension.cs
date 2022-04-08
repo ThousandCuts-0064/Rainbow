@@ -21,17 +21,6 @@ namespace Rainbow
                 Invert(color.G),
                 Invert(color.B));
 
-        public static Color MidLight(this Color color)
-        {
-            float highest = Math.Max(color.R, Math.Max(color.G, color.B));
-            float lightness = byte.MaxValue / highest;
-
-            return Color.FromArgb(
-                (int)(color.R * lightness),
-                (int)(color.G * lightness),
-                (int)(color.B * lightness));
-        }
-
         public static ColorComplexity ToComplexity(this ColorCode code)
         {
             if (code < ColorCode.I || code > ColorCode.All) return ColorComplexity.None;

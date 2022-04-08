@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace Rainbow
 {
     public class Tile : GameplayElement
     {
+        private const string EMPTY_COLOR_TO_STRING = "_";
+        private static readonly IReadOnlyDictionary<ColorColumn, string> _colorColumnToString;
         private static readonly StringFormat _stringFormat = new StringFormat()
         {
             Alignment = StringAlignment.Center,
@@ -22,19 +25,68 @@ namespace Rainbow
         private readonly string _text;
         private readonly GameModifiers _gameModifiers;
         private readonly int _column;
-        public readonly IColorModel _colorModel;
-        private Color _colorDistortion;
+        private readonly IColorModel _colorModel;
+        private readonly Color _colorDistortion;
         private float _fadeRatio;
         public ColorCode ColorCode { get; }
         public Color Color => _solidBrush.Color;
+        public int Lives { get; private set; }
         public PointF Location { get; private set; }
+
+        static Tile()
+        {
+            var colorColumnToString = new Dictionary<ColorColumn, string>()
+            {
+                { (ColorCode.I, 0), "Q" }, { (ColorCode.II, 0), "A" }, { (ColorCode.III, 0), "Z" },
+                { (ColorCode.I, 1), "W" }, { (ColorCode.II, 1), "S" }, { (ColorCode.III, 1), "X" },
+                { (ColorCode.I, 2), "E" }, { (ColorCode.II, 2), "D" }, { (ColorCode.III, 2), "C" },
+                { (ColorCode.I, 3), "R" }, { (ColorCode.II, 3), "F" }, { (ColorCode.III, 3), "V" },
+                { (ColorCode.I, 4), "T" }, { (ColorCode.II, 4), "G" }, { (ColorCode.III, 4), "B" },
+                { (ColorCode.I, 5), "Y" }, { (ColorCode.II, 5), "H" }, { (ColorCode.III, 5), "N" },
+                { (ColorCode.I, 6), "U" }, { (ColorCode.II, 6), "J" }, { (ColorCode.III, 6), "M" },
+                { (ColorCode.I, 7), "I" }, { (ColorCode.II, 7), "K" }, { (ColorCode.III, 7), "," },
+                { (ColorCode.I, 8), "O" }, { (ColorCode.II, 8), "L" }, { (ColorCode.III, 8), "." },
+                { (ColorCode.I, 9), "P" }, { (ColorCode.II, 9), ";" }, { (ColorCode.III, 9), "/" },
+            };
+
+            for (int i = 0; i < 10; i++)
+            {
+                colorColumnToString.Add(
+                    (ColorCode.None, i),
+                    EMPTY_COLOR_TO_STRING);
+
+                colorColumnToString.Add(
+                    (ColorCode.I_II, i),
+                    colorColumnToString[(ColorCode.I, i)] +
+                        colorColumnToString[(ColorCode.II, i)]);
+
+                colorColumnToString.Add(
+                    (ColorCode.I_III, i),
+                    colorColumnToString[(ColorCode.I, i)] +
+                        colorColumnToString[(ColorCode.III, i)]);
+
+                colorColumnToString.Add(
+                    (ColorCode.II_III, i),
+                    colorColumnToString[(ColorCode.II, i)] +
+                        colorColumnToString[(ColorCode.III, i)]);
+
+                colorColumnToString.Add(
+                    (ColorCode.All, i),
+                    colorColumnToString[(ColorCode.I, i)] +
+                        colorColumnToString[(ColorCode.II, i)] +
+                        colorColumnToString[(ColorCode.III, i)]);
+            }
+
+            _colorColumnToString = colorColumnToString;
+        }
 
         public Tile(IColorModel colorModel, ColorCode colorCode, GameModifiers gameModifiers, int column)
         {
             _colorModel = colorModel;
             ColorCode = colorCode;
-            _column = column;
             _gameModifiers = gameModifiers;
+            _column = column;
+            Lives = 1;
             _solidBrush = new SolidBrush(colorModel.CodeToColor(colorCode));
             Location = Game.SpawnLocations[column];
 
@@ -44,13 +96,19 @@ namespace Rainbow
                 Game.Random.Next(64),
                 Game.Random.Next(64));
 
-            if (!gameModifiers.HasFlag(GameModifiers.HintButtons)) return;
-            if (colorCode.HasFlag(ColorCode.I)) _text += InputManager.MapKeys.Reverse[(ColorCode.I, column)].ToString();
-            if (colorCode.HasFlag(ColorCode.II)) _text += InputManager.MapKeys.Reverse[(ColorCode.II, column)].ToString();
-            if (colorCode.HasFlag(ColorCode.III)) _text += InputManager.MapKeys.Reverse[(ColorCode.III, column)].ToString();
-            _font = new Font(
-                FontFamily.GenericMonospace, // Chars are same width and calculations are easy
-                Math.Min(Game.TileHeight * 0.5f, Game.TileWidth / _text.Length));
+            if (gameModifiers.HasFlag(GameModifiers.DoubleClickTiles))
+            {
+                _pen.DashStyle = DashStyle.Dash;
+                Lives = 2;
+            }
+
+            if (gameModifiers.HasFlag(GameModifiers.HintButtons))
+            {
+                _text += _colorColumnToString[(colorCode, column)];
+                _font = new Font(
+                    FontFamily.GenericMonospace, // Chars are same width and calculations are easy
+                    Math.Min(Game.TileHeight * 0.5f, Game.TileWidth / _text.Length));
+            }
         }
 
         public override void Draw(Graphics graphics)
@@ -66,8 +124,8 @@ namespace Rainbow
 
             if (_gameModifiers.HasFlag(GameModifiers.FadingColors))
             {
-                _solidBrush.Color = Color.Blend(_colorBlend, _fadeRatio);
-                _fadeRatio += _fadeRatio < 1 ? 0.002f : 0;
+                _solidBrush.Color = _solidBrush.Color.Blend(_colorBlend, _fadeRatio);
+                _fadeRatio += _fadeRatio < 1 ? 0.00175f : 0;
                 _brushText.Color = _colorBlend;
             }
 
@@ -83,6 +141,32 @@ namespace Rainbow
             graphics.DrawString(_text, _font, _brushText, rectangleF.X + rectangleF.Width * 0.5f, rectangleF.Y + rectangleF.Height * 0.5f, _stringFormat);
 
             _solidBrush.Color = colorBase;
+        }
+
+        /// <summary>
+        /// Reduces tile's lives with 1.
+        /// </summary>
+        public void Click()
+        {
+            Lives--;
+            switch (Lives)
+            {
+                case 0:
+                    Dispose();
+                    break;
+
+                case 1:
+                    _pen.DashStyle = DashStyle.Solid;
+                    break;
+
+                case 2:
+                    _pen.DashStyle = DashStyle.Dash;
+                    break;
+
+                case 3:
+                    _pen.DashStyle = DashStyle.Dot;
+                    break;
+            }
         }
 
         public override void Dispose()

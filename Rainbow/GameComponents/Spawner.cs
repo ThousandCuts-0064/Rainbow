@@ -10,14 +10,18 @@ namespace Rainbow
     {
         private const int DOUBLE_TILES_CHANCE = 33; // % chance in standart state
         private const int TRIPLE_TILES_CHANCE = 20; // % chance in standart state
-        private const int SHOTGUN_TILES_CHANCE = 10; // % chance for event trigger
+        private const int SHOTGUN_TILES_CHANCE = 5; // % chance for event trigger
+        private const int DIAMOND_EVENT_CHANCE = 5; // % chance for event trigger
+        private const int CHESS_EVENT_CHANCE = 50; // % chance for event trigger
+        private readonly Queue<Tile>[] _tileQueues;
+        private readonly NormalState _normalState;
+        private readonly ShotgunState _shotgunState;
+        private readonly DiamondState _diamondState;
+        private readonly ChessState _chessState;
         private readonly IColorModel _colorModel;
         private readonly GameModifiers _gameModifiers;
         private readonly int _level;
-        private readonly Queue<Tile>[] _tileQueues;
         private SpawnerState _spawnerState;
-        private NormalState _normalState;
-        private ShotgunState _shotgunState;
         private Tile _lastSpawned;
 
         public Spawner(Queue<Tile>[] tileQueues, IColorModel colorModel, GameModifiers gameModifiers, int level)
@@ -29,10 +33,12 @@ namespace Rainbow
 
             _normalState = new NormalState(this);
             _shotgunState = new ShotgunState(this);
+            _diamondState = new DiamondState(this);
+            _chessState = new ChessState(this);
             SetState(_normalState);
 
             //First Spawn. Spawner needs one spawn to chain spawn.
-            NormalSpawn(Game.Random.Next(_level));
+            SpawnRandomColor(Game.Random.Next(_level));
         }
 
         public void OnTick()
@@ -52,6 +58,28 @@ namespace Rainbow
                     }
                 }
 
+                if (_gameModifiers.HasFlag(GameModifiers.DiamondEvent))
+                {
+                    if (chance >= DIAMOND_EVENT_CHANCE) // Chance must be between 0 and DIAMOND_EVENT_CHANCE
+                        chance -= DIAMOND_EVENT_CHANCE;
+                    else
+                    {
+                        SetState(_diamondState);
+                        chance = chanceCap;
+                    }
+                }
+
+                if (_gameModifiers.HasFlag(GameModifiers.ChessEvent))
+                {
+                    if (chance >= CHESS_EVENT_CHANCE) // Chance must be between 0 and CHESS_EVENT_CHANCE
+                        chance -= CHESS_EVENT_CHANCE;
+                    else
+                    {
+                        SetState(_chessState);
+                        chance = chanceCap;
+                    }
+                }
+
                 if (chance < chanceCap)
                     SetState(_normalState);
             }
@@ -61,7 +89,7 @@ namespace Rainbow
 
         private void SetState(SpawnerState state) => _spawnerState = state.OnSet();
 
-        private void NormalSpawn(int spawnLocationIndex)
+        private void SpawnRandomColor(int spawnLocationIndex)
         {
             var randomColorCode = (ColorCode)(Game.Random.Next((int)ColorCode.All) + 1);
             Spawn(spawnLocationIndex, randomColorCode);
@@ -82,6 +110,7 @@ namespace Rainbow
 
             public SpawnerState OnSet()
             {
+                AllowSwap = false;
                 OnStateSet();
                 return this;
             }
@@ -110,10 +139,10 @@ namespace Rainbow
                     else
                     {
                         int index1 = Game.Random.Next(Spawner._level);
-                        Spawner.NormalSpawn(index1);
+                        Spawner.SpawnRandomColor(index1);
                         int index2 = Game.Random.Next(Spawner._level - 1);
                         if (index2 >= index1) index2++;
-                        Spawner.NormalSpawn(index2);
+                        Spawner.SpawnRandomColor(index2);
                         chance = chanceCap;
                     }
                 }
@@ -125,26 +154,26 @@ namespace Rainbow
                     else
                     {
                         int index1 = Game.Random.Next(Spawner._level);
-                        Spawner.NormalSpawn(index1);
+                        Spawner.SpawnRandomColor(index1);
                         int index2 = Game.Random.Next(Spawner._level - 1);
                         if (index2 >= index1) index2++;
-                        Spawner.NormalSpawn(index2);
+                        Spawner.SpawnRandomColor(index2);
                         int index3 = Game.Random.Next(Spawner._level - 2);
                         if (index3 >= index1) index3++;
                         if (index3 >= index2) index3++;
                         if (index3 == index1) index3++;
-                        Spawner.NormalSpawn(index3);
+                        Spawner.SpawnRandomColor(index3);
                         chance = chanceCap;
                     }
                 }
 
                 if (chance < chanceCap)
-                    Spawner.NormalSpawn(Game.Random.Next(Spawner._level));
+                    Spawner.SpawnRandomColor(Game.Random.Next(Spawner._level));
 
                 AllowSwap = true;
             }
 
-            protected override void OnStateSet() => AllowSwap = false;
+            protected override void OnStateSet() { }
         }
 
         private class ShotgunState : SpawnerState
@@ -201,7 +230,6 @@ namespace Rainbow
 
             protected override void OnStateSet()
             {
-                AllowSwap = false;
                 _waitSpace = true;
                 _finishedCycle = false;
                 _rowCount = 0;
@@ -220,6 +248,52 @@ namespace Rainbow
             protected override void OnStateSet()
             {
                 throw new NotImplementedException();
+            }
+        }
+
+        private class ChessState : SpawnerState
+        {
+            private bool _waitSpace;
+            private bool _finishedCycle;
+            private int _rowCount;
+
+            public ChessState(Spawner spawner) : base(spawner) { }
+
+            public override void OnTick()
+            {
+                if (_waitSpace &&
+                    Spawner._lastSpawned.Location.Y < Game.TileHeight * 3)
+                    return;
+                else
+                {
+                    if (_finishedCycle)
+                    {
+                        AllowSwap = true;
+                        return;
+                    }
+
+                    _waitSpace = false;
+                }
+
+                if (Spawner._lastSpawned.Location.Y < -1) return;
+                for (int i = 0; i < Spawner._level; i++)
+                    Spawner.Spawn(i,
+                        i % 2 == _rowCount % 2
+                        ? ColorCode.All
+                        : ColorCode.None);
+                _rowCount++;
+                if (_rowCount == Spawner._level)
+                {
+                    _waitSpace = true;
+                    _finishedCycle = true;
+                }
+            }
+
+            protected override void OnStateSet()
+            {
+                _waitSpace = true;
+                _finishedCycle = false;
+                _rowCount = 0;
             }
         }
     }

@@ -12,7 +12,7 @@ namespace Rainbow
         private const int CHAIN_TICKS_WINDOW = 3;
         private readonly HashSet<Keys> _pressedKeys = new HashSet<Keys>();
         private readonly Column[] _columns;
-        public static IReadOnlyMap<Keys, (ColorCode colorCode, int column)> MapKeys { get; } = new Map<Keys, (ColorCode colorCode, int column)>()
+        public static IReadOnlyMap<Keys, ColorColumn> MapKeys { get; } = new Map<Keys, ColorColumn>()
         {
             { Keys.Q, (ColorCode.I, 0) }, { Keys.A, (ColorCode.II, 0) }, { Keys.Z, (ColorCode.III, 0) },
             { Keys.W, (ColorCode.I, 1) }, { Keys.S, (ColorCode.II, 1) }, { Keys.X, (ColorCode.III, 1) },
@@ -23,7 +23,7 @@ namespace Rainbow
             { Keys.U, (ColorCode.I, 6) }, { Keys.J, (ColorCode.II, 6) }, { Keys.M, (ColorCode.III, 6) },
             { Keys.I, (ColorCode.I, 7) }, { Keys.K, (ColorCode.II, 7) }, { Keys.Oemcomma, (ColorCode.III, 7) },
             { Keys.O, (ColorCode.I, 8) }, { Keys.L, (ColorCode.II, 8) }, { Keys.OemPeriod, (ColorCode.III, 8) },
-            { Keys.P, (ColorCode.I, 9) }, { Keys.Oem1, (ColorCode.II, 9) }, { Keys.OemQuestion,(ColorCode.III, 9) }, // Oem1 = ';'   OemQuestion = '/'
+            { Keys.P, (ColorCode.I, 9) }, { Keys.Oem1, (ColorCode.II, 9) }, { Keys.OemQuestion,(ColorCode.III, 9) } // Oem1 = ';'   OemQuestion = '/'
         };
         public event Action<ColorCode, int> ColorInput;
         public event Action Shotgun;
@@ -51,10 +51,10 @@ namespace Rainbow
                 Shotgun?.Invoke();
                 return;
             }
-            if (MapKeys.Forward.TryGetValue(key, out var tuple) &&
-                tuple.column < _columns.Length &&
+            if (MapKeys.Forward.TryGetValue(key, out var colorColumn) &&
+                colorColumn.Column < _columns.Length &&
                 _pressedKeys.Add(key)) // Send input once per key press
-                _columns[tuple.column].OnKeyDown(key);
+                _columns[colorColumn.Column].OnKeyDown(key);
         }
 
         public void OnKeyUp(object sender, KeyEventArgs e) => _pressedKeys.Remove(e.KeyCode);
@@ -88,7 +88,7 @@ namespace Rainbow
             public void OnKeyDown(Keys key)
             {
                 if (_colorCodeInput == ColorCode.None) _tickChainStarter = Game.Ticks;
-                _colorCodeInput |= MapKeys.Forward[key].colorCode;
+                _colorCodeInput |= MapKeys.Forward[key].ColorCode;
             }
 
             public void FireColorInput()

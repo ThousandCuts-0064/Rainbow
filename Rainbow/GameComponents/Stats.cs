@@ -94,9 +94,9 @@ namespace Rainbow
 
         private void TakeTile(Tile tile)
         {
-            if (tile.ColorCode.HasFlag(ColorCode.I)) _lifeI.Resource.Current--;
-            if (tile.ColorCode.HasFlag(ColorCode.II)) _lifeII.Resource.Current--;
-            if (tile.ColorCode.HasFlag(ColorCode.III)) _lifeIII.Resource.Current--;
+            if (tile.ColorCode.HasFlag(ColorCode.I)) _lifeI.Resource.Current -= tile.Lives;
+            if (tile.ColorCode.HasFlag(ColorCode.II)) _lifeII.Resource.Current -= tile.Lives;
+            if (tile.ColorCode.HasFlag(ColorCode.III)) _lifeIII.Resource.Current -= tile.Lives;
         }
     }
 }

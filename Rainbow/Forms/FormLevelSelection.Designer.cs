@@ -52,10 +52,12 @@ namespace Rainbow
             this.panelLevels = new System.Windows.Forms.Panel();
             this.checkBoxColorWheel = new System.Windows.Forms.CheckBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
-            this.checkBox5 = new System.Windows.Forms.CheckBox();
+            this.checkBoxDoubleClickTiles = new System.Windows.Forms.CheckBox();
             this.checkBox6 = new System.Windows.Forms.CheckBox();
             this.panelColorModels = new System.Windows.Forms.Panel();
             this.radioButtonARC = new System.Windows.Forms.RadioButton();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.panelLevels.SuspendLayout();
             this.panelColorModels.SuspendLayout();
             this.SuspendLayout();
@@ -64,14 +66,14 @@ namespace Rainbow
             // 
             this.buttonStart.BackColor = System.Drawing.SystemColors.ControlLight;
             this.buttonStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonStart.Location = new System.Drawing.Point(436, 436);
+            this.buttonStart.Location = new System.Drawing.Point(610, 410);
             this.buttonStart.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(100, 100);
             this.buttonStart.TabIndex = 24;
             this.buttonStart.Text = "Start";
             this.buttonStart.UseVisualStyleBackColor = false;
-            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
+            this.buttonStart.Click += new System.EventHandler(this.ButtonStart_Click);
             // 
             // radioButtonLevel1
             // 
@@ -87,7 +89,7 @@ namespace Rainbow
             this.radioButtonLevel1.Text = "Level 1";
             this.radioButtonLevel1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel1.UseVisualStyleBackColor = false;
-            this.radioButtonLevel1.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
+            this.radioButtonLevel1.CheckedChanged += new System.EventHandler(this.RadioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel2
             // 
@@ -95,7 +97,7 @@ namespace Rainbow
             this.radioButtonLevel2.BackColor = System.Drawing.SystemColors.ControlLight;
             this.radioButtonLevel2.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.radioButtonLevel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonLevel2.Location = new System.Drawing.Point(107, 0);
+            this.radioButtonLevel2.Location = new System.Drawing.Point(0, 100);
             this.radioButtonLevel2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonLevel2.Name = "radioButtonLevel2";
             this.radioButtonLevel2.Size = new System.Drawing.Size(100, 100);
@@ -103,7 +105,7 @@ namespace Rainbow
             this.radioButtonLevel2.Text = "Level 2";
             this.radioButtonLevel2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel2.UseVisualStyleBackColor = false;
-            this.radioButtonLevel2.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
+            this.radioButtonLevel2.CheckedChanged += new System.EventHandler(this.RadioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel3
             // 
@@ -111,7 +113,7 @@ namespace Rainbow
             this.radioButtonLevel3.BackColor = System.Drawing.SystemColors.ControlLight;
             this.radioButtonLevel3.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.radioButtonLevel3.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonLevel3.Location = new System.Drawing.Point(212, 0);
+            this.radioButtonLevel3.Location = new System.Drawing.Point(0, 200);
             this.radioButtonLevel3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonLevel3.Name = "radioButtonLevel3";
             this.radioButtonLevel3.Size = new System.Drawing.Size(100, 100);
@@ -119,7 +121,7 @@ namespace Rainbow
             this.radioButtonLevel3.Text = "Level 3";
             this.radioButtonLevel3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel3.UseVisualStyleBackColor = false;
-            this.radioButtonLevel3.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
+            this.radioButtonLevel3.CheckedChanged += new System.EventHandler(this.RadioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel4
             // 
@@ -127,7 +129,7 @@ namespace Rainbow
             this.radioButtonLevel4.BackColor = System.Drawing.SystemColors.ControlLight;
             this.radioButtonLevel4.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.radioButtonLevel4.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonLevel4.Location = new System.Drawing.Point(317, 0);
+            this.radioButtonLevel4.Location = new System.Drawing.Point(0, 300);
             this.radioButtonLevel4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonLevel4.Name = "radioButtonLevel4";
             this.radioButtonLevel4.Size = new System.Drawing.Size(100, 100);
@@ -135,7 +137,7 @@ namespace Rainbow
             this.radioButtonLevel4.Text = "Level 4";
             this.radioButtonLevel4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel4.UseVisualStyleBackColor = false;
-            this.radioButtonLevel4.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
+            this.radioButtonLevel4.CheckedChanged += new System.EventHandler(this.RadioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel5
             // 
@@ -143,7 +145,7 @@ namespace Rainbow
             this.radioButtonLevel5.BackColor = System.Drawing.SystemColors.ControlLight;
             this.radioButtonLevel5.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.radioButtonLevel5.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonLevel5.Location = new System.Drawing.Point(424, 0);
+            this.radioButtonLevel5.Location = new System.Drawing.Point(0, 400);
             this.radioButtonLevel5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonLevel5.Name = "radioButtonLevel5";
             this.radioButtonLevel5.Size = new System.Drawing.Size(100, 100);
@@ -151,7 +153,7 @@ namespace Rainbow
             this.radioButtonLevel5.Text = "Level 5";
             this.radioButtonLevel5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel5.UseVisualStyleBackColor = false;
-            this.radioButtonLevel5.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
+            this.radioButtonLevel5.CheckedChanged += new System.EventHandler(this.RadioButtonsLevel_CheckedChanged);
             // 
             // checkBoxShowButtons
             // 
@@ -159,7 +161,7 @@ namespace Rainbow
             this.checkBoxShowButtons.BackColor = System.Drawing.SystemColors.ControlLight;
             this.checkBoxShowButtons.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxShowButtons.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxShowButtons.Location = new System.Drawing.Point(12, 330);
+            this.checkBoxShowButtons.Location = new System.Drawing.Point(410, 110);
             this.checkBoxShowButtons.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBoxShowButtons.Name = "checkBoxShowButtons";
             this.checkBoxShowButtons.Size = new System.Drawing.Size(100, 100);
@@ -167,7 +169,7 @@ namespace Rainbow
             this.checkBoxShowButtons.Text = "Hint Buttons";
             this.checkBoxShowButtons.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBoxShowButtons.UseVisualStyleBackColor = false;
-            this.checkBoxShowButtons.CheckedChanged += new System.EventHandler(this.checkBoxGameModifier_CheckedChanged);
+            this.checkBoxShowButtons.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // checkBoxDoubleTiles
             // 
@@ -175,7 +177,7 @@ namespace Rainbow
             this.checkBoxDoubleTiles.BackColor = System.Drawing.SystemColors.ControlLight;
             this.checkBoxDoubleTiles.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxDoubleTiles.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxDoubleTiles.Location = new System.Drawing.Point(117, 224);
+            this.checkBoxDoubleTiles.Location = new System.Drawing.Point(210, 110);
             this.checkBoxDoubleTiles.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBoxDoubleTiles.Name = "checkBoxDoubleTiles";
             this.checkBoxDoubleTiles.Size = new System.Drawing.Size(100, 100);
@@ -183,7 +185,7 @@ namespace Rainbow
             this.checkBoxDoubleTiles.Text = "Double Tiles";
             this.checkBoxDoubleTiles.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBoxDoubleTiles.UseVisualStyleBackColor = false;
-            this.checkBoxDoubleTiles.CheckedChanged += new System.EventHandler(this.checkBoxGameModifier_CheckedChanged);
+            this.checkBoxDoubleTiles.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // checkBoxFadingColors
             // 
@@ -191,7 +193,7 @@ namespace Rainbow
             this.checkBoxFadingColors.BackColor = System.Drawing.SystemColors.ControlLight;
             this.checkBoxFadingColors.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxFadingColors.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxFadingColors.Location = new System.Drawing.Point(331, 224);
+            this.checkBoxFadingColors.Location = new System.Drawing.Point(310, 210);
             this.checkBoxFadingColors.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBoxFadingColors.Name = "checkBoxFadingColors";
             this.checkBoxFadingColors.Size = new System.Drawing.Size(100, 100);
@@ -199,7 +201,7 @@ namespace Rainbow
             this.checkBoxFadingColors.Text = "Fading Colors";
             this.checkBoxFadingColors.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBoxFadingColors.UseVisualStyleBackColor = false;
-            this.checkBoxFadingColors.CheckedChanged += new System.EventHandler(this.checkBoxGameModifier_CheckedChanged);
+            this.checkBoxFadingColors.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // checkBoxInvertedColors
             // 
@@ -207,7 +209,7 @@ namespace Rainbow
             this.checkBoxInvertedColors.BackColor = System.Drawing.SystemColors.ControlLight;
             this.checkBoxInvertedColors.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxInvertedColors.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxInvertedColors.Location = new System.Drawing.Point(436, 224);
+            this.checkBoxInvertedColors.Location = new System.Drawing.Point(310, 110);
             this.checkBoxInvertedColors.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBoxInvertedColors.Name = "checkBoxInvertedColors";
             this.checkBoxInvertedColors.Size = new System.Drawing.Size(100, 100);
@@ -215,7 +217,7 @@ namespace Rainbow
             this.checkBoxInvertedColors.Text = "Inverted Colors";
             this.checkBoxInvertedColors.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBoxInvertedColors.UseVisualStyleBackColor = false;
-            this.checkBoxInvertedColors.CheckedChanged += new System.EventHandler(this.checkBoxGameModifier_CheckedChanged);
+            this.checkBoxInvertedColors.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // radioButtonLevel10
             // 
@@ -223,7 +225,7 @@ namespace Rainbow
             this.radioButtonLevel10.BackColor = System.Drawing.SystemColors.ControlLight;
             this.radioButtonLevel10.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.radioButtonLevel10.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonLevel10.Location = new System.Drawing.Point(424, 107);
+            this.radioButtonLevel10.Location = new System.Drawing.Point(100, 400);
             this.radioButtonLevel10.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonLevel10.Name = "radioButtonLevel10";
             this.radioButtonLevel10.Size = new System.Drawing.Size(100, 100);
@@ -231,7 +233,7 @@ namespace Rainbow
             this.radioButtonLevel10.Text = "Level 10";
             this.radioButtonLevel10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel10.UseVisualStyleBackColor = false;
-            this.radioButtonLevel10.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
+            this.radioButtonLevel10.CheckedChanged += new System.EventHandler(this.RadioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel9
             // 
@@ -239,7 +241,7 @@ namespace Rainbow
             this.radioButtonLevel9.BackColor = System.Drawing.SystemColors.ControlLight;
             this.radioButtonLevel9.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.radioButtonLevel9.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonLevel9.Location = new System.Drawing.Point(317, 107);
+            this.radioButtonLevel9.Location = new System.Drawing.Point(100, 300);
             this.radioButtonLevel9.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonLevel9.Name = "radioButtonLevel9";
             this.radioButtonLevel9.Size = new System.Drawing.Size(100, 100);
@@ -247,7 +249,7 @@ namespace Rainbow
             this.radioButtonLevel9.Text = "Level 9";
             this.radioButtonLevel9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel9.UseVisualStyleBackColor = false;
-            this.radioButtonLevel9.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
+            this.radioButtonLevel9.CheckedChanged += new System.EventHandler(this.RadioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel8
             // 
@@ -255,7 +257,7 @@ namespace Rainbow
             this.radioButtonLevel8.BackColor = System.Drawing.SystemColors.ControlLight;
             this.radioButtonLevel8.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.radioButtonLevel8.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonLevel8.Location = new System.Drawing.Point(212, 107);
+            this.radioButtonLevel8.Location = new System.Drawing.Point(100, 200);
             this.radioButtonLevel8.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonLevel8.Name = "radioButtonLevel8";
             this.radioButtonLevel8.Size = new System.Drawing.Size(100, 100);
@@ -263,7 +265,7 @@ namespace Rainbow
             this.radioButtonLevel8.Text = "Level 8";
             this.radioButtonLevel8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel8.UseVisualStyleBackColor = false;
-            this.radioButtonLevel8.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
+            this.radioButtonLevel8.CheckedChanged += new System.EventHandler(this.RadioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel7
             // 
@@ -271,7 +273,7 @@ namespace Rainbow
             this.radioButtonLevel7.BackColor = System.Drawing.SystemColors.ControlLight;
             this.radioButtonLevel7.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.radioButtonLevel7.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonLevel7.Location = new System.Drawing.Point(107, 107);
+            this.radioButtonLevel7.Location = new System.Drawing.Point(100, 100);
             this.radioButtonLevel7.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonLevel7.Name = "radioButtonLevel7";
             this.radioButtonLevel7.Size = new System.Drawing.Size(100, 100);
@@ -279,7 +281,7 @@ namespace Rainbow
             this.radioButtonLevel7.Text = "Level 7";
             this.radioButtonLevel7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel7.UseVisualStyleBackColor = false;
-            this.radioButtonLevel7.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
+            this.radioButtonLevel7.CheckedChanged += new System.EventHandler(this.RadioButtonsLevel_CheckedChanged);
             // 
             // radioButtonLevel6
             // 
@@ -287,7 +289,7 @@ namespace Rainbow
             this.radioButtonLevel6.BackColor = System.Drawing.SystemColors.ControlLight;
             this.radioButtonLevel6.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.radioButtonLevel6.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonLevel6.Location = new System.Drawing.Point(0, 107);
+            this.radioButtonLevel6.Location = new System.Drawing.Point(100, 0);
             this.radioButtonLevel6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonLevel6.Name = "radioButtonLevel6";
             this.radioButtonLevel6.Size = new System.Drawing.Size(100, 100);
@@ -295,7 +297,7 @@ namespace Rainbow
             this.radioButtonLevel6.Text = "Level 6";
             this.radioButtonLevel6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonLevel6.UseVisualStyleBackColor = false;
-            this.radioButtonLevel6.CheckedChanged += new System.EventHandler(this.radioButtonsLevel_CheckedChanged);
+            this.radioButtonLevel6.CheckedChanged += new System.EventHandler(this.RadioButtonsLevel_CheckedChanged);
             // 
             // checkBoxTripleTiles
             // 
@@ -303,7 +305,7 @@ namespace Rainbow
             this.checkBoxTripleTiles.BackColor = System.Drawing.SystemColors.ControlLight;
             this.checkBoxTripleTiles.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxTripleTiles.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxTripleTiles.Location = new System.Drawing.Point(224, 224);
+            this.checkBoxTripleTiles.Location = new System.Drawing.Point(210, 210);
             this.checkBoxTripleTiles.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBoxTripleTiles.Name = "checkBoxTripleTiles";
             this.checkBoxTripleTiles.Size = new System.Drawing.Size(100, 100);
@@ -311,7 +313,7 @@ namespace Rainbow
             this.checkBoxTripleTiles.Text = "Triple Tiles";
             this.checkBoxTripleTiles.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBoxTripleTiles.UseVisualStyleBackColor = false;
-            this.checkBoxTripleTiles.CheckedChanged += new System.EventHandler(this.checkBoxGameModifier_CheckedChanged);
+            this.checkBoxTripleTiles.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // checkBoxColorDistortion
             // 
@@ -319,7 +321,7 @@ namespace Rainbow
             this.checkBoxColorDistortion.BackColor = System.Drawing.SystemColors.ControlLight;
             this.checkBoxColorDistortion.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxColorDistortion.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxColorDistortion.Location = new System.Drawing.Point(12, 224);
+            this.checkBoxColorDistortion.Location = new System.Drawing.Point(310, 10);
             this.checkBoxColorDistortion.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBoxColorDistortion.Name = "checkBoxColorDistortion";
             this.checkBoxColorDistortion.Size = new System.Drawing.Size(100, 100);
@@ -327,7 +329,7 @@ namespace Rainbow
             this.checkBoxColorDistortion.Text = "Color Distortion";
             this.checkBoxColorDistortion.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBoxColorDistortion.UseVisualStyleBackColor = false;
-            this.checkBoxColorDistortion.CheckedChanged += new System.EventHandler(this.checkBoxGameModifier_CheckedChanged);
+            this.checkBoxColorDistortion.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // radioButtonCMY
             // 
@@ -335,7 +337,7 @@ namespace Rainbow
             this.radioButtonCMY.BackColor = System.Drawing.SystemColors.ControlLight;
             this.radioButtonCMY.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.radioButtonCMY.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonCMY.Location = new System.Drawing.Point(107, 0);
+            this.radioButtonCMY.Location = new System.Drawing.Point(0, 100);
             this.radioButtonCMY.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonCMY.Name = "radioButtonCMY";
             this.radioButtonCMY.Size = new System.Drawing.Size(100, 100);
@@ -343,7 +345,7 @@ namespace Rainbow
             this.radioButtonCMY.Text = "CMY";
             this.radioButtonCMY.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonCMY.UseVisualStyleBackColor = false;
-            this.radioButtonCMY.CheckedChanged += new System.EventHandler(this.radioButtonColorModel_CheckedChanged);
+            this.radioButtonCMY.CheckedChanged += new System.EventHandler(this.RadioButtonColorModel_CheckedChanged);
             // 
             // radioButtonOSV
             // 
@@ -351,7 +353,7 @@ namespace Rainbow
             this.radioButtonOSV.BackColor = System.Drawing.SystemColors.ControlLight;
             this.radioButtonOSV.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.radioButtonOSV.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonOSV.Location = new System.Drawing.Point(317, 0);
+            this.radioButtonOSV.Location = new System.Drawing.Point(0, 300);
             this.radioButtonOSV.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonOSV.Name = "radioButtonOSV";
             this.radioButtonOSV.Size = new System.Drawing.Size(100, 100);
@@ -359,7 +361,7 @@ namespace Rainbow
             this.radioButtonOSV.Text = "OSV";
             this.radioButtonOSV.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonOSV.UseVisualStyleBackColor = false;
-            this.radioButtonOSV.CheckedChanged += new System.EventHandler(this.radioButtonColorModel_CheckedChanged);
+            this.radioButtonOSV.CheckedChanged += new System.EventHandler(this.RadioButtonColorModel_CheckedChanged);
             // 
             // radioButtonRGB
             // 
@@ -375,7 +377,7 @@ namespace Rainbow
             this.radioButtonRGB.Text = "RGB";
             this.radioButtonRGB.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonRGB.UseVisualStyleBackColor = false;
-            this.radioButtonRGB.CheckedChanged += new System.EventHandler(this.radioButtonColorModel_CheckedChanged);
+            this.radioButtonRGB.CheckedChanged += new System.EventHandler(this.RadioButtonColorModel_CheckedChanged);
             // 
             // panelLevels
             // 
@@ -389,10 +391,10 @@ namespace Rainbow
             this.panelLevels.Controls.Add(this.radioButtonLevel9);
             this.panelLevels.Controls.Add(this.radioButtonLevel7);
             this.panelLevels.Controls.Add(this.radioButtonLevel8);
-            this.panelLevels.Location = new System.Drawing.Point(12, 12);
+            this.panelLevels.Location = new System.Drawing.Point(10, 10);
             this.panelLevels.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panelLevels.Name = "panelLevels";
-            this.panelLevels.Size = new System.Drawing.Size(524, 207);
+            this.panelLevels.Size = new System.Drawing.Size(200, 500);
             this.panelLevels.TabIndex = 0;
             this.panelLevels.TabStop = true;
             // 
@@ -402,7 +404,7 @@ namespace Rainbow
             this.checkBoxColorWheel.BackColor = System.Drawing.SystemColors.ControlLight;
             this.checkBoxColorWheel.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxColorWheel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxColorWheel.Location = new System.Drawing.Point(436, 330);
+            this.checkBoxColorWheel.Location = new System.Drawing.Point(410, 10);
             this.checkBoxColorWheel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBoxColorWheel.Name = "checkBoxColorWheel";
             this.checkBoxColorWheel.Size = new System.Drawing.Size(100, 100);
@@ -410,7 +412,7 @@ namespace Rainbow
             this.checkBoxColorWheel.Text = "Color Wheel";
             this.checkBoxColorWheel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBoxColorWheel.UseVisualStyleBackColor = false;
-            this.checkBoxColorWheel.CheckedChanged += new System.EventHandler(this.checkBoxGameModifier_CheckedChanged);
+            this.checkBoxColorWheel.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // checkBox4
             // 
@@ -418,7 +420,7 @@ namespace Rainbow
             this.checkBox4.BackColor = System.Drawing.SystemColors.ControlLight;
             this.checkBox4.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox4.Location = new System.Drawing.Point(329, 330);
+            this.checkBox4.Location = new System.Drawing.Point(510, 10);
             this.checkBox4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(100, 100);
@@ -426,24 +428,23 @@ namespace Rainbow
             this.checkBox4.Text = "Shotgun Tiles";
             this.checkBox4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox4.UseVisualStyleBackColor = false;
-            this.checkBox4.CheckedChanged += new System.EventHandler(this.checkBoxGameModifier_CheckedChanged);
+            this.checkBox4.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
-            // checkBox5
+            // checkBoxDoubleClickTiles
             // 
-            this.checkBox5.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox5.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.checkBox5.Enabled = false;
-            this.checkBox5.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox5.Location = new System.Drawing.Point(224, 330);
-            this.checkBox5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(100, 100);
-            this.checkBox5.TabIndex = 17;
-            this.checkBox5.Text = "Multy Click Tiles";
-            this.checkBox5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox5.UseVisualStyleBackColor = false;
-            this.checkBox5.CheckedChanged += new System.EventHandler(this.checkBoxGameModifier_CheckedChanged);
+            this.checkBoxDoubleClickTiles.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBoxDoubleClickTiles.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.checkBoxDoubleClickTiles.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkBoxDoubleClickTiles.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxDoubleClickTiles.Location = new System.Drawing.Point(210, 10);
+            this.checkBoxDoubleClickTiles.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.checkBoxDoubleClickTiles.Name = "checkBoxDoubleClickTiles";
+            this.checkBoxDoubleClickTiles.Size = new System.Drawing.Size(100, 100);
+            this.checkBoxDoubleClickTiles.TabIndex = 17;
+            this.checkBoxDoubleClickTiles.Text = "Double Click Tiles";
+            this.checkBoxDoubleClickTiles.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBoxDoubleClickTiles.UseVisualStyleBackColor = false;
+            this.checkBoxDoubleClickTiles.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // checkBox6
             // 
@@ -452,7 +453,7 @@ namespace Rainbow
             this.checkBox6.Enabled = false;
             this.checkBox6.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox6.Location = new System.Drawing.Point(117, 330);
+            this.checkBox6.Location = new System.Drawing.Point(410, 210);
             this.checkBox6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBox6.Name = "checkBox6";
             this.checkBox6.Size = new System.Drawing.Size(100, 100);
@@ -460,18 +461,18 @@ namespace Rainbow
             this.checkBox6.Text = "Birdy";
             this.checkBox6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox6.UseVisualStyleBackColor = false;
-            this.checkBox6.CheckedChanged += new System.EventHandler(this.checkBoxGameModifier_CheckedChanged);
+            this.checkBox6.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // panelColorModels
             // 
+            this.panelColorModels.Controls.Add(this.radioButtonOSV);
             this.panelColorModels.Controls.Add(this.radioButtonARC);
             this.panelColorModels.Controls.Add(this.radioButtonRGB);
-            this.panelColorModels.Controls.Add(this.radioButtonOSV);
             this.panelColorModels.Controls.Add(this.radioButtonCMY);
-            this.panelColorModels.Location = new System.Drawing.Point(12, 436);
+            this.panelColorModels.Location = new System.Drawing.Point(610, 10);
             this.panelColorModels.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panelColorModels.Name = "panelColorModels";
-            this.panelColorModels.Size = new System.Drawing.Size(417, 100);
+            this.panelColorModels.Size = new System.Drawing.Size(100, 400);
             this.panelColorModels.TabIndex = 1;
             this.panelColorModels.TabStop = true;
             // 
@@ -481,7 +482,7 @@ namespace Rainbow
             this.radioButtonARC.BackColor = System.Drawing.SystemColors.ControlLight;
             this.radioButtonARC.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.radioButtonARC.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonARC.Location = new System.Drawing.Point(212, 0);
+            this.radioButtonARC.Location = new System.Drawing.Point(0, 200);
             this.radioButtonARC.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButtonARC.Name = "radioButtonARC";
             this.radioButtonARC.Size = new System.Drawing.Size(100, 100);
@@ -489,7 +490,39 @@ namespace Rainbow
             this.radioButtonARC.Text = "ARC";
             this.radioButtonARC.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.radioButtonARC.UseVisualStyleBackColor = false;
-            this.radioButtonARC.CheckedChanged += new System.EventHandler(this.radioButtonColorModel_CheckedChanged);
+            this.radioButtonARC.CheckedChanged += new System.EventHandler(this.RadioButtonColorModel_CheckedChanged);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBox1.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.checkBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox1.Location = new System.Drawing.Point(510, 110);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(100, 100);
+            this.checkBox1.TabIndex = 25;
+            this.checkBox1.Text = "Diamond Event";
+            this.checkBox1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBox1.UseVisualStyleBackColor = false;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBox2.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.checkBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox2.Location = new System.Drawing.Point(510, 210);
+            this.checkBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(100, 100);
+            this.checkBox2.TabIndex = 26;
+            this.checkBox2.Text = "Chess Event";
+            this.checkBox2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBox2.UseVisualStyleBackColor = false;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // FormLevelSelection
             // 
@@ -497,11 +530,13 @@ namespace Rainbow
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Gray;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(660, 550);
+            this.ClientSize = new System.Drawing.Size(720, 520);
+            this.Controls.Add(this.checkBox2);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.panelColorModels);
             this.Controls.Add(this.checkBoxColorWheel);
             this.Controls.Add(this.checkBox4);
-            this.Controls.Add(this.checkBox5);
+            this.Controls.Add(this.checkBoxDoubleClickTiles);
             this.Controls.Add(this.checkBox6);
             this.Controls.Add(this.checkBoxColorDistortion);
             this.Controls.Add(this.checkBoxTripleTiles);
@@ -553,9 +588,11 @@ namespace Rainbow
         private System.Windows.Forms.Panel panelLevels;
         private System.Windows.Forms.CheckBox checkBoxColorWheel;
         private System.Windows.Forms.CheckBox checkBox4;
-        private System.Windows.Forms.CheckBox checkBox5;
+        private System.Windows.Forms.CheckBox checkBoxDoubleClickTiles;
         private System.Windows.Forms.CheckBox checkBox6;
         private System.Windows.Forms.Panel panelColorModels;
         private System.Windows.Forms.RadioButton radioButtonARC;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBox2;
     }
 }

@@ -13,7 +13,7 @@ namespace Rainbow
         private const int SHOTGUN_TILES_CHANCE = 5; // % chance for event trigger
         private const int DIAMOND_EVENT_CHANCE = 5; // % chance for event trigger
         private const int CHESS_EVENT_CHANCE = 50; // % chance for event trigger
-        private readonly Queue<Tile>[] _tileQueues;
+        private readonly LinkedList<Tile>[] _tileLists;
         private readonly NormalState _normalState;
         private readonly ShotgunState _shotgunState;
         private readonly DiamondState _diamondState;
@@ -24,9 +24,9 @@ namespace Rainbow
         private SpawnerState _spawnerState;
         private Tile _lastSpawned;
 
-        public Spawner(Queue<Tile>[] tileQueues, IColorModel colorModel, GameModifiers gameModifiers, int level)
+        public Spawner(LinkedList<Tile>[] tileLists, IColorModel colorModel, GameModifiers gameModifiers, int level)
         {
-            _tileQueues = tileQueues;
+            _tileLists = tileLists;
             _colorModel = colorModel;
             _gameModifiers = gameModifiers;
             _level = level;
@@ -98,7 +98,7 @@ namespace Rainbow
         private void Spawn(int spawnLocationIndex, ColorCode colorCode)
         {
             _lastSpawned = new Tile(_colorModel, colorCode, _gameModifiers, spawnLocationIndex);
-            _tileQueues[spawnLocationIndex].Enqueue(_lastSpawned);
+            _tileLists[spawnLocationIndex].AddFirst(_lastSpawned);
         }
 
         private abstract class SpawnerState

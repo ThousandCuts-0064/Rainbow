@@ -12,7 +12,7 @@ namespace Rainbow
     {
         private const int DEFAULT_MAX_LIFES = 10;
         private const int DEFAULT_MAX_SHOTGUNS = 10;
-        private readonly Queue<Tile>[] _tileQueues;
+        private readonly LinkedList<Tile>[] _tileLists;
         private readonly IColorModel _colorModel;
         private readonly Bar _lifeI;
         private readonly Bar _lifeII;
@@ -20,10 +20,10 @@ namespace Rainbow
         private readonly Bar _barShotgun;
         private readonly int _level;
 
-        public Stats(Queue<Tile>[] tileQueues, IColorModel colorModel, int level)
+        public Stats(LinkedList<Tile>[] tileLists, IColorModel colorModel, int level)
         {
             _colorModel = colorModel;
-            _tileQueues = tileQueues;
+            _tileLists = tileLists;
             _level = level;
 
             var playArea = Game.PlayArea;
@@ -69,10 +69,11 @@ namespace Rainbow
         {
             for (int i = 0; i < _level; i++)
             {
-                if (_tileQueues[i].Count != 0 &&
-                    _tileQueues[i].Peek().Location.Y > Game.Boarders[i].Second.Y)
+                if (_tileLists[i].Count != 0 &&
+                    _tileLists[i].Last.Value.Location.Y > Game.Boarders[i].Second.Y)
                 {
-                    var tile = _tileQueues[i].Dequeue();
+                    var tile = _tileLists[i].Last.Value;
+                    _tileLists[i].RemoveLast();
                     TakeTile(tile);
                     tile.Dispose();
                 }
@@ -84,10 +85,13 @@ namespace Rainbow
             if (_barShotgun.Resource.Current == 0) return;
             for (int i = 0; i < _level; i++)
             {
-                var tileQueue = _tileQueues[i];
-                while (tileQueue.Count > 0 &&
-                    tileQueue.Peek().Location.Y + Game.TileHeight >= Game.Finishes[i].First.Y)
-                    tileQueue.Dequeue().Dispose();
+                var tileList = _tileLists[i];
+                while (tileList.Count > 0 &&
+                    tileList.Last.Value.Location.Y + Game.TileHeight >= Game.Finishes[i].First.Y)
+                {
+                    tileList.Last.Value.Dispose();
+                    tileList.RemoveLast();
+                }
             }
             _barShotgun.Resource.Current--;
         }

@@ -21,7 +21,7 @@ namespace Rainbow
         private const int TILE_HIGHT_UNITS = 10;
         private static readonly Color _borderColor = Color.Black;
         private static readonly Color _finishColor = Color.Black;
-        private static Queue<Tile>[] _tileQueues;
+        private static LinkedList<Tile>[] _tileLists;
         private static HashSet<Update> _updates;
         private static Line[] _boarders;//
         private static Line[] _finishes;//
@@ -50,12 +50,11 @@ namespace Rainbow
         public static IReadOnlyList<PointF> SpawnLocations => _spawns;
         public static IReadOnlyList<ILine> Boarders => _boarders;
         public static IReadOnlyList<ILine> Finishes => _finishes;
+        public static Random Random { get; } = new Random();
 
         public static HashSet<GameplayElement> GameplayElements { get; private set; }
         public static List<MapElement> MapElements { get; private set; }
         public static List<UIElement> UIElements { get; private set; }
-
-        public static Random Random { get; private set; } = new Random();
         public static RectangleF PlayArea { get; private set; }
 
         public static ulong Ticks { get; private set; } = 0;
@@ -78,7 +77,7 @@ namespace Rainbow
             IsLoaded = true;
 
             //Direct object Creation
-            _tileQueues = new Queue<Tile>[level];
+            _tileLists = new LinkedList<Tile>[level];
             _updates = new HashSet<Update>();
             _boarders = new Line[level + 1];
             _finishes = new Line[level];
@@ -108,7 +107,7 @@ namespace Rainbow
             for (int i = 0; i < level; i++)
             {
                 //Tile queues
-                _tileQueues[i] = new Queue<Tile>();
+                _tileLists[i] = new LinkedList<Tile>();
 
                 //Spawn locations
                 _spawns[i] = new PointF(PlayArea.Location.X + TileWidth * i, -TileHeight);
@@ -127,14 +126,14 @@ namespace Rainbow
             }
 
             //Dependant object creation
-            _stats = new Stats(_tileQueues, colorModel, level); //Depends on UIElements, Calculation, Boarders
-            _spawner = new Spawner(_tileQueues, colorModel, gameModifiers, level); // Depends on SpawnLocations, Random
+            _stats = new Stats(_tileLists, colorModel, level); //Depends on UIElements, Calculation, Boarders
+            _spawner = new Spawner(_tileLists, colorModel, gameModifiers, level); // Depends on SpawnLocations, Random
             try
             {
                 _colorDiagram = gameModifiers.HasFlag(GameModifiers.ColorWheel)
                     ? new UIImage(
                         Image.FromFile(
-                            Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).FullName).FullName +
+                            Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName +
                             @"\Resources\ColorWheel.png"),
                         new RectangleF(
                             new PointF(
@@ -174,23 +173,25 @@ namespace Rainbow
 
         private static void OnColorInput(ColorCode colorCode, int column)
         {
-            var tileQueue = _tileQueues[column];
-            if (tileQueue.Count == 0) return;
+            var tileList = _tileLists[column];
+            if (tileList.Count == 0) return;
 
-            var firstTile = tileQueue.Peek();
-            if (firstTile.Location.Y + TileHeight < Finishes[column].First.Y ||
-                firstTile.ColorCode != colorCode)
-                return;
+            var firstTile = tileList.Last.Value;
+            while (firstTile.Location.Y + TileHeight > Finishes[column].First.Y)
+            {
+                if (firstTile.ColorCode != colorCode)
+                {
+                    firstTile = tileList.Last.Previous.Value;
+                    if (firstTile == null) return;
+                    continue;
+                }
 
-            firstTile.Click();
-            if (firstTile.Lives <= 0)
-                tileQueue.Dequeue();
-
-            //firstTile = tileQueue.Peek();
-            //while(firstTile.Location.Y + TileHeight > Finishes[column].First.Y)
-            //{
-            //    if (firstTile.ColorCode != colorCode) continue;
-            //}
+                firstTile.Click();
+                if (firstTile.Lives <= 0)
+                    tileList.RemoveLast();
+                firstTile = tileList.Last.Value;
+                if (firstTile == null) return;
+            }
         }
     }
 }

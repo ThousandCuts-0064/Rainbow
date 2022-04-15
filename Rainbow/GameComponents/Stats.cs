@@ -80,6 +80,36 @@ namespace Rainbow
             }
         }
 
+        public void ColorInput(ColorCode colorCode, int column)
+        {
+            var tileList = _tileLists[column];
+            if (tileList.Count == 0) return;
+
+            var firstTile = tileList.Last.Value;
+            while (firstTile.Location.Y + Game.TileHeight > Game.Finishes[column].First.Y)
+            {
+                if (firstTile.ColorCode != colorCode)
+                {
+                    var previous = tileList.FindLast(firstTile).Previous;
+                    if (previous == null) return;
+                    firstTile = previous.Value;
+                    continue;
+                }
+
+                firstTile.Click();
+                var node = tileList.FindLast(firstTile);
+                var perviousNode = node.Previous;
+                if (firstTile.Lives <= 0)
+                {
+                    tileList.Remove(node);
+                    if (firstTile.IsNoClick) TakeNoClickTile(firstTile);
+                }
+
+                if (perviousNode != null)
+                    firstTile = perviousNode.Value;
+            }
+        }
+
         public void UseShotgun()
         {
             if (_barShotgun.Resource.Current == 0) return;
@@ -98,9 +128,22 @@ namespace Rainbow
 
         private void TakeTile(Tile tile)
         {
+            if (tile.IsNoClick)
+            {
+                TakeNoClickTile(tile);
+                return;
+            }
+
             if (tile.ColorCode.HasFlag(ColorCode.I)) _lifeI.Resource.Current -= tile.Lives;
             if (tile.ColorCode.HasFlag(ColorCode.II)) _lifeII.Resource.Current -= tile.Lives;
             if (tile.ColorCode.HasFlag(ColorCode.III)) _lifeIII.Resource.Current -= tile.Lives;
+        }
+
+        private void TakeNoClickTile(Tile tile)
+        {
+            if (tile.ColorCode.HasFlag(ColorCode.I)) _lifeI.Resource.Current -= tile.TimesClicked;
+            if (tile.ColorCode.HasFlag(ColorCode.II)) _lifeII.Resource.Current -= tile.TimesClicked;
+            if (tile.ColorCode.HasFlag(ColorCode.III)) _lifeIII.Resource.Current -= tile.TimesClicked;
         }
     }
 }

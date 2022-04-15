@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Rainbow
 {
-    public abstract class UIElement : IDrawable
+    public abstract class UIElement : IDrawable, IDisposable
     {
         public UIElement() => Game.UIElements.Add(this);
 

@@ -8,19 +8,30 @@ namespace Rainbow
 {
     class Spawner
     {
-        private const int DOUBLE_TILES_CHANCE = 33; // % chance in standart state
-        private const int TRIPLE_TILES_CHANCE = 20; // % chance in standart state
+        private const int NO_CLICK_TILES_CHANCE = 10; // % chance in standart state
+        private const int DOUBLE_TILES_CHANCE = 15; // % chance in standart state
+        private const int TRIPLE_TILES_CHANCE = 10; // % chance in standart state
+        private const int DOUBLE_CLICK_TILES_CHANCE = 15; // % chance in standart state
+        private const int TRIPLE_CLICK_TILES_CHANCE = 10; // % chance in standart state
+        private const int NO_COLOR_TILES_CHANCE = 15; // % chance in standart state
+
         private const int SHOTGUN_TILES_CHANCE = 5; // % chance for event trigger
         private const int DIAMOND_EVENT_CHANCE = 5; // % chance for event trigger
-        private const int CHESS_EVENT_CHANCE = 50; // % chance for event trigger
+        private const int CHESS_EVENT_CHANCE = 5; // % chance for event trigger
+        private const int RAINBOW_EVENT_CHANCE = 5; // % chance for event trigger
+
         private readonly LinkedList<Tile>[] _tileLists;
         private readonly NormalState _normalState;
         private readonly ShotgunState _shotgunState;
         private readonly DiamondState _diamondState;
         private readonly ChessState _chessState;
+        private readonly RainbowState _rainbowState;
         private readonly IColorModel _colorModel;
         private readonly GameModifiers _gameModifiers;
         private readonly int _level;
+        /// <summary>
+        /// Should only be set using the SetState method.
+        /// </summary>
         private SpawnerState _spawnerState;
         private Tile _lastSpawned;
 
@@ -35,10 +46,11 @@ namespace Rainbow
             _shotgunState = new ShotgunState(this);
             _diamondState = new DiamondState(this);
             _chessState = new ChessState(this);
+            _rainbowState = new RainbowState(this);
             SetState(_normalState);
 
             //First Spawn. Spawner needs one spawn to chain spawn.
-            SpawnRandomColor(Game.Random.Next(_level));
+            Spawn(Game.Random.Next(_level), RandomColor());
         }
 
         public void OnTick()
@@ -46,60 +58,48 @@ namespace Rainbow
             if (_spawnerState.AllowSwap)
             {
                 int chanceCap = 100;
-                int chance = Game.Random.Next(chanceCap);
-                if (_gameModifiers.HasFlag(GameModifiers.ShotgunTiles))
-                {
-                    if (chance >= SHOTGUN_TILES_CHANCE) // Chance must be between 0 and SHOTGUN_TILES_CHANCE
-                        chance -= SHOTGUN_TILES_CHANCE;
-                    else
-                    {
-                        SetState(_shotgunState);
-                        chance = chanceCap;
-                    }
-                }
+                int chanceCurrent = Game.Random.Next(chanceCap);
 
-                if (_gameModifiers.HasFlag(GameModifiers.DiamondEvent))
-                {
-                    if (chance >= DIAMOND_EVENT_CHANCE) // Chance must be between 0 and DIAMOND_EVENT_CHANCE
-                        chance -= DIAMOND_EVENT_CHANCE;
-                    else
-                    {
-                        SetState(_diamondState);
-                        chance = chanceCap;
-                    }
-                }
+                if (TryChanceModifier(GameModifiers.ShotgunTiles, ref chanceCurrent, SHOTGUN_TILES_CHANCE, chanceCap))
+                    SetState(_shotgunState);
 
-                if (_gameModifiers.HasFlag(GameModifiers.ChessEvent))
-                {
-                    if (chance >= CHESS_EVENT_CHANCE) // Chance must be between 0 and CHESS_EVENT_CHANCE
-                        chance -= CHESS_EVENT_CHANCE;
-                    else
-                    {
-                        SetState(_chessState);
-                        chance = chanceCap;
-                    }
-                }
+                if (TryChanceModifier(GameModifiers.DiamondEvent, ref chanceCurrent, DIAMOND_EVENT_CHANCE, chanceCap))
+                    SetState(_diamondState);
 
-                if (chance < chanceCap)
+                if (TryChanceModifier(GameModifiers.ChessEvent, ref chanceCurrent, CHESS_EVENT_CHANCE, chanceCap))
+                    SetState(_chessState);
+
+                if (TryChanceModifier(GameModifiers.RainbowEvent, ref chanceCurrent, RAINBOW_EVENT_CHANCE, chanceCap))
+                    SetState(_rainbowState);
+
+                if (chanceCurrent < chanceCap)
                     SetState(_normalState);
             }
 
             _spawnerState.OnTick();
         }
 
+        private bool TryChanceModifier(GameModifiers modifier, ref int chanceCurrent, int chanceTarget, int chanceCap)
+        {
+            if (!_gameModifiers.HasFlag(modifier) || chanceCurrent == chanceCap) return false;
+            if (chanceCurrent >= chanceTarget)
+            {
+                chanceCurrent -= chanceTarget;
+                return false;
+            }
+            chanceCurrent = chanceCap;
+            return true;
+        }
+
         private void SetState(SpawnerState state) => _spawnerState = state.OnSet();
 
-        private void SpawnRandomColor(int spawnLocationIndex)
+        private void Spawn(int spawnLocationIndex, ColorCode colorCode, int lives = 1, bool noClick = false)
         {
-            var randomColorCode = (ColorCode)(Game.Random.Next((int)ColorCode.All) + 1);
-            Spawn(spawnLocationIndex, randomColorCode);
-        }
-
-        private void Spawn(int spawnLocationIndex, ColorCode colorCode)
-        {
-            _lastSpawned = new Tile(_colorModel, colorCode, _gameModifiers, spawnLocationIndex);
+            _lastSpawned = new Tile(_colorModel, colorCode, _gameModifiers, spawnLocationIndex, lives, noClick);
             _tileLists[spawnLocationIndex].AddFirst(_lastSpawned);
         }
+
+        private ColorCode RandomColor() => (ColorCode)(Game.Random.Next((int)ColorCode.All) + 1);
 
         private abstract class SpawnerState
         {
@@ -126,49 +126,51 @@ namespace Rainbow
 
             public override void OnTick()
             {
-                //Hack: Compensates for 1 or 2 pixel stuttering, background won't flicker between touching tiles in same column.
-                if (Spawner._lastSpawned.Location.Y < -1) return;
+                //Hack: Compensates for some pixel stuttering, background will flicker less between touching tiles in the same column.
+                if (Spawner._lastSpawned.Location.Y < -2) return;
 
                 int chanceCap = 100;
-                int chance = Game.Random.Next(chanceCap);
+                int chanceCurrent = Game.Random.Next(chanceCap);
 
-                if (Spawner._gameModifiers.HasFlag(GameModifiers.DoubleTiles))
+                if (Spawner.TryChanceModifier(GameModifiers.NoClickTiles, ref chanceCurrent, NO_CLICK_TILES_CHANCE, chanceCap))
                 {
-                    if (chance >= DOUBLE_TILES_CHANCE) // Chance must be between 0 and DOUBLE_TILES_CHANCE
-                        chance -= DOUBLE_TILES_CHANCE;
-                    else
-                    {
-                        int index1 = Game.Random.Next(Spawner._level);
-                        Spawner.SpawnRandomColor(index1);
-                        int index2 = Game.Random.Next(Spawner._level - 1);
-                        if (index2 >= index1) index2++;
-                        Spawner.SpawnRandomColor(index2);
-                        chance = chanceCap;
-                    }
+                    Spawner.Spawn(Game.Random.Next(Spawner._level), Spawner.RandomColor(), 1, true);
                 }
 
-                if (Spawner._gameModifiers.HasFlag(GameModifiers.TripleTiles))
+                if (Spawner.TryChanceModifier(GameModifiers.DoubleTiles, ref chanceCurrent, DOUBLE_TILES_CHANCE, chanceCap))
                 {
-                    if (chance >= TRIPLE_TILES_CHANCE) // Chance must be between 0 and TRIPLE_TILES_CHANCE
-                        chance -= TRIPLE_TILES_CHANCE;
-                    else
-                    {
-                        int index1 = Game.Random.Next(Spawner._level);
-                        Spawner.SpawnRandomColor(index1);
-                        int index2 = Game.Random.Next(Spawner._level - 1);
-                        if (index2 >= index1) index2++;
-                        Spawner.SpawnRandomColor(index2);
-                        int index3 = Game.Random.Next(Spawner._level - 2);
-                        if (index3 >= index1) index3++;
-                        if (index3 >= index2) index3++;
-                        if (index3 == index1) index3++;
-                        Spawner.SpawnRandomColor(index3);
-                        chance = chanceCap;
-                    }
+                    int index1 = Game.Random.Next(Spawner._level);
+                    Spawner.Spawn(index1, Spawner.RandomColor());
+                    int index2 = Game.Random.Next(Spawner._level - 1);
+                    if (index2 >= index1) index2++;
+                    Spawner.Spawn(index2, Spawner.RandomColor());
                 }
 
-                if (chance < chanceCap)
-                    Spawner.SpawnRandomColor(Game.Random.Next(Spawner._level));
+                if (Spawner.TryChanceModifier(GameModifiers.TripleTiles, ref chanceCurrent, TRIPLE_TILES_CHANCE, chanceCap))
+                {
+                    int index1 = Game.Random.Next(Spawner._level);
+                    Spawner.Spawn(index1, Spawner.RandomColor());
+                    int index2 = Game.Random.Next(Spawner._level - 1);
+                    if (index2 >= index1) index2++;
+                    Spawner.Spawn(index2, Spawner.RandomColor());
+                    int index3 = Game.Random.Next(Spawner._level - 2);
+                    if (index3 >= index1) index3++;
+                    if (index3 >= index2) index3++;
+                    if (index3 == index1) index3++;
+                    Spawner.Spawn(index3, Spawner.RandomColor());
+                }
+
+                if (Spawner.TryChanceModifier(GameModifiers.DoubleClickTiles, ref chanceCurrent, DOUBLE_CLICK_TILES_CHANCE, chanceCap))
+                    Spawner.Spawn(Game.Random.Next(Spawner._level), Spawner.RandomColor(), 2);
+
+                if (Spawner.TryChanceModifier(GameModifiers.TripleClickTiles, ref chanceCurrent, TRIPLE_CLICK_TILES_CHANCE, chanceCap))
+                    Spawner.Spawn(Game.Random.Next(Spawner._level), Spawner.RandomColor(), 3);
+
+                if (Spawner.TryChanceModifier(GameModifiers.NoColorTiles, ref chanceCurrent, NO_COLOR_TILES_CHANCE, chanceCap))
+                    Spawner.Spawn(Game.Random.Next(Spawner._level), ColorCode.None);
+
+                if (chanceCurrent < chanceCap)
+                    Spawner.Spawn(Game.Random.Next(Spawner._level), Spawner.RandomColor());
 
                 AllowSwap = true;
             }
@@ -223,7 +225,7 @@ namespace Rainbow
                             _finishedCycle = true;
                             return;
                     }
-                    Spawner.Spawn(i, colorCode);
+                    Spawner.Spawn(i, colorCode, 1);
                 }
                 _rowCount++;
             }
@@ -280,7 +282,8 @@ namespace Rainbow
                     Spawner.Spawn(i,
                         i % 2 == _rowCount % 2
                         ? ColorCode.All
-                        : ColorCode.None);
+                        : ColorCode.None,
+                        1);
                 _rowCount++;
                 if (_rowCount == Spawner._level)
                 {
@@ -294,6 +297,21 @@ namespace Rainbow
                 _waitSpace = true;
                 _finishedCycle = false;
                 _rowCount = 0;
+            }
+        }
+
+        private class RainbowState : SpawnerState
+        {
+            public RainbowState(Spawner spawner) : base(spawner) { }
+
+            public override void OnTick()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void OnStateSet()
+            {
+                throw new NotImplementedException();
             }
         }
     }

@@ -10,25 +10,29 @@ namespace Rainbow
     public enum GameModifiers
     {
         None = 0,
-        DoubleClickTiles =  1 << 0,
+
+        NoClickTiles =      1 << 0,
         DoubleTiles =       1 << 1,
         TripleTiles =       1 << 2,
-        Empty1 =            1 << 3,
-        Empty2 =            1 << 4,
-        ColorDistortion =   1 << 5,
-        InvertedColors =    1 << 6,
-        FadingColors =      1 << 7,
-        Empty3 =            1 << 8,
-        Empty4 =            1 << 9,
+        DoubleClickTiles =  1 << 3,
+        TripleClickTiles =  1 << 4,
+                            
+        NoColorTiles =      1 << 5,
+        ColorDistortion =   1 << 6,
+        InvertedColors =    1 << 7,
+        FadingColors =      1 << 8,
+        FlashingColors =    1 << 9,
+                            
         ColorWheel =        1 << 10,
-        HintButtons =       1 << 11,
-        Birdy =             1 << 12,
-        Empty5 =            1 << 13,
+        HintColumns =       1 << 11,
+        HintButtons =       1 << 12,
+        Birdy =             1 << 13,
         Empty6 =            1 << 14,
+                            
         ShotgunTiles =      1 << 15,
         DiamondEvent =      1 << 16,
         ChessEvent =        1 << 17,
-        Empty8 =            1 << 18,
+        RainbowEvent =      1 << 18,
         Empty9 =            1 << 19,
     }
 }

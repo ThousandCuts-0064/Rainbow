@@ -17,21 +17,50 @@ namespace Rainbow
             Alignment = StringAlignment.Center,
             LineAlignment = StringAlignment.Center
         };
-        private static readonly SolidBrush _brushText = new SolidBrush(Color.DarkGray);
+        private static readonly SolidBrush _brushText = new SolidBrush(Color.Gray);
         private static readonly Color _colorBlend = Color.Gray;
-        private readonly Font _font;
+        private static readonly Color _colorBorderNormal = Color.Black;
+        private static readonly Color _colorBorderNoClick = Color.White;
         private readonly SolidBrush _solidBrush;
-        private readonly Pen _pen = new Pen(Color.Black, Game.Unit);
-        private readonly string _text;
+        private readonly Font _font;
+        private readonly Pen _pen = new Pen(_colorBorderNormal, Game.Unit);
         private readonly GameModifiers _gameModifiers;
-        private readonly int _column;
         private readonly IColorModel _colorModel;
         private readonly Color _colorDistortion;
+        private readonly string _text;
+        private readonly int _column;
         private float _fadeRatio;
+        private int _lives;
         public ColorCode ColorCode { get; }
+        public int TimesClicked { get; private set; }
+        public bool IsNoClick { get; }
         public Color Color => _solidBrush.Color;
-        public int Lives { get; private set; }
-        public PointF Location { get; private set; }
+        public int Lives
+        {
+            get => _lives;
+            private set
+            {
+                _lives = value;
+                switch (value)
+                {
+                    case 0:
+                        Dispose();
+                        break;
+
+                    case 1:
+                        _pen.DashStyle = DashStyle.Solid;
+                        break;
+
+                    case 2:
+                        _pen.DashStyle = DashStyle.Dash;
+                        break;
+
+                    case 3:
+                        _pen.DashStyle = DashStyle.Dot;
+                        break;
+                }
+            }
+        }
 
         static Tile()
         {
@@ -80,13 +109,14 @@ namespace Rainbow
             _colorColumnToString = colorColumnToString;
         }
 
-        public Tile(IColorModel colorModel, ColorCode colorCode, GameModifiers gameModifiers, int column)
+        public Tile(IColorModel colorModel, ColorCode colorCode, GameModifiers gameModifiers, int column, int lives = 1, bool isNoClick = false)
         {
             _colorModel = colorModel;
             ColorCode = colorCode;
             _gameModifiers = gameModifiers;
             _column = column;
-            Lives = 1;
+            Lives = lives;
+            IsNoClick = isNoClick;
             _solidBrush = new SolidBrush(colorModel.CodeToColor(colorCode));
             Location = Game.SpawnLocations[column];
 
@@ -96,12 +126,6 @@ namespace Rainbow
                 Game.Random.Next(64),
                 Game.Random.Next(64));
 
-            if (gameModifiers.HasFlag(GameModifiers.DoubleClickTiles))
-            {
-                _pen.DashStyle = DashStyle.Dash;
-                Lives = 2;
-            }
-
             if (gameModifiers.HasFlag(GameModifiers.HintButtons))
             {
                 _text += _colorColumnToString[(colorCode, column)];
@@ -110,6 +134,11 @@ namespace Rainbow
                     Math.Min(Game.TileHeight * 0.5f, Game.TileWidth / _text.Length));
             }
         }
+
+        public override PointF GetCenter() =>
+            new PointF(
+                Location.X + Game.TileWidth * 0.5f,
+                Location.Y + Game.TileHeight * 0.5f);
 
         public override void Draw(Graphics graphics)
         {
@@ -126,11 +155,13 @@ namespace Rainbow
             {
                 _solidBrush.Color = _solidBrush.Color.Blend(_colorBlend, _fadeRatio);
                 _fadeRatio += _fadeRatio < 1 ? 0.00175f : 0;
-                _brushText.Color = _colorBlend;
+                //_brushText.Color = _colorBlend;
             }
 
             if (_gameModifiers.HasFlag(GameModifiers.InvertedColors))
                 _solidBrush.Color = _solidBrush.Color.Invert();
+
+            _pen.Color = IsNoClick ? _colorBorderNoClick : _colorBorderNormal;
 
             RectangleF rectangleF = new RectangleF(Location.X, Location.Y, Game.TileWidth, Game.TileHeight);
             graphics.FillRectangle(_solidBrush, rectangleF);
@@ -148,25 +179,8 @@ namespace Rainbow
         /// </summary>
         public void Click()
         {
+            TimesClicked++;
             Lives--;
-            switch (Lives)
-            {
-                case 0:
-                    Dispose();
-                    break;
-
-                case 1:
-                    _pen.DashStyle = DashStyle.Solid;
-                    break;
-
-                case 2:
-                    _pen.DashStyle = DashStyle.Dash;
-                    break;
-
-                case 3:
-                    _pen.DashStyle = DashStyle.Dot;
-                    break;
-            }
         }
 
         public override void Dispose()

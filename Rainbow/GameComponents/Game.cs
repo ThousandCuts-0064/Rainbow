@@ -106,7 +106,7 @@ namespace Rainbow
             //Level scale
             for (int i = 0; i < level; i++)
             {
-                //Tile queues
+                //Tile lists
                 _tileLists[i] = new LinkedList<Tile>();
 
                 //Spawn locations
@@ -128,26 +128,13 @@ namespace Rainbow
             //Dependant object creation
             _stats = new Stats(_tileLists, colorModel, level); //Depends on UIElements, Calculation, Boarders
             _spawner = new Spawner(_tileLists, colorModel, gameModifiers, level); // Depends on SpawnLocations, Random
-            try
-            {
-                _colorDiagram = gameModifiers.HasFlag(GameModifiers.ColorWheel)
-                    ? new UIImage(
-                        Image.FromFile(
-                            Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName +
-                            @"\Resources\ColorWheel.png"),
-                        new RectangleF(
-                            new PointF(
-                                Boarders.Last().Second.X,
-                                Boarders.Last().Second.Y - TileHeight * 3),
-                            new SizeF(
-                                UIElementWidth,
-                                TileHeight * 3)))
-                    : null;
-            }
-            catch { }
+            if (gameModifiers.HasFlag(GameModifiers.ColorWheel))
+                _colorDiagram = new UIImage(
+                    Resources.ColorWheel,
+                    CalculateColorWheelRectangle());
 
             //Events
-            _inputManager.ColorInput += OnColorInput;
+            _inputManager.ColorInput += _stats.ColorInput;
             _inputManager.Shotgun += _stats.UseShotgun;
             _timer.Tick += GameTick;
             formPlay.KeyDown += _inputManager.OnKeyDown;
@@ -168,30 +155,16 @@ namespace Rainbow
             _inputManager.OnTick();
             foreach (var update in _updates) update();
             _spawner.OnTick();
-            _formPlay.Refresh();
+            _formPlay.Invalidate();
         }
 
-        private static void OnColorInput(ColorCode colorCode, int column)
-        {
-            var tileList = _tileLists[column];
-            if (tileList.Count == 0) return;
-
-            var firstTile = tileList.Last.Value;
-            while (firstTile.Location.Y + TileHeight > Finishes[column].First.Y)
-            {
-                if (firstTile.ColorCode != colorCode)
-                {
-                    firstTile = tileList.Last.Previous.Value;
-                    if (firstTile == null) return;
-                    continue;
-                }
-
-                firstTile.Click();
-                if (firstTile.Lives <= 0)
-                    tileList.RemoveLast();
-                firstTile = tileList.Last.Value;
-                if (firstTile == null) return;
-            }
-        }
+        private static RectangleF CalculateColorWheelRectangle() =>
+            new RectangleF(
+                new PointF(
+                    Boarders.Last().Second.X,
+                    Boarders.Last().Second.Y - TileHeight * 3),
+                new SizeF(
+                    UIElementWidth,
+                    TileHeight * 3));
     }
 }

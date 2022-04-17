@@ -162,8 +162,10 @@ namespace Rainbow
                 _solidBrush.Color = _solidBrush.Color.Invert();
 
             _pen.Color = IsNoClick ? _colorBorderNoClick : _colorBorderNormal;
+            //_pen.Color = _colorBorderNoClick;//
 
             RectangleF rectangleF = new RectangleF(Location.X, Location.Y, Game.TileWidth, Game.TileHeight);
+            //rectangleF.Inflate(-Game.HalfUnit/2, -Game.HalfUnit/2);
             graphics.FillRectangle(_solidBrush, rectangleF);
 
             rectangleF.Inflate(-Game.HalfUnit, -Game.HalfUnit);

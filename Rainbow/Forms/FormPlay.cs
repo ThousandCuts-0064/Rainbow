@@ -42,8 +42,8 @@ namespace Rainbow
             g.PixelOffsetMode = PixelOffsetMode.HighSpeed;
 
             base.OnPaint(e);
-            foreach (var item in Game.GameplayElements) item.Draw(g);
             foreach (var item in Game.MapElements) item.Draw(g);
+            foreach (var item in Game.GameplayElements) item.Draw(g);
             foreach (var item in Game.UIElements) item.Draw(g);
         }
     }

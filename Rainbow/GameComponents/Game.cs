@@ -19,8 +19,8 @@ namespace Rainbow
         /// Number of units
         /// </summary>
         private const int TILE_HIGHT_UNITS = 10;
-        private static readonly Color _borderColor = Color.Black;
-        private static readonly Color _finishColor = Color.Black;
+        private static readonly Color _colorBoarder = Color.Black;
+        private static readonly Color _colorFinish = Color.Black;
         private static LinkedList<Tile>[] _tileLists;
         private static HashSet<Update> _updates;
         private static Line[] _boarders;//
@@ -28,6 +28,8 @@ namespace Rainbow
         private static PointF[] _spawns;//
 
         private static Channel[] _channels;
+        private static Line _boarderLeft;
+        private static Line _boarderRight;
 
         private static Timer _timer;
         private static Stats _stats;
@@ -48,8 +50,11 @@ namespace Rainbow
         /// % of screen width. Range: [0, 1].
         /// </summary>
         public static float PlayAreaWidthRatio => 0.6f;
-
-        public static float MapLineWidth => 0.01f;
+        /// <summary>
+        /// % of screen width. Range: [0, 1].
+        /// </summary>
+        public static float MapLineWidthRatio => 0.002f;
+        public static float MapLineWidth { get; private set; }
 
         public static IReadOnlyList<PointF> SpawnLocations => _spawns;
         public static IReadOnlyList<ILine> Boarders => _boarders;
@@ -104,19 +109,40 @@ namespace Rainbow
                 new SizeF(screen.Width * PlayAreaWidthRatio, screen.Height));
 
             //New
+            MapLineWidth = screen.Width * MapLineWidthRatio;
 
+            _boarderLeft = new Line(_colorBoarder, 
+                new PointF(
+                    PlayArea.Left - MapLineWidth / 2, 
+                    PlayArea.Top), 
+                new PointF(
+                    PlayArea.Left - MapLineWidth / 2,
+                    PlayArea.Bottom),
+                MapLineWidth);
+
+            _boarderRight = new Line(_colorBoarder,
+                 new PointF(
+                    PlayArea.Right - MapLineWidth / 2,
+                    PlayArea.Top),
+                new PointF(
+                    PlayArea.Right - MapLineWidth / 2,
+                    PlayArea.Bottom),
+                MapLineWidth);
 
             _channels = new Channel[level];
             for (int i = 0; i < level; i++)
             {
-                var rectangleF = new RectangleF(PlayArea.Location, new SizeF(TileWidth, PlayArea.Height));
+                var rectangleF = new RectangleF(
+                    PlayArea.Location, 
+                    new SizeF(TileWidth, PlayArea.Height));
+
                 rectangleF.Offset(TileWidth * i, 0);
-                _channels[i] = new Channel(rectangleF);
+                _channels[i] = new Channel(rectangleF, MapLineWidth);
             }
 
             //Leftmost boarder
             var bottomLeft = new PointF(PlayArea.Left, PlayArea.Bottom);
-            _boarders[0] = new Line(_borderColor, PlayArea.Location, bottomLeft, HalfUnit);
+            _boarders[0] = new Line(_colorBoarder, PlayArea.Location, bottomLeft, HalfUnit);
 
             //Level scale
             for (int i = 0; i < level; i++)
@@ -132,11 +158,11 @@ namespace Rainbow
                 var finishOffset = new SizeF(0, -TileHeight * 2);
 
                 //Lines are automaticaly added to the draw list
-                _boarders[i + 1] = new Line(_borderColor,
+                _boarders[i + 1] = new Line(_colorBoarder,
                     PlayArea.Location + tileOffset,
                     bottomLeft + tileOffset,
                     HalfUnit);
-                _finishes[i] = new Line(_finishColor,
+                _finishes[i] = new Line(_colorFinish,
                     bottomLeft + finishOffset,
                     bottomLeft + finishOffset + tileOffset,
                     HalfUnit);

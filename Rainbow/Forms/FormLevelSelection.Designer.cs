@@ -167,7 +167,7 @@ namespace Rainbow
             this.checkBoxShowButtons.BackColor = System.Drawing.SystemColors.ControlLight;
             this.checkBoxShowButtons.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxShowButtons.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxShowButtons.Location = new System.Drawing.Point(410, 110);
+            this.checkBoxShowButtons.Location = new System.Drawing.Point(410, 210);
             this.checkBoxShowButtons.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.checkBoxShowButtons.Name = "checkBoxShowButtons";
             this.checkBoxShowButtons.Size = new System.Drawing.Size(100, 100);
@@ -616,7 +616,7 @@ namespace Rainbow
             this.checkBoxHintColumns.BackColor = System.Drawing.SystemColors.ControlLight;
             this.checkBoxHintColumns.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxHintColumns.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxHintColumns.Location = new System.Drawing.Point(410, 210);
+            this.checkBoxHintColumns.Location = new System.Drawing.Point(410, 110);
             this.checkBoxHintColumns.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.checkBoxHintColumns.Name = "checkBoxHintColumns";
             this.checkBoxHintColumns.Size = new System.Drawing.Size(100, 100);

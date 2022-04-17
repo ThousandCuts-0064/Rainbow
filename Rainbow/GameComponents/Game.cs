@@ -20,12 +20,7 @@ namespace Rainbow
         /// </summary>
         private const int TILE_HIGHT_UNITS = 10;
         private static readonly Color _colorBoarder = Color.Black;
-        private static readonly Color _colorFinish = Color.Black;
-        private static LinkedList<Tile>[] _tileLists;
         private static HashSet<Update> _updates;
-        private static Line[] _boarders;//
-        private static Line[] _finishes;//
-        private static PointF[] _spawns;//
 
         private static Channel[] _channels;
         private static Line _boarderLeft;
@@ -56,9 +51,9 @@ namespace Rainbow
         public static float MapLineWidthRatio => 0.002f;
         public static float MapLineWidth { get; private set; }
 
-        public static IReadOnlyList<PointF> SpawnLocations => _spawns;
-        public static IReadOnlyList<ILine> Boarders => _boarders;
-        public static IReadOnlyList<ILine> Finishes => _finishes;
+        public static IReadOnlyList<IReadOnlyChannel> Channels => _channels;
+        public static ILine BoarderRight => _boarderRight;
+        public static ILine BoarderLeft => _boarderLeft;
         public static Random Random { get; } = new Random();
 
         public static HashSet<GameplayElement> GameplayElements { get; private set; }
@@ -71,7 +66,9 @@ namespace Rainbow
         public static float Unit { get; private set; }
         public static float HalfUnit { get; private set; }
         public static float UIElementWidth { get; private set; }
+        public static float ChannelWidth { get; private set; }
         public static float TileWidth { get; private set; }
+
         public static float TileHeight { get; private set; }
         public static bool IsPaused { get => !_timer.Enabled; set => _timer.Enabled = !value; }
         public static bool IsLoaded { get; private set; }
@@ -86,11 +83,7 @@ namespace Rainbow
             IsLoaded = true;
 
             //Direct object Creation
-            _tileLists = new LinkedList<Tile>[level];
             _updates = new HashSet<Update>();
-            _boarders = new Line[level + 1];
-            _finishes = new Line[level];
-            _spawns = new PointF[level];
             MapElements = new List<MapElement>();
             GameplayElements = new HashSet<GameplayElement>();
             UIElements = new List<UIElement>();
@@ -101,20 +94,20 @@ namespace Rainbow
             var screen = formPlay.ClientRectangle;
             Unit = screen.Height * UNIT_HIGHT_RATIO;
             HalfUnit = Unit / 2;
+            ChannelWidth = screen.Width * PlayAreaWidthRatio / level;
+            MapLineWidth = screen.Width * MapLineWidthRatio;
+            UIElementWidth = screen.Width * (1 - PlayAreaWidthRatio) / 2 - MapLineWidth;
             TileHeight = TILE_HIGHT_UNITS * Unit;
-            TileWidth = screen.Width * PlayAreaWidthRatio / level;
-            UIElementWidth = screen.Width * (1 - PlayAreaWidthRatio) / 2;
+            TileWidth = ChannelWidth - MapLineWidth * 2;
             PlayArea = new RectangleF(
                 new PointF(screen.Width * (1 - PlayAreaWidthRatio) / 2, 0),
                 new SizeF(screen.Width * PlayAreaWidthRatio, screen.Height));
 
-            //New
-            MapLineWidth = screen.Width * MapLineWidthRatio;
-
-            _boarderLeft = new Line(_colorBoarder, 
+            //Boarders
+            _boarderLeft = new Line(_colorBoarder,
                 new PointF(
-                    PlayArea.Left - MapLineWidth / 2, 
-                    PlayArea.Top), 
+                    PlayArea.Left - MapLineWidth / 2,
+                    PlayArea.Top),
                 new PointF(
                     PlayArea.Left - MapLineWidth / 2,
                     PlayArea.Bottom),
@@ -122,55 +115,28 @@ namespace Rainbow
 
             _boarderRight = new Line(_colorBoarder,
                  new PointF(
-                    PlayArea.Right - MapLineWidth / 2,
+                    PlayArea.Right + MapLineWidth / 2,
                     PlayArea.Top),
                 new PointF(
-                    PlayArea.Right - MapLineWidth / 2,
+                    PlayArea.Right + MapLineWidth / 2,
                     PlayArea.Bottom),
                 MapLineWidth);
 
+            //Channels
             _channels = new Channel[level];
             for (int i = 0; i < level; i++)
             {
                 var rectangleF = new RectangleF(
-                    PlayArea.Location, 
-                    new SizeF(TileWidth, PlayArea.Height));
+                    PlayArea.Location,
+                    new SizeF(ChannelWidth, PlayArea.Height));
 
-                rectangleF.Offset(TileWidth * i, 0);
+                rectangleF.Offset(ChannelWidth * i, 0);
                 _channels[i] = new Channel(rectangleF, MapLineWidth);
             }
 
-            //Leftmost boarder
-            var bottomLeft = new PointF(PlayArea.Left, PlayArea.Bottom);
-            _boarders[0] = new Line(_colorBoarder, PlayArea.Location, bottomLeft, HalfUnit);
-
-            //Level scale
-            for (int i = 0; i < level; i++)
-            {
-                //Tile lists
-                _tileLists[i] = new LinkedList<Tile>();
-
-                //Spawn locations
-                _spawns[i] = new PointF(PlayArea.Location.X + TileWidth * i, -TileHeight);
-
-                //Rest of boarders and finish lines
-                var tileOffset = new SizeF(TileWidth * (i + 1), 0);
-                var finishOffset = new SizeF(0, -TileHeight * 2);
-
-                //Lines are automaticaly added to the draw list
-                _boarders[i + 1] = new Line(_colorBoarder,
-                    PlayArea.Location + tileOffset,
-                    bottomLeft + tileOffset,
-                    HalfUnit);
-                _finishes[i] = new Line(_colorFinish,
-                    bottomLeft + finishOffset,
-                    bottomLeft + finishOffset + tileOffset,
-                    HalfUnit);
-            }
-
             //Dependant object creation
-            _stats = new Stats(_tileLists, colorModel, level); //Depends on UIElements, Calculation, Boarders
-            _spawner = new Spawner(_tileLists, colorModel, gameModifiers, level); // Depends on SpawnLocations, Random
+            _stats = new Stats(_channels, colorModel, level);
+            _spawner = new Spawner(_channels, colorModel, gameModifiers, level);
             if (gameModifiers.HasFlag(GameModifiers.ColorWheel))
                 _colorDiagram = new UIImage(
                     Resources.ColorWheel,
@@ -204,8 +170,8 @@ namespace Rainbow
         private static RectangleF CalculateColorWheelRectangle() =>
             new RectangleF(
                 new PointF(
-                    Boarders.Last().Point2.X,
-                    Boarders.Last().Point2.Y - TileHeight * 3),
+                    _boarderRight.Point2.X + MapLineWidth / 2,
+                    _boarderRight.Point2.Y + MapLineWidth / 2 - TileHeight * 3),
                 new SizeF(
                     UIElementWidth,
                     TileHeight * 3));

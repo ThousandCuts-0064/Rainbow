@@ -118,7 +118,7 @@ namespace Rainbow
             Lives = lives;
             IsNoClick = isNoClick;
             _solidBrush = new SolidBrush(colorModel.CodeToColor(colorCode));
-            Location = Game.SpawnLocations[column];
+            Location = Game.Channels[column].PointSpawn;
 
             _fadeRatio = 0;
             _colorDistortion = Color.FromArgb(
@@ -131,7 +131,7 @@ namespace Rainbow
                 _text += _colorColumnToString[(colorCode, column)];
                 _font = new Font(
                     FontFamily.GenericMonospace, // Chars are same width and calculations are easy
-                    Math.Min(Game.TileHeight * 0.5f, Game.TileWidth / _text.Length));
+                    Math.Min(Game.TileHeight * 0.5f, (Game.TileWidth - Game.Unit) / _text.Length));
             }
         }
 
@@ -162,16 +162,14 @@ namespace Rainbow
                 _solidBrush.Color = _solidBrush.Color.Invert();
 
             _pen.Color = IsNoClick ? _colorBorderNoClick : _colorBorderNormal;
-            //_pen.Color = _colorBorderNoClick;//
+            //Hack: Testing tile boarder
+            //_pen.Color = _colorBorderNoClick; 
 
             RectangleF rectangleF = new RectangleF(Location.X, Location.Y, Game.TileWidth, Game.TileHeight);
-            //rectangleF.Inflate(-Game.HalfUnit/2, -Game.HalfUnit/2);
+            rectangleF.Inflate(-Game.HalfUnit, -Game.HalfUnit);
 
             graphics.FillRectangle(_solidBrush, rectangleF);
-
-            rectangleF.Inflate(-Game.HalfUnit, -Game.HalfUnit);
             graphics.DrawRectangle(_pen, rectangleF.X, rectangleF.Y, rectangleF.Width, rectangleF.Height);
-
             graphics.DrawString(_text, _font, _brushText, rectangleF.X + rectangleF.Width * 0.5f, rectangleF.Y + rectangleF.Height * 0.5f, _stringFormat);
 
             _solidBrush.Color = colorBase;

@@ -11,5 +11,6 @@ namespace Rainbow
     {
         PointF Point1 { get; }
         PointF Point2 { get; }
+        float Width { get; }
     }
 }

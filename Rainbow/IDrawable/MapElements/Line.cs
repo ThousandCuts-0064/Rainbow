@@ -12,6 +12,7 @@ namespace Rainbow
         public Pen Pen { get; }
         public PointF Point1 { get; private set; }
         public PointF Point2 { get; private set; }
+        float ILine.Width => Pen.Width;
 
         public Line(Color color, PointF point1, PointF point2, float width)
         {

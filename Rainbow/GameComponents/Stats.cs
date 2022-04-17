@@ -12,7 +12,7 @@ namespace Rainbow
     {
         private const int DEFAULT_MAX_LIFES = 10;
         private const int DEFAULT_MAX_SHOTGUNS = 10;
-        private readonly LinkedList<Tile>[] _tileLists;
+        private readonly Channel[] _channels;
         private readonly IColorModel _colorModel;
         private readonly Bar _lifeI;
         private readonly Bar _lifeII;
@@ -20,41 +20,42 @@ namespace Rainbow
         private readonly Bar _barShotgun;
         private readonly int _level;
 
-        public Stats(LinkedList<Tile>[] tileLists, IColorModel colorModel, int level)
+        public Stats(Channel[] channels, IColorModel colorModel, int level)
         {
             _colorModel = colorModel;
-            _tileLists = tileLists;
+            _channels = channels;
             _level = level;
 
             var playArea = Game.PlayArea;
+            var locationX = Game.BoarderRight.Point1.X + Game.BoarderRight.Width / 2;
             var width = Game.UIElementWidth;
             var height = Game.TileHeight;
 
             _lifeI = new Bar(
                 colorModel.CodeToColor(ColorCode.I),
                 new RectangleF(
-                    new PointF(playArea.Right, playArea.Top),
+                    new PointF(locationX, playArea.Top),
                     new SizeF(width, height)),
                 DEFAULT_MAX_LIFES);
 
             _lifeII = new Bar(
                 colorModel.CodeToColor(ColorCode.II),
                 new RectangleF(
-                    new PointF(playArea.Right, playArea.Top + height),
+                    new PointF(locationX, playArea.Top + height),
                     new SizeF(width, height)),
                 DEFAULT_MAX_LIFES);
 
             _lifeIII = new Bar(
                 colorModel.CodeToColor(ColorCode.III),
                 new RectangleF(
-                    new PointF(playArea.Right, playArea.Top + height * 2),
+                    new PointF(locationX, playArea.Top + height * 2),
                     new SizeF(width, height)),
                 DEFAULT_MAX_LIFES);
 
             _barShotgun = new Bar(
                 Color.FromArgb(192, 192, 192),
                 new RectangleF(
-                    new PointF(playArea.Right, playArea.Top + height * 3),
+                    new PointF(locationX, playArea.Top + height * 3),
                     new SizeF(width, height)),
                 DEFAULT_MAX_SHOTGUNS);
 
@@ -69,24 +70,25 @@ namespace Rainbow
         {
             for (int i = 0; i < _level; i++)
             {
-                if (_tileLists[i].Count != 0 &&
-                    _tileLists[i].Last.Value.Location.Y > Game.Boarders[i].Point2.Y)
-                {
-                    var tile = _tileLists[i].Last.Value;
-                    _tileLists[i].RemoveLast();
-                    TakeTile(tile);
-                    tile.Dispose();
-                }
+                var tileList = _channels[i].TileList;
+                if (tileList.Count == 0 ||
+                    tileList.Last.Value.Location.Y <= _channels[i].BoarderLeft.Point2.Y)
+                    continue;
+
+                var tile = tileList.Last.Value;
+                tileList.RemoveLast();
+                TakeTile(tile);
+                tile.Dispose();
             }
         }
 
         public void ColorInput(ColorCode colorCode, int column)
         {
-            var tileList = _tileLists[column];
+            var tileList = _channels[column].TileList;
             if (tileList.Count == 0) return;
 
             var firstTile = tileList.Last.Value;
-            while (firstTile.Location.Y + Game.TileHeight > Game.Finishes[column].Point1.Y)
+            while (firstTile.Location.Y + Game.TileHeight > _channels[column].Finish.Point1.Y)
             {
                 LinkedListNode<Tile> previousNode;
 
@@ -115,9 +117,9 @@ namespace Rainbow
             if (_barShotgun.Resource.Current == 0) return;
             for (int i = 0; i < _level; i++)
             {
-                var tileList = _tileLists[i];
+                var tileList = _channels[i].TileList;
                 while (tileList.Count > 0 &&
-                    tileList.Last.Value.Location.Y + Game.TileHeight >= Game.Finishes[i].Point1.Y)
+                    tileList.Last.Value.Location.Y + Game.TileHeight >= _channels[i].Finish.Point1.Y)
                 {
                     tileList.Last.Value.Dispose();
                     tileList.RemoveLast();

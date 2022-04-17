@@ -20,7 +20,7 @@ namespace Rainbow
         private const int CHESS_EVENT_CHANCE = 5; // % chance for event trigger
         private const int RAINBOW_EVENT_CHANCE = 5; // % chance for event trigger
 
-        private readonly LinkedList<Tile>[] _tileLists;
+        private readonly Channel[] _channels;
         private readonly NormalState _normalState;
         private readonly ShotgunState _shotgunState;
         private readonly DiamondState _diamondState;
@@ -35,9 +35,9 @@ namespace Rainbow
         private SpawnerState _spawnerState;
         private Tile _lastSpawned;
 
-        public Spawner(LinkedList<Tile>[] tileLists, IColorModel colorModel, GameModifiers gameModifiers, int level)
+        public Spawner(Channel[] channels, IColorModel colorModel, GameModifiers gameModifiers, int level)
         {
-            _tileLists = tileLists;
+            _channels = channels;
             _colorModel = colorModel;
             _gameModifiers = gameModifiers;
             _level = level;
@@ -93,10 +93,10 @@ namespace Rainbow
 
         private void SetState(SpawnerState state) => _spawnerState = state.OnSet();
 
-        private void Spawn(int spawnLocationIndex, ColorCode colorCode, int lives = 1, bool noClick = false)
+        private void Spawn(int ChannelIndex, ColorCode colorCode, int lives = 1, bool noClick = false)
         {
-            _lastSpawned = new Tile(_colorModel, colorCode, _gameModifiers, spawnLocationIndex, lives, noClick);
-            _tileLists[spawnLocationIndex].AddFirst(_lastSpawned);
+            _lastSpawned = new Tile(_colorModel, colorCode, _gameModifiers, ChannelIndex, lives, noClick);
+            _channels[ChannelIndex].TileList.AddFirst(_lastSpawned);
         }
 
         private ColorCode RandomColor() => (ColorCode)(Game.Random.Next((int)ColorCode.All) + 1);
@@ -127,7 +127,7 @@ namespace Rainbow
             public override void OnTick()
             {
                 //Hack: Compensates for some pixel stuttering, background will flicker less between touching tiles in the same column.
-                if (Spawner._lastSpawned.Location.Y < -2) return;
+                if (Spawner._lastSpawned.Location.Y < -1) return;
 
                 int chanceCap = 100;
                 int chanceCurrent = Game.Random.Next(chanceCap);

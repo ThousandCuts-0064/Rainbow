@@ -27,6 +27,8 @@ namespace Rainbow
         private static Line[] _finishes;//
         private static PointF[] _spawns;//
 
+        private static Channel[] _channels;
+
         private static Timer _timer;
         private static Stats _stats;
         private static Spawner _spawner;
@@ -46,6 +48,8 @@ namespace Rainbow
         /// % of screen width. Range: [0, 1].
         /// </summary>
         public static float PlayAreaWidthRatio => 0.6f;
+
+        public static float MapLineWidth => 0.01f;
 
         public static IReadOnlyList<PointF> SpawnLocations => _spawns;
         public static IReadOnlyList<ILine> Boarders => _boarders;
@@ -99,9 +103,20 @@ namespace Rainbow
                 new PointF(screen.Width * (1 - PlayAreaWidthRatio) / 2, 0),
                 new SizeF(screen.Width * PlayAreaWidthRatio, screen.Height));
 
+            //New
+
+
+            _channels = new Channel[level];
+            for (int i = 0; i < level; i++)
+            {
+                var rectangleF = new RectangleF(PlayArea.Location, new SizeF(TileWidth, PlayArea.Height));
+                rectangleF.Offset(TileWidth * i, 0);
+                _channels[i] = new Channel(rectangleF);
+            }
+
             //Leftmost boarder
             var bottomLeft = new PointF(PlayArea.Left, PlayArea.Bottom);
-            _boarders[0] = new Line(_borderColor, PlayArea.Location, bottomLeft);
+            _boarders[0] = new Line(_borderColor, PlayArea.Location, bottomLeft, HalfUnit);
 
             //Level scale
             for (int i = 0; i < level; i++)
@@ -119,10 +134,12 @@ namespace Rainbow
                 //Lines are automaticaly added to the draw list
                 _boarders[i + 1] = new Line(_borderColor,
                     PlayArea.Location + tileOffset,
-                    bottomLeft + tileOffset);
+                    bottomLeft + tileOffset,
+                    HalfUnit);
                 _finishes[i] = new Line(_finishColor,
                     bottomLeft + finishOffset,
-                    bottomLeft + finishOffset + tileOffset);
+                    bottomLeft + finishOffset + tileOffset,
+                    HalfUnit);
             }
 
             //Dependant object creation
@@ -161,8 +178,8 @@ namespace Rainbow
         private static RectangleF CalculateColorWheelRectangle() =>
             new RectangleF(
                 new PointF(
-                    Boarders.Last().Second.X,
-                    Boarders.Last().Second.Y - TileHeight * 3),
+                    Boarders.Last().Point2.X,
+                    Boarders.Last().Point2.Y - TileHeight * 3),
                 new SizeF(
                     UIElementWidth,
                     TileHeight * 3));

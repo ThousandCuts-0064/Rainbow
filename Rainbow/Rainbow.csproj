@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorColumn.cs" />
+    <Compile Include="GameComponents\Channel.cs" />
     <Compile Include="GameComponents\Resources.cs" />
     <Compile Include="IColorModel\ARC.cs" />
     <Compile Include="IDrawable\GameplayElements\Birdy.cs" />

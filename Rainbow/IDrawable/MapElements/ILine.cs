@@ -9,7 +9,7 @@ namespace Rainbow
 {
     public interface ILine : IDrawable
     {
-        PointF First { get; }
-        PointF Second { get; }
+        PointF Point1 { get; }
+        PointF Point2 { get; }
     }
 }

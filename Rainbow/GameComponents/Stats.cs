@@ -70,7 +70,7 @@ namespace Rainbow
             for (int i = 0; i < _level; i++)
             {
                 if (_tileLists[i].Count != 0 &&
-                    _tileLists[i].Last.Value.Location.Y > Game.Boarders[i].Second.Y)
+                    _tileLists[i].Last.Value.Location.Y > Game.Boarders[i].Point2.Y)
                 {
                     var tile = _tileLists[i].Last.Value;
                     _tileLists[i].RemoveLast();
@@ -86,27 +86,27 @@ namespace Rainbow
             if (tileList.Count == 0) return;
 
             var firstTile = tileList.Last.Value;
-            while (firstTile.Location.Y + Game.TileHeight > Game.Finishes[column].First.Y)
+            while (firstTile.Location.Y + Game.TileHeight > Game.Finishes[column].Point1.Y)
             {
-                if (firstTile.ColorCode != colorCode)
-                {
-                    var previous = tileList.FindLast(firstTile).Previous;
-                    if (previous == null) return;
-                    firstTile = previous.Value;
-                    continue;
-                }
+                LinkedListNode<Tile> previousNode;
 
-                firstTile.Click();
-                var node = tileList.FindLast(firstTile);
-                var perviousNode = node.Previous;
-                if (firstTile.Lives <= 0)
+                if (firstTile.ColorCode == colorCode)
                 {
-                    tileList.Remove(node);
-                    if (firstTile.IsNoClick) TakeNoClickTile(firstTile);
-                }
+                    firstTile.Click();
+                    var node = tileList.FindLast(firstTile);
+                    previousNode = node.Previous;
 
-                if (perviousNode != null)
-                    firstTile = perviousNode.Value;
+                    if (firstTile.Lives <= 0)
+                    {
+                        tileList.Remove(node);
+                        if (firstTile.IsNoClick) TakeNoClickTile(firstTile);
+                    }
+                }
+                else
+                    previousNode = tileList.FindLast(firstTile).Previous;
+
+                if (previousNode == null) return;
+                firstTile = previousNode.Value;
             }
         }
 
@@ -117,7 +117,7 @@ namespace Rainbow
             {
                 var tileList = _tileLists[i];
                 while (tileList.Count > 0 &&
-                    tileList.Last.Value.Location.Y + Game.TileHeight >= Game.Finishes[i].First.Y)
+                    tileList.Last.Value.Location.Y + Game.TileHeight >= Game.Finishes[i].Point1.Y)
                 {
                     tileList.Last.Value.Dispose();
                     tileList.RemoveLast();

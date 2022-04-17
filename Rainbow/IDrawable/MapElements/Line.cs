@@ -7,19 +7,19 @@ using System.Drawing;
 
 namespace Rainbow
 {
-    class Line : MapElement, ILine
+    public class Line : MapElement, ILine
     {
         public Pen Pen { get; }
-        public PointF First { get; private set; }
-        public PointF Second { get; private set; }
+        public PointF Point1 { get; private set; }
+        public PointF Point2 { get; private set; }
 
-        public Line(Color color, PointF first, PointF second)
+        public Line(Color color, PointF point1, PointF point2, float width)
         {
-            First = first;
-            Second = second;
-            Pen = new Pen(color, Game.Unit / 5);
+            Point1 = point1;
+            Point2 = point2;
+            Pen = new Pen(color, width);
         }
 
-        public override void Draw(Graphics graphics) => graphics.DrawLine(Pen, First, Second);
+        public override void Draw(Graphics graphics) => graphics.DrawLine(Pen, Point1, Point2);
     }
 }

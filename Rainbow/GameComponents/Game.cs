@@ -131,7 +131,7 @@ namespace Rainbow
                     new SizeF(ChannelWidth, PlayArea.Height));
 
                 rectangleF.Offset(ChannelWidth * i, 0);
-                _channels[i] = new Channel(rectangleF, MapLineWidth);
+                _channels[i] = new Channel(rectangleF, gameModifiers, MapLineWidth, i);
             }
 
             //Dependant object creation

@@ -65,21 +65,21 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColorColumn.cs" />
+    <Compile Include="Colors\ColorColumn.cs" />
     <Compile Include="GameComponents\Channel\Channel.cs" />
     <Compile Include="GameComponents\Channel\IReadOnlyChannel.cs" />
     <Compile Include="GameComponents\Resources.cs" />
-    <Compile Include="IColorModel\ARC.cs" />
+    <Compile Include="Colors\IColorModel\ARC.cs" />
     <Compile Include="IDrawable\GameplayElements\Birdy.cs" />
     <Compile Include="IDrawable\UIElements\UIImage.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="GameComponents\GameModifiers.cs" />
-    <Compile Include="IColorModel\ColorCode.cs" />
-    <Compile Include="IColorModel\ColorComplexity.cs" />
-    <Compile Include="IColorModel\CMY.cs" />
-    <Compile Include="IColorModel\ColorExtension.cs" />
-    <Compile Include="IColorModel\IColorModel.cs" />
+    <Compile Include="Colors\ColorCode.cs" />
+    <Compile Include="Colors\ColorComplexity.cs" />
+    <Compile Include="Colors\IColorModel\CMY.cs" />
+    <Compile Include="Colors\ColorExtension.cs" />
+    <Compile Include="Colors\IColorModel\IColorModel.cs" />
     <Compile Include="IDrawable\UIElements\Bar.cs" />
     <Compile Include="IDrawable\IDrawable.cs" />
     <Compile Include="Forms\FormDim.cs">
@@ -123,8 +123,8 @@
       <DependentUpon>FormPause.cs</DependentUpon>
     </Compile>
     <Compile Include="IDrawable\UIElements\UIElement.cs" />
-    <Compile Include="IColorModel\RGB.cs" />
-    <Compile Include="IColorModel\OSV.cs" />
+    <Compile Include="Colors\IColorModel\RGB.cs" />
+    <Compile Include="Colors\IColorModel\OSV.cs" />
     <Compile Include="GameComponents\Spawner.cs" />
     <Compile Include="GameComponents\Stats.cs" />
     <Compile Include="Update.cs" />

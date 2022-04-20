@@ -7,24 +7,22 @@ using System.Drawing;
 
 namespace Rainbow
 {
-    public abstract class GameplayElement : IDrawable, IDisposable
+    public abstract class DynamicObject : GameObject
     {
         private readonly Update _update;
         public PointF Location { get; protected set; }
 
-        public GameplayElement()
+        public DynamicObject(Layer layer) : base(layer)
         {
             _update = Update;
-            Game.GameplayElements.Add(this);
             Game.AddToUpdateCallback(_update);
         }
 
         public abstract PointF GetCenter();
-        public abstract void Draw(Graphics graphics);
 
-        public virtual void Dispose()
+        public override void Dispose()
         {
-            Game.GameplayElements.Remove(this);
+            base.Dispose();
             Game.RemoveFromUpdateCallback(_update);
         }
 

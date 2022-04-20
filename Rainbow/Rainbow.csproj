@@ -70,8 +70,10 @@
     <Compile Include="GameComponents\Channel\IReadOnlyChannel.cs" />
     <Compile Include="GameComponents\Resources.cs" />
     <Compile Include="Colors\IColorModel\ARC.cs" />
-    <Compile Include="IDrawable\GameplayElements\Birdy.cs" />
-    <Compile Include="IDrawable\UIElements\UIImage.cs" />
+    <Compile Include="GameObject\DynamicObject\Types\Birdy.cs" />
+    <Compile Include="GameObject\GameObject.cs" />
+    <Compile Include="GameObject\Layer.cs" />
+    <Compile Include="GameObject\OtherTypes\GameImage.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="GameComponents\GameModifiers.cs" />
@@ -80,8 +82,8 @@
     <Compile Include="Colors\IColorModel\CMY.cs" />
     <Compile Include="Colors\ColorExtension.cs" />
     <Compile Include="Colors\IColorModel\IColorModel.cs" />
-    <Compile Include="IDrawable\UIElements\Bar.cs" />
-    <Compile Include="IDrawable\IDrawable.cs" />
+    <Compile Include="GameObject\OtherTypes\Bar.cs" />
+    <Compile Include="GameObject\IDrawable.cs" />
     <Compile Include="Forms\FormDim.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -106,10 +108,9 @@
     <Compile Include="Forms\FormPlay.Designer.cs">
       <DependentUpon>FormPlay.cs</DependentUpon>
     </Compile>
-    <Compile Include="IDrawable\GameplayElements\GameplayElement.cs" />
-    <Compile Include="IDrawable\MapElements\ILine.cs" />
-    <Compile Include="IDrawable\MapElements\MapElement.cs" />
-    <Compile Include="IDrawable\MapElements\Line.cs" />
+    <Compile Include="GameObject\DynamicObject\DynamicObject.cs" />
+    <Compile Include="GameObject\OtherTypes\Line\ILine.cs" />
+    <Compile Include="GameObject\OtherTypes\Line\Line.cs" />
     <Compile Include="GameComponents\Game.cs" />
     <Compile Include="GameComponents\InputManager.cs" />
     <Compile Include="Map\IReadOnlyMap.cs" />
@@ -122,13 +123,12 @@
     <Compile Include="Forms\FormPause.Designer.cs">
       <DependentUpon>FormPause.cs</DependentUpon>
     </Compile>
-    <Compile Include="IDrawable\UIElements\UIElement.cs" />
     <Compile Include="Colors\IColorModel\RGB.cs" />
     <Compile Include="Colors\IColorModel\OSV.cs" />
     <Compile Include="GameComponents\Spawner.cs" />
     <Compile Include="GameComponents\Stats.cs" />
-    <Compile Include="Update.cs" />
-    <Compile Include="IDrawable\GameplayElements\Tile.cs" />
+    <Compile Include="GameObject\DynamicObject\Update.cs" />
+    <Compile Include="GameObject\DynamicObject\Types\Tile.cs" />
     <EmbeddedResource Include="Forms\FormDim.resx">
       <DependentUpon>FormDim.cs</DependentUpon>
     </EmbeddedResource>
@@ -179,5 +179,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

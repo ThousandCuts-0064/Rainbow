@@ -8,7 +8,7 @@ using System.Drawing.Drawing2D;
 
 namespace Rainbow
 {
-    public class Tile : GameplayElement
+    public class Tile : DynamicObject
     {
         private static readonly StringFormat _stringFormat = new StringFormat()
         {
@@ -60,7 +60,7 @@ namespace Rainbow
             }
         }
 
-        public Tile(IColorModel colorModel, ColorCode colorCode, GameModifiers gameModifiers, int column, int lives = 1, bool isNoClick = false)
+        public Tile(IColorModel colorModel, ColorCode colorCode, GameModifiers gameModifiers, int column, int lives = 1, bool isNoClick = false, Layer layer = Layer.Gameplay) : base(layer)
         {
             _colorModel = colorModel;
             ColorCode = colorCode;
@@ -106,7 +106,6 @@ namespace Rainbow
             {
                 _solidBrush.Color = _solidBrush.Color.Blend(_colorBlend, _fadeRatio);
                 _fadeRatio += _fadeRatio < 1 ? 0.00175f : 0;
-                //_brushText.Color = _colorBlend;
             }
 
             if (_gameModifiers.HasFlag(GameModifiers.InvertedColors))

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Rainbow
 {
-    class Bar : UIElement
+    class Bar : GameObject
     {
         private readonly Pen _pen = new Pen(Color.Black, Game.Unit);
         private readonly SolidBrush _solidBrush;
@@ -15,7 +15,7 @@ namespace Rainbow
         public Resource Resource { get; }
         public Color Color { get => _solidBrush.Color; set => _solidBrush.Color = value; }
 
-        public Bar(Color color, RectangleF rectangleF, float max)
+        public Bar(Color color, RectangleF rectangleF, float max, Layer layer = Layer.UI) : base(layer)
         {
             _solidBrush = new SolidBrush(color);
             RectangleF = rectangleF;

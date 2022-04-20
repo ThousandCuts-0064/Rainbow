@@ -7,10 +7,10 @@ using System.Drawing;
 
 namespace Rainbow
 {
-    public abstract class MapElement : IDrawable
+    public interface IDrawable
     {
-        public MapElement() => Game.MapElements.Add(this);
+        Layer Layer { get; }
 
-        public abstract void Draw(Graphics graphics);
+        void Draw(Graphics graphics);
     }
 }

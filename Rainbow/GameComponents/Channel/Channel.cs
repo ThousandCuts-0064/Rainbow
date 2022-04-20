@@ -33,16 +33,19 @@ namespace Rainbow
             BoarderLeft = new Line(_colorBorder,
                     new PointF(rectangleF.Left + boarderHalfWidth, rectangleF.Top),
                     new PointF(rectangleF.Left + boarderHalfWidth, rectangleF.Bottom),
+                    Layer.Map,
                     boarderWidth);
 
             BoarderRight = new Line(_colorBorder,
                     new PointF(rectangleF.Right - boarderHalfWidth, rectangleF.Top),
                     new PointF(rectangleF.Right - boarderHalfWidth, rectangleF.Bottom),
+                    Layer.Map,
                     boarderWidth);
 
             Finish = new Line(_colorFinish,
                     BoarderLeft.Point2 + DefaultFinishOffset,
                     BoarderRight.Point2 + DefaultFinishOffset,
+                    Layer.Map,
                     Game.HalfUnit);
 
             PointSpawn = new PointF(rectangleF.Location.X + boarderWidth, rectangleF.Top - Game.TileHeight);

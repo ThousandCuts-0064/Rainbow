@@ -36,15 +36,13 @@ namespace Rainbow
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            var g = e.Graphics;
+            var graphics = e.Graphics;
             
-            g.InterpolationMode = InterpolationMode.NearestNeighbor;
-            g.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+            graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+            graphics.PixelOffsetMode = PixelOffsetMode.HighSpeed;
 
             base.OnPaint(e);
-            foreach (var item in Game.MapElements) item.Draw(g);
-            foreach (var item in Game.GameplayElements) item.Draw(g);
-            foreach (var item in Game.UIElements) item.Draw(g);
+            Game.Draw(graphics);
         }
     }
 }

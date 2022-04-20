@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Rainbow
 {
-    class Birdy : GameplayElement
+    class Birdy : DynamicObject
     {
         private Image _image;
         private Tile _target;
         private SizeF _size;
 
-        public Birdy()
+        public Birdy(Layer layer = Layer.UI) : base(layer)
         {
             _size = new SizeF(Game.TileHeight, Game.TileHeight);
             _image = Resources.Birdy.Resize((int)_size.Width, (int)_size.Height);

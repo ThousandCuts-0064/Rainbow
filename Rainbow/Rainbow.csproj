@@ -74,6 +74,7 @@
     <Compile Include="GameObject\GameObject.cs" />
     <Compile Include="GameObject\Layer.cs" />
     <Compile Include="GameObject\OtherTypes\GameImage.cs" />
+    <Compile Include="GameObject\OtherTypes\GameString.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="GameComponents\GameModifiers.cs" />
@@ -109,7 +110,7 @@
       <DependentUpon>FormPlay.cs</DependentUpon>
     </Compile>
     <Compile Include="GameObject\DynamicObject\DynamicObject.cs" />
-    <Compile Include="GameObject\OtherTypes\Line\ILine.cs" />
+    <Compile Include="GameObject\OtherTypes\Line\IReadOnlyLine.cs" />
     <Compile Include="GameObject\OtherTypes\Line\Line.cs" />
     <Compile Include="GameComponents\Game.cs" />
     <Compile Include="GameComponents\InputManager.cs" />

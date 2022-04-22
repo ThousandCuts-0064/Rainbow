@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Rainbow
 {
-    public interface ILine : IDrawable
+    public interface IReadOnlyLine : IDrawable
     {
         PointF Point1 { get; }
         PointF Point2 { get; }

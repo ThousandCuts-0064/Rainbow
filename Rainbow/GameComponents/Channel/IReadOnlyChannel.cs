@@ -9,10 +9,10 @@ namespace Rainbow
 {
     public interface IReadOnlyChannel
     {
-        ILine BoarderRight { get; }
-        ILine BoarderLeft { get; }
-        ILine Finish { get; }
+        IReadOnlyLine BoarderRight { get; }
+        IReadOnlyLine BoarderLeft { get; }
+        IReadOnlyLine Finish { get; }
         PointF PointSpawn { get; }
-        RectangleF RectangleF { get; }
+        RectangleF Rectangle { get; }
     }
 }

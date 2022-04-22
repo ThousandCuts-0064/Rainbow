@@ -10,29 +10,23 @@ namespace Rainbow
 {
     public class Tile : DynamicObject
     {
-        private static readonly StringFormat _stringFormat = new StringFormat()
-        {
-            Alignment = StringAlignment.Center,
-            LineAlignment = StringAlignment.Center
-        };
-        private static readonly SolidBrush _brushText = new SolidBrush(Color.Gray);
         private static readonly Color _colorBlend = Color.Gray;
         private static readonly Color _colorBorderNormal = Color.Black;
         private static readonly Color _colorBorderNoClick = Color.White;
-        private readonly SolidBrush _solidBrush;
-        private readonly Font _font;
-        private readonly Pen _pen = new Pen(_colorBorderNormal, Game.Unit);
-        private readonly GameModifiers _gameModifiers;
         private readonly IColorModel _colorModel;
+        private readonly GameString _gameString;
+        private readonly SolidBrush _brushFill;
+        private readonly Pen _penBoarder = new Pen(_colorBorderNormal, Game.Unit);
+        private RectangleF _rectangleFill;
+        private readonly GameModifiers _gameModifiers;
         private readonly Color _colorDistortion;
-        private readonly string _text;
         private readonly int _column;
         private float _fadeRatio;
         private int _lives;
         public ColorCode ColorCode { get; }
         public int TimesClicked { get; private set; }
         public bool IsNoClick { get; }
-        public Color Color => _solidBrush.Color;
+        public Color Color => _brushFill.Color;
         public int Lives
         {
             get => _lives;
@@ -46,21 +40,23 @@ namespace Rainbow
                         break;
 
                     case 1:
-                        _pen.DashStyle = DashStyle.Solid;
+                        _penBoarder.DashStyle = DashStyle.Solid;
                         break;
 
                     case 2:
-                        _pen.DashStyle = DashStyle.Dash;
+                        _penBoarder.DashStyle = DashStyle.Dash;
                         break;
 
                     case 3:
-                        _pen.DashStyle = DashStyle.Dot;
+                        _penBoarder.DashStyle = DashStyle.Dot;
                         break;
                 }
             }
         }
 
-        public Tile(IColorModel colorModel, ColorCode colorCode, GameModifiers gameModifiers, int column, int lives = 1, bool isNoClick = false, Layer layer = Layer.Gameplay) : base(layer)
+        public Tile(IColorModel colorModel, ColorCode colorCode, GameModifiers gameModifiers, int column, 
+            int lives = 1, bool isNoClick = false, Layer layer = Layer.Gameplay) : 
+            base(layer)
         {
             _colorModel = colorModel;
             ColorCode = colorCode;
@@ -68,8 +64,10 @@ namespace Rainbow
             _column = column;
             Lives = lives;
             IsNoClick = isNoClick;
-            _solidBrush = new SolidBrush(colorModel.CodeToColor(colorCode));
+            _brushFill = new SolidBrush(colorModel.CodeToColor(colorCode));
             Location = Game.Channels[column].PointSpawn;
+            _rectangleFill = new RectangleF(Location, new SizeF(Game.TileWidth, Game.TileHeight));
+            _rectangleFill.Inflate(-Game.HalfUnit, -Game.HalfUnit);
 
             _fadeRatio = 0;
             _colorDistortion = Color.FromArgb(
@@ -79,10 +77,11 @@ namespace Rainbow
 
             if (gameModifiers.HasFlag(GameModifiers.HintButtons))
             {
-                _text += new ColorColumn(colorCode, column).ToInput();
-                _font = new Font(
-                    FontFamily.GenericMonospace, // Chars are same width and calculations are easy
-                    Math.Min(Game.TileHeight * 0.5f, (Game.TileWidth - Game.Unit) / _text.Length));
+                _gameString = new GameString(
+                    new ColorColumn(colorCode, column).ToInput(),
+                    _rectangleFill,
+                    _colorBlend,
+                    Layer.UI);
             }
         }
 
@@ -93,36 +92,32 @@ namespace Rainbow
 
         public override void Draw(Graphics graphics)
         {
-            Color colorBase = _solidBrush.Color;
+            Color colorBase = _brushFill.Color;
 
             if (_gameModifiers.HasFlag(GameModifiers.ColorDistortion))
             {
-                _solidBrush.Color = _colorModel.Combine(
-                    _solidBrush.Color,
+                _brushFill.Color = _colorModel.Combine(
+                    _brushFill.Color,
                     _colorDistortion);
             }
 
             if (_gameModifiers.HasFlag(GameModifiers.FadingColors))
             {
-                _solidBrush.Color = _solidBrush.Color.Blend(_colorBlend, _fadeRatio);
+                _brushFill.Color = _brushFill.Color.Blend(_colorBlend, _fadeRatio);
                 _fadeRatio += _fadeRatio < 1 ? 0.00175f : 0;
             }
 
             if (_gameModifiers.HasFlag(GameModifiers.InvertedColors))
-                _solidBrush.Color = _solidBrush.Color.Invert();
+                _brushFill.Color = _brushFill.Color.Invert();
 
-            _pen.Color = IsNoClick ? _colorBorderNoClick : _colorBorderNormal;
+            _penBoarder.Color = IsNoClick ? _colorBorderNoClick : _colorBorderNormal;
             //Hack: Testing tile boarder
             //_pen.Color = _colorBorderNoClick; 
 
-            RectangleF rectangleF = new RectangleF(Location.X, Location.Y, Game.TileWidth, Game.TileHeight);
-            rectangleF.Inflate(-Game.HalfUnit, -Game.HalfUnit);
-
-            graphics.FillRectangle(_solidBrush, rectangleF);
-            graphics.DrawRectangle(_pen, rectangleF.X, rectangleF.Y, rectangleF.Width, rectangleF.Height);
-            graphics.DrawString(_text, _font, _brushText, rectangleF.X + rectangleF.Width * 0.5f, rectangleF.Y + rectangleF.Height * 0.5f, _stringFormat);
-
-            _solidBrush.Color = colorBase;
+            graphics.FillRectangle(_brushFill, _rectangleFill);
+            graphics.DrawRectangle(_penBoarder, _rectangleFill.X, _rectangleFill.Y, _rectangleFill.Width, _rectangleFill.Height);
+            
+            _brushFill.Color = colorBase;
         }
 
         /// <summary>
@@ -137,12 +132,18 @@ namespace Rainbow
         public override void Dispose()
         {
             base.Dispose();
-            _solidBrush.Dispose();
-            _pen.Dispose();
-            _font?.Dispose();
+            _brushFill.Dispose();
+            _penBoarder.Dispose();
+            _gameString?.Dispose();
         }
 
-        protected override void Update() => Location = new PointF(Location.X,
-            Location.Y + Game.TileUnitsPerSecond * Game.Unit * Game.DeltaTime);
+        protected override void Update()
+        {
+            var offset = Game.TileUnitsPerSecond * Game.Unit * Game.DeltaTime;
+            Location = new PointF(Location.X, Location.Y + offset);
+            _rectangleFill.Offset(0, offset);
+            if (_gameString != null) 
+                _gameString.Rectangle = _rectangleFill;
+        }
     }
 }

@@ -7,12 +7,12 @@ using System.Drawing;
 
 namespace Rainbow
 {
-    public class Line : GameObject, ILine
+    public class Line : GameObject, IReadOnlyLine
     {
         public Pen Pen { get; }
         public PointF Point1 { get; private set; }
         public PointF Point2 { get; private set; }
-        float ILine.Width => Pen.Width;
+        float IReadOnlyLine.Width => Pen.Width;
 
         public Line(Color color, PointF point1, PointF point2, Layer layer, float width) : base(layer)
         {

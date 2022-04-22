@@ -21,10 +21,6 @@ namespace Rainbow
         private const int TILE_HIGHT_UNITS = 10;
         private static readonly Color _colorBoarder = Color.Black;
         private static Dictionary<Layer, List<IDrawable>> _layerToList;
-        private static List<IDrawable> _layerBackground;
-        private static List<IDrawable> _layerMap;
-        private static List<IDrawable> _layerGameplay;
-        private static List<IDrawable> _layerUI;
         private static HashSet<Update> _updates;
         private static Channel[] _channels;
         private static Timer _timer;
@@ -39,8 +35,8 @@ namespace Rainbow
         private static GameModifiers _gameModifiers;
         private static int _level;
         public static IReadOnlyList<IReadOnlyChannel> Channels => _channels;
-        public static ILine BoarderRight => _boarderRight;
-        public static ILine BoarderLeft => _boarderLeft;
+        public static IReadOnlyLine BoarderRight => _boarderRight;
+        public static IReadOnlyLine BoarderLeft => _boarderLeft;
         public static Random Random { get; } = new Random();
         public static RectangleF PlayArea { get; private set; }
         /// <summary>
@@ -80,17 +76,10 @@ namespace Rainbow
             _updates = new HashSet<Update>();
             _timer = new Timer { Interval = (int)(DeltaTime * 1000) };
             _inputManager = new InputManager(level);
-            _layerBackground = new List<IDrawable>();
-            _layerGameplay = new List<IDrawable>();
-            _layerMap = new List<IDrawable>();
-            _layerUI = new List<IDrawable>();
-            _layerToList = new Dictionary<Layer, List<IDrawable>>()
-            {
-                { Layer.Background, _layerBackground },
-                { Layer.Map, _layerMap },
-                { Layer.Gameplay, _layerGameplay },
-                { Layer.UI, _layerUI },
-            };
+            _layerToList = new Dictionary<Layer, List<IDrawable>>();
+            for (int i = 0; Enum.IsDefined(typeof(Layer), i); i++)
+                _layerToList.Add((Layer)i, new List<IDrawable>());
+
 
             //Calculation
             var screen = formPlay.ClientRectangle;
@@ -168,10 +157,9 @@ namespace Rainbow
 
         public static void Draw(Graphics graphics)
         {
-            foreach (var item in _layerBackground) item.Draw(graphics);
-            foreach (var item in _layerMap) item.Draw(graphics);
-            foreach (var item in _layerGameplay) item.Draw(graphics);
-            foreach (var item in _layerUI) item.Draw(graphics);
+            foreach (var layer in _layerToList.Values)
+                foreach (var item in layer)
+                    item.Draw(graphics);
         }
 
         private static void GameTick(object sender, EventArgs e)

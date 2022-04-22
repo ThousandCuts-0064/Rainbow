@@ -12,17 +12,17 @@ namespace Rainbow
     class GameImage : GameObject
     {
         private readonly Image _image;
-        private RectangleF _rectangleF;
+        private RectangleF _rectangle;
 
-        public GameImage(Image image, RectangleF rectangleF, Layer layer) : base(layer)
+        public GameImage(Image image, RectangleF rectangle, Layer layer) : base(layer)
         {
-            _image = image.Resize((int)rectangleF.Width, (int)rectangleF.Height);
-            _rectangleF = rectangleF;
+            _image = image.Resize((int)rectangle.Width, (int)rectangle.Height);
+            _rectangle = rectangle;
         }
 
         public override void Draw(Graphics graphics)
         {
-            graphics.DrawImage(_image, _rectangleF);
+            graphics.DrawImage(_image, _rectangle);
         }
     }
 }

@@ -67,8 +67,7 @@ namespace Rainbow
             Column = column;
         }
 
-        public string ToInput() =>
-            _toInput[this];
+        public string ToInput() => _toInput[this];
 
         public static implicit operator ColorColumn((ColorCode code, int column) tuple) => 
             new ColorColumn(tuple.code, tuple.column);

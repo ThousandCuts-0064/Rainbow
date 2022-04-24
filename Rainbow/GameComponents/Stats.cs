@@ -72,7 +72,7 @@ namespace Rainbow
             {
                 var tileList = _channels[i].TileList;
                 if (tileList.Count == 0 ||
-                    tileList.Last.Value.Location.Y <= _channels[i].BoarderLeft.Point2.Y)
+                    tileList.Last.Value.Location.Y < _channels[i].BoarderLeft.Point2.Y)
                     continue;
 
                 var tile = tileList.Last.Value;
@@ -88,7 +88,7 @@ namespace Rainbow
             if (tileList.Count == 0) return;
 
             var firstTile = tileList.Last.Value;
-            while (firstTile.Location.Y + Game.TileHeight > _channels[column].Finish.Point1.Y)
+            while (firstTile.Location.Y + Game.TileHeight >= _channels[column].Finish.Point1.Y)
             {
                 LinkedListNode<Tile> previousNode;
 

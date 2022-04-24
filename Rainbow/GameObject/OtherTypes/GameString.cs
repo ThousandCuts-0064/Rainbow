@@ -17,9 +17,9 @@ namespace Rainbow
         };
         private readonly StringFormat _format;
         private readonly SolidBrush _brush;
-        public RectangleF Rectangle { get; set; }
         private readonly Font _font;
         public Color Color { get => _brush.Color; set => _brush.Color = value; }
+        public RectangleF Rectangle { get; set; }
         public string String { get; set; }
 
         public GameString(string @string, RectangleF rectangle, Color color, Layer layer) : base(layer)

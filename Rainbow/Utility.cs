@@ -35,5 +35,8 @@ namespace Rainbow
 
             return destImage;
         }
+
+        public static void DrawRectangle(this Graphics graphics, Pen pen, RectangleF rectangle) =>
+            graphics.DrawRectangle(pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
     }
 }

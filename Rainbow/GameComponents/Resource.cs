@@ -25,10 +25,8 @@ namespace Rainbow
             get => _current; 
             set
             {
-                _current = value;
-                if (_current > 0) return;
-                _current = 0;
-                Empty?.Invoke();
+                _current = Math2.Clamp(value, 0, _max);
+                if (_current == 0) Empty?.Invoke();
             }
         }
 

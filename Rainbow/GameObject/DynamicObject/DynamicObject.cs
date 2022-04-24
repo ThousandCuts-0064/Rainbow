@@ -10,7 +10,7 @@ namespace Rainbow
     public abstract class DynamicObject : GameObject
     {
         private readonly Update _update;
-        public PointF Location { get; protected set; }
+        public virtual PointF Location { get; protected set; }
 
         public DynamicObject(Layer layer) : base(layer)
         {

@@ -34,23 +34,23 @@ namespace Rainbow
         private static IColorModel _colorModel;
         private static GameModifiers _gameModifiers;
         private static int _level;
+        /// <summary>
+        /// Time interval between ticks in seconds
+        /// </summary>
+        public const float DELTA_TIME = 0.016f;
+        /// <summary>
+        /// % of screen width. Range: [0, 1].
+        /// </summary>
+        public const float PLAY_AREA_WIDTH_RATIO = 0.6f;
+        /// <summary>
+        /// % of screen width. Range: [0, 1].
+        /// </summary>
+        public const float MAP_LINE_WIDTH_RATIO = 0.002f;
         public static IReadOnlyList<IReadOnlyChannel> Channels => _channels;
         public static IReadOnlyLine BoarderRight => _boarderRight;
         public static IReadOnlyLine BoarderLeft => _boarderLeft;
         public static Random Random { get; } = new Random();
         public static RectangleF PlayArea { get; private set; }
-        /// <summary>
-        /// Time interval between ticks in seconds
-        /// </summary>
-        public static float DeltaTime => 0.016f;
-        /// <summary>
-        /// % of screen width. Range: [0, 1].
-        /// </summary>
-        public static float PlayAreaWidthRatio => 0.6f;
-        /// <summary>
-        /// % of screen width. Range: [0, 1].
-        /// </summary>
-        public static float MapLineWidthRatio => 0.002f;
         public static ulong Ticks { get; private set; } = 0;
         public static float Unit { get; private set; }
         public static float HalfUnit { get; private set; }
@@ -74,7 +74,7 @@ namespace Rainbow
 
             //Direct object Creation
             _updates = new HashSet<Update>();
-            _timer = new Timer { Interval = (int)(DeltaTime * 1000) };
+            _timer = new Timer { Interval = (int)(DELTA_TIME * 1000) };
             _inputManager = new InputManager(level);
             _layerToList = new Dictionary<Layer, List<IDrawable>>();
             for (int i = 0; Enum.IsDefined(typeof(Layer), i); i++)
@@ -85,14 +85,14 @@ namespace Rainbow
             var screen = formPlay.ClientRectangle;
             Unit = screen.Height * UNIT_HIGHT_RATIO;
             HalfUnit = Unit / 2;
-            ChannelWidth = screen.Width * PlayAreaWidthRatio / level;
-            MapLineWidth = screen.Width * MapLineWidthRatio;
-            UIElementWidth = screen.Width * (1 - PlayAreaWidthRatio) / 2 - MapLineWidth;
+            ChannelWidth = screen.Width * PLAY_AREA_WIDTH_RATIO / level;
+            MapLineWidth = screen.Width * MAP_LINE_WIDTH_RATIO;
+            UIElementWidth = screen.Width * (1 - PLAY_AREA_WIDTH_RATIO) / 2 - MapLineWidth;
             TileHeight = TILE_HIGHT_UNITS * Unit;
             TileWidth = ChannelWidth - MapLineWidth * 2;
             PlayArea = new RectangleF(
-                new PointF(screen.Width * (1 - PlayAreaWidthRatio) / 2, 0),
-                new SizeF(screen.Width * PlayAreaWidthRatio, screen.Height));
+                new PointF(screen.Width * (1 - PLAY_AREA_WIDTH_RATIO) / 2, 0),
+                new SizeF(screen.Width * PLAY_AREA_WIDTH_RATIO, screen.Height));
 
             //Boarders
             _boarderLeft = new Line(_colorBoarder,
@@ -165,9 +165,9 @@ namespace Rainbow
         private static void GameTick(object sender, EventArgs e)
         {
             Ticks++;
-            _stats.OnTick();
             _inputManager.OnTick();
             foreach (var update in _updates) update();
+            _stats.OnTick();
             _spawner.OnTick();
             _formPlay.Invalidate();
         }

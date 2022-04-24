@@ -11,9 +11,9 @@ namespace Rainbow
     {
         public static Color Blend(this Color @base, Color target, float ratio) =>
             Color.FromArgb(
-                Blend(@base.R, target.R, ratio),
-                Blend(@base.G, target.G, ratio),
-                Blend(@base.B, target.B, ratio));
+                (int)Math2.Lerp(@base.R, target.R, ratio),
+                (int)Math2.Lerp(@base.G, target.G, ratio),
+                (int)Math2.Lerp(@base.B, target.B, ratio));
 
         public static Color Invert(this Color color) =>
             Color.FromArgb(
@@ -29,9 +29,6 @@ namespace Rainbow
             if (code == ColorCode.All) return ColorComplexity.All;
             return ColorComplexity.Secondary;
         }
-
-        private static int Blend(byte @base, byte target, float ratio) =>
-            (int)((@base * 2 * (1 - ratio) + target * 2 * ratio) / 2);
 
         private static int Invert(byte specter) =>
             byte.MaxValue - specter;

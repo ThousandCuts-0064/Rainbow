@@ -9,14 +9,20 @@ namespace Rainbow
 {
     class Birdy : DynamicObject
     {
-        private Image _image;
+        private GameImage _gameImage;
         private Tile _target;
         private SizeF _size;
-
-        public Birdy(Layer layer = Layer.UI) : base(layer)
+        public override PointF Location 
         {
+            get => _gameImage.Rectangle.Location; 
+            protected set => _gameImage.Rectangle = new RectangleF(value, _size);
+        }
+
+        public Birdy(PointF location, Layer layer = Layer.UI) : base(layer)
+        {
+            Location = location;
             _size = new SizeF(Game.TileHeight, Game.TileHeight);
-            _image = Resources.Birdy.Resize((int)_size.Width, (int)_size.Height);
+            _gameImage = new GameImage(Resources.Birdy, new RectangleF(Location, _size), Layer);
         }
 
         public override PointF GetCenter() =>
@@ -24,12 +30,11 @@ namespace Rainbow
                 Location.X + _size.Width * 0.5f,
                 Location.Y + _size.Height * 0.5f);
 
-        public override void Draw(Graphics graphics) =>
-            graphics.DrawImage(_image, Location);
+        public override void Draw(Graphics graphics) { }
 
         protected override void Update()
         {
-            var speed = Game.TileUnitsPerSecond * Game.Unit * Game.DeltaTime * 2;
+            var speed = Game.TileUnitsPerSecond * Game.Unit * Game.DELTA_TIME * 2;
             var targetCenter = _target.GetCenter();
             var center = GetCenter();
             var direction = new PointF(

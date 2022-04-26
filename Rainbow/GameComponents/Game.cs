@@ -33,7 +33,6 @@ namespace Rainbow
         private static GameImage _colorDiagram;
         private static IColorModel _colorModel;
         private static GameModifiers _gameModifiers;
-        private static int _level;
         /// <summary>
         /// Time interval between ticks in seconds
         /// </summary>
@@ -51,6 +50,7 @@ namespace Rainbow
         public static IReadOnlyLine BoarderLeft => _boarderLeft;
         public static Random Random { get; } = new Random();
         public static RectangleF PlayArea { get; private set; }
+        public static Rectangle Screen { get; private set; }
         public static ulong Ticks { get; private set; } = 0;
         public static float Unit { get; private set; }
         public static float HalfUnit { get; private set; }
@@ -60,6 +60,7 @@ namespace Rainbow
         public static float TileWidth { get; private set; }
         public static float TileHeight { get; private set; }
         public static int TileUnitsPerSecond { get; private set; } = 10;
+        public static int Level { get; private set; }
         public static bool IsPaused { get => !_timer.Enabled; set => _timer.Enabled = !value; }
         public static bool IsLoaded { get; private set; }
 
@@ -69,7 +70,7 @@ namespace Rainbow
             _formPlay = formPlay;
             _colorModel = colorModel;
             _gameModifiers = gameModifiers;
-            _level = level;
+            Level = level;
             IsLoaded = true;
 
             //Direct object Creation
@@ -83,6 +84,7 @@ namespace Rainbow
 
             //Calculation
             var screen = formPlay.ClientRectangle;
+            Screen = screen;
             Unit = screen.Height * UNIT_HIGHT_RATIO;
             HalfUnit = Unit / 2;
             ChannelWidth = screen.Width * PLAY_AREA_WIDTH_RATIO / level;
@@ -145,6 +147,16 @@ namespace Rainbow
 
             //Start Game
             _timer.Start();
+
+            //Local functions
+            RectangleF CalculateColorWheelRectangle() =>
+            new RectangleF(
+                new PointF(
+                    _boarderRight.Point2.X + MapLineWidth / 2,
+                    _boarderRight.Point2.Y + MapLineWidth / 2 - TileHeight * 3),
+                new SizeF(
+                    UIElementWidth,
+                    TileHeight * 3));
         }
 
         public static void FocusFormPlay() => _formPlay.Focus();
@@ -171,14 +183,5 @@ namespace Rainbow
             _spawner.OnTick();
             _formPlay.Invalidate();
         }
-
-        private static RectangleF CalculateColorWheelRectangle() =>
-            new RectangleF(
-                new PointF(
-                    _boarderRight.Point2.X + MapLineWidth / 2,
-                    _boarderRight.Point2.Y + MapLineWidth / 2 - TileHeight * 3),
-                new SizeF(
-                    UIElementWidth,
-                    TileHeight * 3));
     }
 }

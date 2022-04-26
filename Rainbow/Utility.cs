@@ -11,6 +11,15 @@ namespace Rainbow
 {
     public static class Utility
     {
+        public static void DrawRectangle(this Graphics graphics, Pen pen, RectangleF rectangle) =>
+            graphics.DrawRectangle(pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+
+        public static PointF Offset(this PointF point, float x, float y) =>
+            new PointF(point.X + x, point.Y + y);
+
+        public static PointF GetCenter(this RectangleF rectangle) =>
+            new PointF(rectangle.X + rectangle.Width * 0.5f, rectangle.Y + rectangle.Height * 0.5f);
+
         public static Bitmap Resize(this Image image, int width, int height)
         {
             var destRect = new Rectangle(0, 0, width, height);
@@ -35,8 +44,5 @@ namespace Rainbow
 
             return destImage;
         }
-
-        public static void DrawRectangle(this Graphics graphics, Pen pen, RectangleF rectangle) =>
-            graphics.DrawRectangle(pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
     }
 }

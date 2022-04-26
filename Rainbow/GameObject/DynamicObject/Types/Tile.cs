@@ -23,14 +23,15 @@ namespace Rainbow
         private readonly GameModifiers _gameModifiers;
         private readonly Color _colorStart;
         private readonly Color _colorDistortion;
-        private readonly int _column;
+        private readonly ulong _tickSpawned;
         private RectangleF _rectangleFill;
-        private ulong _tickSpawned;
         private int _lives;
-        public int TimesClicked { get; private set; }
         public ColorCode ColorCode { get; }
+        public int Column { get; }
         public bool IsNoClick { get; }
         public Color Color => _brushFill.Color;
+        public PointF Location { get; private set; }
+        public int TimesClicked { get; private set; }
         public int Lives
         {
             get => _lives;
@@ -57,6 +58,7 @@ namespace Rainbow
                 }
             }
         }
+        public bool IsInControl { get; set; } = true;
 
         public Tile(IColorModel colorModel, ColorCode colorCode, GameModifiers gameModifiers, int column,
             int lives = 1, bool isNoClick = false, Layer layer = Layer.Gameplay) :
@@ -65,7 +67,7 @@ namespace Rainbow
             _colorModel = colorModel;
             ColorCode = colorCode;
             _gameModifiers = gameModifiers;
-            _column = column;
+            Column = column;
             Lives = lives;
             IsNoClick = isNoClick;
             _tickSpawned = Game.Ticks;
@@ -98,10 +100,7 @@ namespace Rainbow
             _colorStart = _brushFill.Color;
         }
 
-        public override PointF GetCenter() =>
-            new PointF(
-                Location.X + Game.TileWidth * 0.5f,
-                Location.Y + Game.TileHeight * 0.5f);
+        public override PointF GetCenter() => _rectangleFill.GetCenter();
 
         public override void Draw(Graphics graphics)
         {
@@ -128,8 +127,10 @@ namespace Rainbow
 
         protected override void Update()
         {
+            if (!IsInControl) return;
+
             var offset = Game.TileUnitsPerSecond * Game.Unit * Game.DELTA_TIME;
-            Location = new PointF(Location.X, Location.Y + offset);
+            Location = Location.Offset(0, offset);
             _rectangleFill.Offset(0, offset);
             if (_gameString != null)
                 _gameString.Rectangle = _rectangleFill;

@@ -10,9 +10,8 @@ namespace Rainbow
     public abstract class DynamicObject : GameObject
     {
         private readonly Update _update;
-        public virtual PointF Location { get; protected set; }
 
-        public DynamicObject(Layer layer) : base(layer)
+        protected DynamicObject(Layer layer) : base(layer)
         {
             _update = Update;
             Game.AddToUpdateCallback(_update);

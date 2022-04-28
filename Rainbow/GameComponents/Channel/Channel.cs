@@ -12,39 +12,41 @@ namespace Rainbow
         private static readonly Color _colorBorder = Color.Black;
         private static readonly Color _colorFinish = Color.Black;
         private static SizeF DefaultFinishOffset => new SizeF(0, -Game.TileHeight * 2);
-        private readonly GameModifiers _gameModifiers;
+        private readonly Line _boarderRight;
+        private readonly Line _boarderLeft;
+        private readonly Line _finish;
         private readonly GameString _hintButtons;
+        private readonly GameModifiers _gameModifiers;
         public LinkedList<Tile> TileList { get; } = new LinkedList<Tile>();
-        public Line BoarderRight { get; }
-        public Line BoarderLeft { get; }
-        public Line Finish { get; }
         public PointF PointSpawn { get; }
         public RectangleF Rectangle { get; }
-        IReadOnlyLine IReadOnlyChannel.BoarderRight => BoarderRight;
-        IReadOnlyLine IReadOnlyChannel.BoarderLeft => BoarderLeft;
-        IReadOnlyLine IReadOnlyChannel.Finish => Finish;
+        public int Index { get; }
+        public IReadOnlyLine BoarderRight => _boarderRight;
+        public IReadOnlyLine BoarderLeft => _boarderLeft;
+        public IReadOnlyLine Finish => _finish;
 
         public Channel(RectangleF rectangle, GameModifiers gameModifiers, float boarderWidth, int index)
         {
+            Index = index;
             Rectangle = rectangle;
             _gameModifiers = gameModifiers;
             var boarderHalfWidth = boarderWidth * 0.5f;
 
-            BoarderLeft = new Line(_colorBorder,
+            _boarderLeft = new Line(_colorBorder,
                     new PointF(rectangle.Left + boarderHalfWidth, rectangle.Top),
                     new PointF(rectangle.Left + boarderHalfWidth, rectangle.Bottom),
                     Layer.Map,
                     boarderWidth);
 
-            BoarderRight = new Line(_colorBorder,
+            _boarderRight = new Line(_colorBorder,
                     new PointF(rectangle.Right - boarderHalfWidth, rectangle.Top),
                     new PointF(rectangle.Right - boarderHalfWidth, rectangle.Bottom),
                     Layer.Map,
                     boarderWidth);
 
-            Finish = new Line(_colorFinish,
-                    BoarderLeft.Point2 + DefaultFinishOffset,
-                    BoarderRight.Point2 + DefaultFinishOffset,
+            _finish = new Line(_colorFinish,
+                    _boarderLeft.Point2 + DefaultFinishOffset,
+                    _boarderRight.Point2 + DefaultFinishOffset,
                     Layer.Map,
                     Game.HalfUnit);
 
@@ -53,7 +55,7 @@ namespace Rainbow
             if (gameModifiers.HasFlag(GameModifiers.HintColumns))
                 _hintButtons = new GameString(
                     new ColorColumn(ColorCode.All, index).ToInput(),
-                    RectangleF.FromLTRB(Finish.Point1.X, Finish.Point1.Y, BoarderRight.Point2.X, BoarderRight.Point2.Y),
+                    RectangleF.FromLTRB(_finish.Point1.X, _finish.Point1.Y, _boarderRight.Point2.X, _boarderRight.Point2.Y),
                     Color.Black,
                     Layer.Map);
         }

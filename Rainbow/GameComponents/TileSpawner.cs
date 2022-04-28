@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rainbow
 {
-    class Spawner
+    class TileSpawner
     {
         private const int NO_CLICK_TILES_CHANCE = 10; // % chance in standart state
         private const int DOUBLE_TILES_CHANCE = 15; // % chance in standart state
@@ -35,7 +35,7 @@ namespace Rainbow
         private State _state;
         private Tile _lastSpawned;
 
-        public Spawner(Channel[] channels, IColorModel colorModel, GameModifiers gameModifiers, int level)
+        public TileSpawner(Channel[] channels, IColorModel colorModel, GameModifiers gameModifiers, int level)
         {
             _channels = channels;
             _colorModel = colorModel;
@@ -93,20 +93,19 @@ namespace Rainbow
 
         private void SetState(State state) => _state = state.OnSet();
 
-        private void Spawn(int ChannelIndex, ColorCode colorCode, int lives = 1, bool noClick = false)
+        private void Spawn(int channelIndex, ColorCode colorCode, int lives = 1, bool noClick = false)
         {
-            _lastSpawned = new Tile(_colorModel, colorCode, _gameModifiers, ChannelIndex, lives, noClick);
-            _channels[ChannelIndex].TileList.AddFirst(_lastSpawned);
+            _lastSpawned = new Tile(_channels[channelIndex], _colorModel, colorCode, _gameModifiers, lives, noClick);
         }
 
         private ColorCode RandomColor() => (ColorCode)(Game.Random.Next((int)ColorCode.All) + 1);
 
         private abstract class State
         {
-            protected Spawner Spawner { get; }
+            protected TileSpawner Spawner { get; }
             public bool AllowSwap { get; protected set; }
 
-            protected State(Spawner spawner) => Spawner = spawner;
+            protected State(TileSpawner spawner) => Spawner = spawner;
 
             public State OnSet()
             {
@@ -122,7 +121,7 @@ namespace Rainbow
 
         private class NormalState : State
         {
-            public NormalState(Spawner spawner) : base(spawner) { }
+            public NormalState(TileSpawner spawner) : base(spawner) { }
 
             public override void OnTick()
             {
@@ -184,7 +183,7 @@ namespace Rainbow
             private bool _finishedCycle;
             private int _rowCount;
 
-            public ShotgunState(Spawner spawner) : base(spawner) { }
+            public ShotgunState(TileSpawner spawner) : base(spawner) { }
 
             public override void OnTick()
             {
@@ -240,7 +239,7 @@ namespace Rainbow
 
         private class DiamondState : State
         {
-            public DiamondState(Spawner spawner) : base(spawner) { }
+            public DiamondState(TileSpawner spawner) : base(spawner) { }
 
             public override void OnTick()
             {
@@ -259,7 +258,7 @@ namespace Rainbow
             private bool _finishedCycle;
             private int _rowCount;
 
-            public ChessState(Spawner spawner) : base(spawner) { }
+            public ChessState(TileSpawner spawner) : base(spawner) { }
 
             public override void OnTick()
             {
@@ -302,7 +301,7 @@ namespace Rainbow
 
         private class RainbowState : State
         {
-            public RainbowState(Spawner spawner) : base(spawner) { }
+            public RainbowState(TileSpawner spawner) : base(spawner) { }
 
             public override void OnTick()
             {

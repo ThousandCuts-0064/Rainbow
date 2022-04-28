@@ -21,15 +21,16 @@ namespace Rainbow
         private const int TILE_HIGHT_UNITS = 10;
         private static readonly Color _colorBoarder = Color.Black;
         private static Dictionary<Layer, List<IDrawable>> _layerToList;
-        private static HashSet<Update> _updates;
+        private static HashSet<Update> _updates; // TODO: make Linked list
         private static Channel[] _channels;
         private static Timer _timer;
         private static Stats _stats;
-        private static Spawner _spawner;
         private static InputManager _inputManager;
+        private static TileSpawner _tileSpawner;
+        private static BirdyManager _birdyManager;
+        private static FormPlay _formPlay;
         private static Line _boarderLeft;
         private static Line _boarderRight;
-        private static FormPlay _formPlay;
         private static GameImage _colorDiagram;
         private static IColorModel _colorModel;
         private static GameModifiers _gameModifiers;
@@ -131,7 +132,8 @@ namespace Rainbow
 
             //Dependant object creation
             _stats = new Stats(_channels, colorModel, level);
-            _spawner = new Spawner(_channels, colorModel, gameModifiers, level);
+            _tileSpawner = new TileSpawner(_channels, colorModel, gameModifiers, level);
+            _birdyManager = new BirdyManager(_channels);
             if (gameModifiers.HasFlag(GameModifiers.ColorWheel))
                 _colorDiagram = new GameImage(
                     Resources.ColorWheel,
@@ -180,7 +182,8 @@ namespace Rainbow
             _inputManager.OnTick();
             foreach (var update in _updates) update();
             _stats.OnTick();
-            _spawner.OnTick();
+            _tileSpawner.OnTick();
+            _birdyManager?.OnTick();
             _formPlay.Invalidate();
         }
     }

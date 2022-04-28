@@ -15,19 +15,22 @@ namespace Rainbow
         private static readonly Color _colorBlend = Color.Gray;
         private static readonly Color _colorBorderNormal = Color.Black;
         private static readonly Color _colorBorderNoClick = Color.White;
+        private readonly Channel _channel;
+        private readonly LinkedListNode<Tile> _listNode;
         private readonly IColorModel _colorModel;
         private readonly GameString _gameString;
         private readonly SolidBrush _brushFill;
         private readonly Pen _penBoarder = new Pen(_colorBorderNormal, Game.Unit);
-        private readonly IReadOnlyChannel _channel;
+        private readonly Controller _controller;
         private readonly GameModifiers _gameModifiers;
         private readonly Color _colorStart;
         private readonly Color _colorDistortion;
         private readonly ulong _tickSpawned;
         private RectangleF _rectangleFill;
         private int _lives;
+        public IReadOnlyChannel Channel => _channel;
         public ColorCode ColorCode { get; }
-        public int Column { get; }
+        public int Column => Channel.Index;
         public bool IsNoClick { get; }
         public Color Color => _brushFill.Color;
         public PointF Location { get; private set; }
@@ -58,21 +61,23 @@ namespace Rainbow
                 }
             }
         }
-        public bool IsInControl { get; set; } = true;
+        public bool IsInControl { get; private set; } = true;
+        public event Action OnDispose;
 
-        public Tile(IColorModel colorModel, ColorCode colorCode, GameModifiers gameModifiers, int column,
+        public Tile(Channel channel, IColorModel colorModel, ColorCode colorCode, GameModifiers gameModifiers,
             int lives = 1, bool isNoClick = false, Layer layer = Layer.Gameplay) :
             base(layer)
         {
+            _controller = new Controller(this);
             _colorModel = colorModel;
-            ColorCode = colorCode;
             _gameModifiers = gameModifiers;
-            Column = column;
+            _tickSpawned = Game.Ticks;
+            ColorCode = colorCode;
             Lives = lives;
             IsNoClick = isNoClick;
-            _tickSpawned = Game.Ticks;
-            _channel = Game.Channels[column];
-            Location = _channel.PointSpawn;
+            _channel = channel;
+            Location = Channel.PointSpawn;
+            _listNode = channel.TileList.AddFirst(this);
             _brushFill = new SolidBrush(colorModel.CodeToColor(colorCode));
             _rectangleFill = new RectangleF(Location, new SizeF(Game.TileWidth, Game.TileHeight));
             _rectangleFill.Inflate(-Game.HalfUnit, -Game.HalfUnit);
@@ -90,7 +95,7 @@ namespace Rainbow
             if (gameModifiers.HasFlag(GameModifiers.HintButtons))
             {
                 _gameString = new GameString(
-                    new ColorColumn(colorCode, column).ToInput(),
+                    new ColorColumn(colorCode, Column).ToInput(),
                     _rectangleFill,
                     _colorBlend,
                     Layer);
@@ -117,24 +122,37 @@ namespace Rainbow
             Lives--;
         }
 
+        /// <summary>
+        /// Tries to get the controller of the tile
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <returns>True if the tile is in control of itself, otherwise false</returns>
+        public bool TryGetController(out Controller controller)
+        {
+            controller = null;
+            if (IsInControl == false) return false;
+
+            IsInControl = false;
+            _channel.TileList.Remove(_listNode);
+            controller = _controller;
+            return true;
+        }
+
         public override void Dispose()
         {
             base.Dispose();
             _brushFill.Dispose();
             _penBoarder.Dispose();
             _gameString?.Dispose();
+            OnDispose?.Invoke();
         }
 
         protected override void Update()
         {
             if (!IsInControl) return;
 
-            var offset = Game.TileUnitsPerSecond * Game.Unit * Game.DELTA_TIME;
-            Location = Location.Offset(0, offset);
-            _rectangleFill.Offset(0, offset);
-            if (_gameString != null)
-                _gameString.Rectangle = _rectangleFill;
-
+            _controller.Move(0, Game.TileUnitsPerSecond * Game.Unit * Game.DELTA_TIME);
+            
             //Color calculations
             _brushFill.Color = _colorStart;
 
@@ -160,7 +178,22 @@ namespace Rainbow
             if (_gameModifiers.HasFlag(GameModifiers.FadingColors))
             {
                 _brushFill.Color = _brushFill.Color.Blend(_colorBlend, 
-                    Math2.Clamp((Location.Y - _channel.BoarderLeft.Point1.Y) / (_channel.Finish.Point1.Y - _channel.BoarderLeft.Point1.Y), 0, 1));
+                    Math2.Clamp((Location.Y - Channel.BoarderLeft.Point1.Y) / (Channel.Finish.Point1.Y - Channel.BoarderLeft.Point1.Y), 0, 1));
+            }
+        }
+
+        public class Controller
+        {
+            private readonly Tile _tile;
+
+            public Controller(Tile tile) => _tile = tile;
+
+            public void Move(float x, float y)
+            {
+                _tile.Location = _tile.Location.Offset(x, y);
+                _tile._rectangleFill.Offset(x, y);
+                if (_tile._gameString != null)
+                    _tile._gameString.Rectangle = _tile._rectangleFill;
             }
         }
     }

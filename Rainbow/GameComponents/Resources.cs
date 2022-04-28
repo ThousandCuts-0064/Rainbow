@@ -19,7 +19,7 @@ namespace Rainbow
             _folder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName + $"\\{nameof(Resources)}\\";
 
             ColorWheel = Image.FromFile($"{_folder}{nameof(ColorWheel)}.png");
-            //Birdy = Image.FromFile($"{_folder}{nameof(Birdy)}.png");
+            Birdy = Image.FromFile($"{_folder}{nameof(Birdy)}.jpg");
         }
     }
 }

@@ -10,13 +10,15 @@ namespace Rainbow
 {
     class Birdy : DynamicObject
     {
-        private static float Speed => Game.TileUnitsPerSecond * Game.Unit * Game.DELTA_TIME * 2;
+        private static float Speed => Game.TileUnitsPerSecond * Game.Unit * Game.DELTA_TIME * 1.2f;
+        private readonly BirdyManager _birdyManager;
         private readonly IdleState _idleState;
         private readonly ChaseState _chaseState;
         private readonly LeavingState _leavingState;
         private readonly GameImage _gameImage;
-        private readonly Tile _target;
         private readonly Line _lineToTarget;
+        private Tile.Controller _targetController;
+        private Tile _target;
         /// <summary>
         /// Should only be set using the SetState method.
         /// </summary>
@@ -29,23 +31,31 @@ namespace Rainbow
             set => _gameImage.Rectangle = new RectangleF(value, _gameImage.Rectangle.Size);
         }
 
-        public Birdy(PointF location, Tile target, Layer layer = Layer.UI) : base(layer)
+        public Birdy(BirdyManager birdyManager, PointF location, Layer layer = Layer.UI) : base(layer)
         {
             var rectangle = new RectangleF(location, new SizeF(Width, Height));
+            _birdyManager = birdyManager;
             _gameImage = new GameImage(Resources.Birdy, rectangle, Layer);
-            _target = target;
-            _lineToTarget = new Line(Color.Black, GetCenter(), _target.GetCenter(), layer, Game.Unit);
+            _lineToTarget = new Line(Color.Black, new PointF(), new PointF(), layer, Game.Unit);
             _lineToTarget.Pen.EndCap = LineCap.ArrowAnchor;
             _lineToTarget.Pen.DashStyle = DashStyle.Dash;
             _idleState = new IdleState(this);
             _chaseState = new ChaseState(this);
             _leavingState = new LeavingState(this);
-            SetState(_chaseState);
+            SetState(_idleState);
         }
 
         public override PointF GetCenter() => _gameImage.Rectangle.GetCenter();
 
-        public override void Draw(Graphics graphics) { }
+        public override void Draw(Graphics graphics) 
+        {
+            if (_state != _chaseState) return;
+
+            _lineToTarget.Point1 = GetCenter();
+            _lineToTarget.Point2 = _target.GetCenter();
+        }
+
+        protected override void Update() => _state.OnUpdate();
 
         public override void Dispose()
         {
@@ -54,8 +64,6 @@ namespace Rainbow
             _lineToTarget.Dispose();
             _target.Dispose();
         }
-
-        protected override void Update() => _state.OnUpdate();
 
         private void SetState(State state)
         {
@@ -78,7 +86,15 @@ namespace Rainbow
             public IdleState(Birdy birdy) : base(birdy) { }
 
             public override void OnSet() { }
-            public override void OnUpdate() { }
+
+            public override void OnUpdate() 
+            {
+                if (Birdy._birdyManager.TryGetClosestToFinish(out Birdy._target))
+                {
+                    Birdy._target.OnDispose += () => Birdy.SetState(Birdy._idleState);
+                    Birdy.SetState(Birdy._chaseState);
+                }
+            }
         }
 
         private class ChaseState : State
@@ -106,7 +122,15 @@ namespace Rainbow
                     normalized.Y * step);
                 Birdy.Location = Birdy.Location.Offset(scaled.X, scaled.Y);
 
-                if (step == magnitude) Birdy._state = Birdy._leavingState;
+                if (magnitude < step * 2)
+                {
+                    if (Birdy._target.TryGetController(out var controller))
+                    {
+                        Birdy._targetController = controller;
+                        Birdy.SetState(Birdy._leavingState);
+                    }
+                    else Birdy.SetState(Birdy._idleState);
+                }
             }
         }
 
@@ -139,8 +163,14 @@ namespace Rainbow
 
             public override void OnUpdate()
             {
-                Birdy.Location = Birdy.Location.Offset(Speed * (int)_directionLeave, 0);
+                Move(Speed * (int)_directionLeave, 0);
                 if (_reachedFinish()) Birdy.Dispose();
+            }
+
+            private void Move(float x, float y)
+            {
+                Birdy.Location = Birdy.Location.Offset(x, y);
+                Birdy._targetController.Move(x, y);
             }
 
             private enum Direction

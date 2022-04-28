@@ -456,7 +456,6 @@ namespace Rainbow
             // 
             this.checkBox6.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox6.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.checkBox6.Enabled = false;
             this.checkBox6.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox6.Location = new System.Drawing.Point(410, 310);

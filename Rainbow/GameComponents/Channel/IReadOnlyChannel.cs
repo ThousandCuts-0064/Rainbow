@@ -14,5 +14,6 @@ namespace Rainbow
         IReadOnlyLine Finish { get; }
         PointF PointSpawn { get; }
         RectangleF Rectangle { get; }
+        int Index { get; }
     }
 }

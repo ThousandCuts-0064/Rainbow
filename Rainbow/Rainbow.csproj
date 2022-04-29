@@ -65,7 +65,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BirdyManager.cs" />
+    <Compile Include="GameComponents\BirdyManager.cs" />
     <Compile Include="Colors\ColorColumn.cs" />
     <Compile Include="GameComponents\Channel\Channel.cs" />
     <Compile Include="GameComponents\Channel\IReadOnlyChannel.cs" />

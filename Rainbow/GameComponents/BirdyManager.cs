@@ -10,6 +10,7 @@ namespace Rainbow
     public class BirdyManager
     {
         private const int SPAWN_TICK_COOLDOWN = 500;
+        private readonly Dictionary<Tile, Birdy> _targetToBirdy = new Dictionary<Tile, Birdy>();
         private readonly Channel[] _channels;
         private readonly PointF _spawnLocation;
 
@@ -21,8 +22,11 @@ namespace Rainbow
 
         public void OnTick()
         {
-            if (Game.Ticks % SPAWN_TICK_COOLDOWN == 0)
-                new Birdy(this, _spawnLocation);
+            if (Game.Ticks % SPAWN_TICK_COOLDOWN != 0) return;
+
+            var birdy = new Birdy(this, _spawnLocation);
+            birdy.TargetFound += tile => _targetToBirdy.Add(tile, birdy);
+            birdy.TargetAcquired += tile => _targetToBirdy.Remove(tile);
         }
 
         /// <summary>
@@ -30,29 +34,36 @@ namespace Rainbow
         /// </summary>
         /// <param name="target"></param>
         /// <returns>True if there is spawned tile, otherwise false.</returns>
-        public bool TryGetClosestToFinish(out Tile target)
+        public bool RequestTarget(out Tile target)
         {
             target = null;
             int i = 0;
             for (; i < _channels.Length; i++)
             {
-                var tileList = _channels[i].TileList;
-                if (tileList.Count != 0)
-                    target = tileList.Last.Value;
+                if (_channels[i].TileCount != 0)
+                {
+                    target = _channels[i].TileNodeLast.Value;
+                    break;
+                }
             }
             if (target == null) return false;
 
             for (; i < _channels.Length; i++)
             {
-                var tileList = _channels[i].TileList;
-                if (tileList.Count == 0) continue;
+                if (_channels[i].TileCount == 0) continue;
 
-                Tile test = tileList.Last.Value;
+                Tile test = _channels[i].TileNodeLast.Value;
                 if (test.Location.Y > target.Location.Y)
                     target = test;
             }
             if (target == null) return false;
             return true;
+        }
+
+        public void OnPotentialTargetLost(Tile tile)
+        {
+            if (_targetToBirdy.TryGetValue(tile, out var birdy))
+                birdy.Retarget();
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace Rainbow
 {
-    class InputManager
+    public class InputManager
     {
         private const int CHAIN_TICKS_WINDOW = 3;
         private readonly HashSet<Keys> _pressedKeys = new HashSet<Keys>();
@@ -25,8 +25,9 @@ namespace Rainbow
             { Keys.O, (ColorCode.I, 8) }, { Keys.L, (ColorCode.II, 8) }, { Keys.OemPeriod, (ColorCode.III, 8) },
             { Keys.P, (ColorCode.I, 9) }, { Keys.Oem1, (ColorCode.II, 9) }, { Keys.OemQuestion,(ColorCode.III, 9) } // Oem1 = ';'   OemQuestion = '/'
         };
+
         public event Action<ColorCode, int> ColorInput;
-        public event Action Shotgun;
+        public event Action ShotgunPressed;
 
         public InputManager(int level)
         {
@@ -48,7 +49,7 @@ namespace Rainbow
             {
                 foreach (var column in _columns)
                     column.FireColorInput();
-                Shotgun?.Invoke();
+                ShotgunPressed?.Invoke();
                 return;
             }
             if (MapKeys.Forward.TryGetValue(key, out var colorColumn) &&

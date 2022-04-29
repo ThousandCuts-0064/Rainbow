@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Rainbow
 {
-    class Birdy : DynamicObject
+    public class Birdy : DynamicObject
     {
         private static float Speed => Game.TileUnitsPerSecond * Game.Unit * Game.DELTA_TIME * 1.2f;
         private readonly BirdyManager _birdyManager;
@@ -31,12 +31,15 @@ namespace Rainbow
             set => _gameImage.Rectangle = new RectangleF(value, _gameImage.Rectangle.Size);
         }
 
+        public event Action<Tile> TargetFound;
+        public event Action<Tile> TargetAcquired;
+
         public Birdy(BirdyManager birdyManager, PointF location, Layer layer = Layer.UI) : base(layer)
         {
             var rectangle = new RectangleF(location, new SizeF(Width, Height));
             _birdyManager = birdyManager;
             _gameImage = new GameImage(Resources.Birdy, rectangle, Layer);
-            _lineToTarget = new Line(Color.Black, new PointF(), new PointF(), layer, Game.Unit);
+            _lineToTarget = new Line(Color.Black, GetCenter(), GetCenter(), layer, Game.Unit);
             _lineToTarget.Pen.EndCap = LineCap.ArrowAnchor;
             _lineToTarget.Pen.DashStyle = DashStyle.Dash;
             _idleState = new IdleState(this);
@@ -47,7 +50,7 @@ namespace Rainbow
 
         public override PointF GetCenter() => _gameImage.Rectangle.GetCenter();
 
-        public override void Draw(Graphics graphics) 
+        public override void Draw(Graphics graphics)
         {
             if (_state != _chaseState) return;
 
@@ -56,6 +59,8 @@ namespace Rainbow
         }
 
         protected override void Update() => _state.OnUpdate();
+
+        public void Retarget() => SetState(_idleState);
 
         public override void Dispose()
         {
@@ -87,11 +92,11 @@ namespace Rainbow
 
             public override void OnSet() { }
 
-            public override void OnUpdate() 
+            public override void OnUpdate()
             {
-                if (Birdy._birdyManager.TryGetClosestToFinish(out Birdy._target))
+                if (Birdy._birdyManager.RequestTarget(out Birdy._target))
                 {
-                    Birdy._target.OnDispose += () => Birdy.SetState(Birdy._idleState);
+                    Birdy.TargetFound?.Invoke(Birdy._target);
                     Birdy.SetState(Birdy._chaseState);
                 }
             }
@@ -124,8 +129,10 @@ namespace Rainbow
 
                 if (magnitude < step * 2)
                 {
-                    if (Birdy._target.TryGetController(out var controller))
+                    if (Birdy._target.IsInControl)
                     {
+                        Birdy.TargetAcquired?.Invoke(Birdy._target);
+                        Birdy._target.TryGetController(out var controller);
                         Birdy._targetController = controller;
                         Birdy.SetState(Birdy._leavingState);
                     }

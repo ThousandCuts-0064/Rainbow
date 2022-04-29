@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 
 namespace Rainbow
 {
-    class Stats
+    public class Stats
     {
         private const int DEFAULT_MAX_LIFES = 10;
         private const int DEFAULT_MAX_SHOTGUNS = 10;
-        private readonly Channel[] _channels;
         private readonly IColorModel _colorModel;
         private readonly Bar _lifeI;
         private readonly Bar _lifeII;
@@ -20,10 +19,11 @@ namespace Rainbow
         private readonly Bar _barShotgun;
         private readonly int _level;
 
-        public Stats(Channel[] channels, IColorModel colorModel, int level)
+        public event Action ShotgunUsed;
+
+        public Stats(IColorModel colorModel, int level)
         {
             _colorModel = colorModel;
-            _channels = channels;
             _level = level;
 
             var playArea = Game.PlayArea;
@@ -68,71 +68,21 @@ namespace Rainbow
 
         public void OnTick()
         {
-            for (int i = 0; i < _level; i++)
-            {
-                var tileList = _channels[i].TileList;
-                if (tileList.Count == 0 ||
-                    tileList.Last.Value.Location.Y < _channels[i].BoarderLeft.Point2.Y)
-                    continue;
 
-                var tile = tileList.Last.Value;
-                tileList.RemoveLast();
-                TakeTile(tile);
-                tile.Dispose();
-            }
         }
 
-        public void ColorInput(ColorCode colorCode, int column)
-        {
-            var tileList = _channels[column].TileList;
-            if (tileList.Count == 0) return;
-
-            var firstTile = tileList.Last.Value;
-            while (firstTile.Location.Y + Game.TileHeight >= _channels[column].Finish.Point1.Y)
-            {
-                LinkedListNode<Tile> previousNode;
-
-                if (firstTile.ColorCode == colorCode)
-                {
-                    firstTile.Click();
-                    var node = tileList.FindLast(firstTile);
-                    previousNode = node.Previous;
-
-                    if (firstTile.Lives <= 0)
-                    {
-                        tileList.Remove(node);
-                        if (firstTile.IsNoClick) TakeNoClickTile(firstTile);
-                    }
-                }
-                else
-                    previousNode = tileList.FindLast(firstTile).Previous;
-
-                if (previousNode == null) return;
-                firstTile = previousNode.Value;
-            }
-        }
-
-        public void UseShotgun()
+        public void OnShotgunPressed()
         {
             if (_barShotgun.Resource.Current == 0) return;
-            for (int i = 0; i < _level; i++)
-            {
-                var tileList = _channels[i].TileList;
-                while (tileList.Count > 0 &&
-                    tileList.Last.Value.Location.Y + Game.TileHeight >= _channels[i].Finish.Point1.Y)
-                {
-                    tileList.Last.Value.Dispose();
-                    tileList.RemoveLast();
-                }
-            }
+            ShotgunUsed?.Invoke();
             _barShotgun.Resource.Current--;
         }
 
-        private void TakeTile(Tile tile)
+        public void OnTakeTile(Tile tile)
         {
             if (tile.IsNoClick)
             {
-                TakeNoClickTile(tile);
+                OnTakeNoClickTile(tile);
                 return;
             }
 
@@ -141,7 +91,7 @@ namespace Rainbow
             if (tile.ColorCode.HasFlag(ColorCode.III)) _lifeIII.Resource.Current -= tile.Lives;
         }
 
-        private void TakeNoClickTile(Tile tile)
+        public void OnTakeNoClickTile(Tile tile)
         {
             if (tile.ColorCode.HasFlag(ColorCode.I)) _lifeI.Resource.Current -= tile.TimesClicked;
             if (tile.ColorCode.HasFlag(ColorCode.II)) _lifeII.Resource.Current -= tile.TimesClicked;

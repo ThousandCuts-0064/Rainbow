@@ -21,9 +21,6 @@ namespace Rainbow
             _image = image.Resize((int)rectangle.Width, (int)rectangle.Height);
         }
 
-        public override void Draw(Graphics graphics)
-        {
-            graphics.DrawImage(_image, Rectangle);
-        }
+        public override void Draw(Graphics graphics) => graphics.DrawImage(_image, Rectangle);
     }
 }

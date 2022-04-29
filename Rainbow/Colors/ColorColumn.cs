@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rainbow
 {
-    readonly struct ColorColumn
+    public readonly struct ColorColumn
     {
         private const string EMPTY_COLOR_TO_STRING = "_";
         private static readonly IReadOnlyDictionary<ColorColumn, string> _toInput;

@@ -76,12 +76,12 @@ namespace Rainbow
 
             //Direct object Creation
             _updates = new HashSet<Update>();
-            _timer = new Timer { Interval = (int)(DELTA_TIME * 1000) };
-            _inputManager = new InputManager(level);
             _layerToList = new Dictionary<Layer, List<IDrawable>>();
             for (int i = 0; Enum.IsDefined(typeof(Layer), i); i++)
                 _layerToList.Add((Layer)i, new List<IDrawable>());
 
+            _timer = new Timer { Interval = (int)(DELTA_TIME * 1000) };
+            _inputManager = new InputManager(level);
 
             //Calculation
             var screen = formPlay.ClientRectangle;
@@ -131,9 +131,14 @@ namespace Rainbow
             }
 
             //Dependant object creation
-            _stats = new Stats(_channels, colorModel, level);
-            _tileSpawner = new TileSpawner(_channels, colorModel, gameModifiers, level);
-            _birdyManager = new BirdyManager(_channels);
+            _stats = new Stats(colorModel, level);
+            //Hack: tile spawner spawns in constructor, this event must be here
+            Tile.Created += (tile, index) => _channels[index].TileListAddFirst(tile);
+            _tileSpawner = new TileSpawner(colorModel, gameModifiers, level);
+
+            if (gameModifiers.HasFlag(GameModifiers.Birdy))
+                _birdyManager = new BirdyManager(_channels);
+
             if (gameModifiers.HasFlag(GameModifiers.ColorWheel))
                 _colorDiagram = new GameImage(
                     Resources.ColorWheel,
@@ -141,9 +146,16 @@ namespace Rainbow
                     Layer.UI);
 
             //Events
-            _inputManager.ColorInput += _stats.ColorInput;
-            _inputManager.Shotgun += _stats.UseShotgun;
             _timer.Tick += GameTick;
+            _inputManager.ShotgunPressed += _stats.OnShotgunPressed;
+            _inputManager.ColorInput += (colorCode, column) => _channels[column].OnColorInput(colorCode);
+            foreach (var channel in _channels)
+            {
+                _stats.ShotgunUsed += channel.OnShotgunUsed;
+                channel.TilePassed += _stats.OnTakeTile;
+                channel.NoClickTileClicked += _stats.OnTakeNoClickTile;
+                if (_birdyManager != null) channel.TileRemoved += _birdyManager.OnPotentialTargetLost;
+            }
             formPlay.KeyDown += _inputManager.OnKeyDown;
             formPlay.KeyUp += _inputManager.OnKeyUp;
 
@@ -180,7 +192,8 @@ namespace Rainbow
         {
             Ticks++;
             _inputManager.OnTick();
-            foreach (var update in _updates) update();
+            foreach (var update in _updates.ToList()) update();
+            foreach (var channel in _channels) channel.OnTick();
             _stats.OnTick();
             _tileSpawner.OnTick();
             _birdyManager?.OnTick();

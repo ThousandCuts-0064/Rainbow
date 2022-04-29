@@ -20,7 +20,6 @@ namespace Rainbow
         private const int CHESS_EVENT_CHANCE = 5; // % chance for event trigger
         private const int RAINBOW_EVENT_CHANCE = 5; // % chance for event trigger
 
-        private readonly Channel[] _channels;
         private readonly NormalState _normalState;
         private readonly ShotgunState _shotgunState;
         private readonly DiamondState _diamondState;
@@ -35,9 +34,8 @@ namespace Rainbow
         private State _state;
         private Tile _lastSpawned;
 
-        public TileSpawner(Channel[] channels, IColorModel colorModel, GameModifiers gameModifiers, int level)
+        public TileSpawner(IColorModel colorModel, GameModifiers gameModifiers, int level)
         {
-            _channels = channels;
             _colorModel = colorModel;
             _gameModifiers = gameModifiers;
             _level = level;
@@ -95,7 +93,7 @@ namespace Rainbow
 
         private void Spawn(int channelIndex, ColorCode colorCode, int lives = 1, bool noClick = false)
         {
-            _lastSpawned = new Tile(_channels[channelIndex], _colorModel, colorCode, _gameModifiers, lives, noClick);
+            _lastSpawned = new Tile(_colorModel, colorCode, _gameModifiers, channelIndex, lives, noClick);
         }
 
         private ColorCode RandomColor() => (ColorCode)(Game.Random.Next((int)ColorCode.All) + 1);

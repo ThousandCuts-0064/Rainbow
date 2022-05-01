@@ -65,6 +65,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameObject\OtherTypes\Animation.cs" />
     <Compile Include="GameComponents\BirdyManager.cs" />
     <Compile Include="Colors\ColorColumn.cs" />
     <Compile Include="GameComponents\Channel\Channel.cs" />

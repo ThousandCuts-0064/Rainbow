@@ -15,7 +15,7 @@ namespace Rainbow
         private readonly IdleState _idleState;
         private readonly ChaseState _chaseState;
         private readonly LeavingState _leavingState;
-        private readonly GameImage _gameImage;
+        private readonly Animation _animation;
         private readonly Line _lineToTarget;
         private Tile.Controller _targetController;
         private Tile _target;
@@ -27,8 +27,12 @@ namespace Rainbow
         public static float Height => Game.TileHeight;
         public PointF Location
         {
-            get => _gameImage.Rectangle.Location;
-            set => _gameImage.Rectangle = new RectangleF(value, _gameImage.Rectangle.Size);
+            get => _animation.Rectangle.Location;
+            set
+            {
+                _animation.IsFlipped = _animation.Rectangle.X > value.X;
+                _animation.Rectangle = new RectangleF(value, _animation.Rectangle.Size);
+            }
         }
 
         public event Action<Tile> TargetFound;
@@ -38,7 +42,7 @@ namespace Rainbow
         {
             var rectangle = new RectangleF(location, new SizeF(Width, Height));
             _birdyManager = birdyManager;
-            _gameImage = new GameImage(Resources.Birdy, rectangle, Layer);
+            _animation = new Animation(Resources.BirdyAnimation, null, rectangle, Layer);
             _lineToTarget = new Line(Color.Black, GetCenter(), GetCenter(), layer, Game.Unit);
             _lineToTarget.Pen.EndCap = LineCap.ArrowAnchor;
             _lineToTarget.Pen.DashStyle = DashStyle.Dash;
@@ -54,7 +58,7 @@ namespace Rainbow
             }
         }
 
-        public override PointF GetCenter() => _gameImage.Rectangle.GetCenter();
+        public override PointF GetCenter() => _animation.Rectangle.GetCenter();
 
         public override void Draw(Graphics graphics)
         {
@@ -71,7 +75,7 @@ namespace Rainbow
         public override void Dispose()
         {
             base.Dispose();
-            _gameImage.Dispose();
+            _animation.Dispose();
             _lineToTarget.Dispose();
             _target.Dispose();
         }

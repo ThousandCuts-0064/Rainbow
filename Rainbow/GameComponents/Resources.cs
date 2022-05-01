@@ -34,7 +34,8 @@ namespace Rainbow
             Image[] images = new Image[25];
             int rows = 3;
             int columns = 9;
-            Size single = new Size(image.Width / columns, image.Height / rows);
+            int space = 60;
+            Size single = new Size((image.Width - space * (columns - 1)) / columns, image.Height / rows);
             Rectangle current = new Rectangle(new Point(0, 0), single);
             for (int c = 0; c < columns - 1; c++)
             {
@@ -43,7 +44,7 @@ namespace Rainbow
                     images[c * rows + r] = bitmap.Clone(current, image.PixelFormat);
                     current.Location.Offset(0, single.Height);
                 }
-                current.Offset(single.Width, 0);
+                current.Offset(single.Width + space, 0);
                 current.Y = 0;
             }
             images[images.Length - 1] = bitmap.Clone(current, image.PixelFormat);

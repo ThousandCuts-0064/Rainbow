@@ -76,6 +76,7 @@
     <Compile Include="GameObject\Layer.cs" />
     <Compile Include="GameObject\OtherTypes\GameImage.cs" />
     <Compile Include="GameObject\OtherTypes\GameString.cs" />
+    <Compile Include="HashedLinkedList\HashedLinkedList.cs" />
     <Compile Include="Math2.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Map\Map.cs" />

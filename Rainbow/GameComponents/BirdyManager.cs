@@ -11,22 +11,49 @@ namespace Rainbow
     {
         private const int SPAWN_TICK_COOLDOWN = 500;
         private readonly Dictionary<Tile, Birdy> _targetToBirdy = new Dictionary<Tile, Birdy>();
-        private readonly Channel[] _channels;
-        private readonly PointF _spawnLocation;
+        private readonly HashedLinkedList<Tile> _listAllTargets = new HashedLinkedList<Tile>();
+        private readonly PointF _defaultSpawnLocation;
 
-        public BirdyManager(Channel[] channels)
+        public BirdyManager()
         {
-            _channels = channels;
-            _spawnLocation = new PointF(Game.Screen.X + Game.Screen.Width / 2, Game.Screen.Bottom + Birdy.Height);
+            _defaultSpawnLocation = new PointF(Game.Screen.X + Game.Screen.Width / 2, Game.Screen.Bottom + Birdy.Height);
         }
 
         public void OnTick()
         {
             if (Game.Ticks % SPAWN_TICK_COOLDOWN != 0) return;
 
-            var birdy = new Birdy(this, _spawnLocation);
-            birdy.TargetFound += tile => _targetToBirdy.Add(tile, birdy);
-            birdy.TargetAcquired += tile => _targetToBirdy.Remove(tile);
+            Birdy birdy = null;
+            if (RequestTarget(out var tile))
+            {
+                birdy = new Birdy(this, new PointF(tile.Location.X, _defaultSpawnLocation.Y), tile);
+                OnTargetFound(tile);
+            }
+            else birdy = new Birdy(this, _defaultSpawnLocation);
+
+            birdy.TargetFound += OnTargetFound;
+            birdy.TargetTaken += target => _targetToBirdy.Remove(target);
+
+            void OnTargetFound(Tile target)
+            {
+                _targetToBirdy.Add(target, birdy);
+                _listAllTargets.Remove(target);
+            }
+        }
+
+        public void OnTargetAppear(Tile tile)
+        {
+            _listAllTargets.AddFirst(tile);
+        }
+
+        public void OnTargetDisappear(Tile tile)
+        {
+            _listAllTargets.Remove(tile);
+            if (_targetToBirdy.TryGetValue(tile, out var birdy))
+            {
+                birdy.Retarget();
+                _targetToBirdy.Remove(tile);
+            }
         }
 
         /// <summary>
@@ -37,33 +64,10 @@ namespace Rainbow
         public bool RequestTarget(out Tile target)
         {
             target = null;
-            int i = 0;
-            for (; i < _channels.Length; i++)
-            {
-                if (_channels[i].TileCount != 0)
-                {
-                    target = _channels[i].TileNodeLast.Value;
-                    break;
-                }
-            }
-            if (target == null) return false;
+            if (_listAllTargets.Count == 0) return false;
 
-            for (; i < _channels.Length; i++)
-            {
-                if (_channels[i].TileCount == 0) continue;
-
-                Tile test = _channels[i].TileNodeLast.Value;
-                if (test.Location.Y > target.Location.Y)
-                    target = test;
-            }
-            if (target == null) return false;
+            target = _listAllTargets.Last.Value;
             return true;
-        }
-
-        public void OnPotentialTargetLost(Tile tile)
-        {
-            if (_targetToBirdy.TryGetValue(tile, out var birdy))
-                birdy.Retarget();
         }
     }
 }

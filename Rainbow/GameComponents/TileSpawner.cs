@@ -124,7 +124,8 @@ namespace Rainbow
             public override void OnTick()
             {
                 //Hack: Compensates for some pixel stuttering, background will flicker less between touching tiles in the same column.
-                if (Spawner._lastSpawned.Location.Y < -1) return;
+                if (Spawner._lastSpawned.Location.Y < - 1) return;
+                //if ((int)Game.Ticks * Game.DELTA_TIME * Game.TileUnitsPerSecond % Game.TILE_HIGHT_UNITS != 0) return;
 
                 int chanceCap = 100;
                 int chanceCurrent = Game.Random.Next(chanceCap);

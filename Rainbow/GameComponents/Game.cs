@@ -15,10 +15,6 @@ namespace Rainbow
         /// % of screen height. Range: [0, 1].
         /// </summary>
         private const float UNIT_HIGHT_RATIO = 0.01f;
-        /// <summary>
-        /// Number of units
-        /// </summary>
-        private const int TILE_HIGHT_UNITS = 10;
         private static readonly Color _colorBoarder = Color.Black;
         private static Dictionary<Layer, List<IDrawable>> _layerToList;
         private static HashSet<Update> _updates; // TODO: make Linked list
@@ -46,13 +42,17 @@ namespace Rainbow
         /// % of screen width. Range: [0, 1].
         /// </summary>
         public const float MAP_LINE_WIDTH_RATIO = 0.002f;
+        /// <summary>
+        /// Number of units
+        /// </summary>
+        public const int TILE_HIGHT_UNITS = 10;
         public static IReadOnlyList<IReadOnlyChannel> Channels => _channels;
         public static IReadOnlyLine BoarderRight => _boarderRight;
         public static IReadOnlyLine BoarderLeft => _boarderLeft;
         public static Random Random { get; } = new Random();
         public static RectangleF PlayArea { get; private set; }
         public static Rectangle Screen { get; private set; }
-        public static ulong Ticks { get; private set; } = 0;
+        public static ulong Ticks { get; private set; } = 0; // This will overflow after approximately 9,359,078,677 years with 16ms delta time
         public static float Unit { get; private set; }
         public static float HalfUnit { get; private set; }
         public static float MapLineWidth { get; private set; }
@@ -62,12 +62,12 @@ namespace Rainbow
         public static float TileHeight { get; private set; }
         public static int TileUnitsPerSecond { get; private set; } = 10;
         public static int Level { get; private set; }
-        public static bool IsPaused { get => !_timer.Enabled; set => _timer.Enabled = !value; }
         public static bool IsLoaded { get; private set; }
+        public static bool IsPaused { get => !_timer.Enabled; set => _timer.Enabled = !value; }
 
         public static void Initialize(FormPlay formPlay, IColorModel colorModel, GameModifiers gameModifiers, int level)
         {
-            //Direct initializations
+            //Direct initialization
             _formPlay = formPlay;
             _colorModel = colorModel;
             _gameModifiers = gameModifiers;
@@ -132,12 +132,16 @@ namespace Rainbow
 
             //Dependant object creation
             _stats = new Stats(colorModel, level);
-            //Hack: tile spawner spawns in constructor, this event must be here
-            Tile.Created += (tile, index) => _channels[index].TileListAddFirst(tile);
-            _tileSpawner = new TileSpawner(colorModel, gameModifiers, level);
 
             if (gameModifiers.HasFlag(GameModifiers.Birdy))
-                _birdyManager = new BirdyManager(_channels);
+                _birdyManager = new BirdyManager();
+
+            //Hack: tile spawner spawns in constructor, these events must be here
+            Tile.Created += (tile, index) => _channels[index].TileListAddFirst(tile);
+            if (_birdyManager != null) Tile.Created += (tile, index) => _birdyManager.OnTargetAppear(tile);
+
+            _tileSpawner = new TileSpawner(colorModel, gameModifiers, level);
+
 
             if (gameModifiers.HasFlag(GameModifiers.ColorWheel))
                 _colorDiagram = new GameImage(
@@ -154,7 +158,7 @@ namespace Rainbow
                 _stats.ShotgunUsed += channel.OnShotgunUsed;
                 channel.TilePassed += _stats.OnTakeTile;
                 channel.NoClickTileClicked += _stats.OnTakeNoClickTile;
-                if (_birdyManager != null) channel.TileRemoved += _birdyManager.OnPotentialTargetLost;
+                if (_birdyManager != null) channel.TileRemoved += _birdyManager.OnTargetDisappear;
             }
             formPlay.KeyDown += _inputManager.OnKeyDown;
             formPlay.KeyUp += _inputManager.OnKeyUp;

@@ -10,7 +10,7 @@ namespace Rainbow
 {
     public class Birdy : DynamicObject
     {
-        private static float Speed => Game.TileUnitsPerSecond * Game.Unit * Game.DELTA_TIME * 1.2f;
+        private static float Speed => Game.TileUnitsPerSecond * Game.Unit * Game.DELTA_TIME * 2f;
         private readonly BirdyManager _birdyManager;
         private readonly IdleState _idleState;
         private readonly ChaseState _chaseState;
@@ -23,7 +23,7 @@ namespace Rainbow
         /// Should only be set using the SetState method.
         /// </summary>
         private State _state;
-        public static float Width => Game.TileWidth;
+        public static float Width => Game.TileHeight;
         public static float Height => Game.TileHeight;
         public PointF Location
         {
@@ -32,9 +32,9 @@ namespace Rainbow
         }
 
         public event Action<Tile> TargetFound;
-        public event Action<Tile> TargetAcquired;
+        public event Action<Tile> TargetTaken;
 
-        public Birdy(BirdyManager birdyManager, PointF location, Layer layer = Layer.UI) : base(layer)
+        public Birdy(BirdyManager birdyManager, PointF location, Tile target = null, Layer layer = Layer.UI) : base(layer)
         {
             var rectangle = new RectangleF(location, new SizeF(Width, Height));
             _birdyManager = birdyManager;
@@ -45,7 +45,13 @@ namespace Rainbow
             _idleState = new IdleState(this);
             _chaseState = new ChaseState(this);
             _leavingState = new LeavingState(this);
-            SetState(_idleState);
+            if (target == null) SetState(_idleState);
+            else
+            {
+                _target = target;
+                TargetFound?.Invoke(target);
+                SetState(_chaseState);
+            }
         }
 
         public override PointF GetCenter() => _gameImage.Rectangle.GetCenter();
@@ -90,7 +96,10 @@ namespace Rainbow
         {
             public IdleState(Birdy birdy) : base(birdy) { }
 
-            public override void OnSet() { }
+            public override void OnSet() 
+            {
+                Birdy._lineToTarget.Point2 = Birdy._lineToTarget.Point1;
+            }
 
             public override void OnUpdate()
             {
@@ -112,12 +121,14 @@ namespace Rainbow
             {
                 var targetCenter = Birdy._target.GetCenter();
                 var center = Birdy.GetCenter();
+                if (center == targetCenter) TryTakeTarget();
+
                 var direction = new PointF(
                     targetCenter.X - center.X,
                     targetCenter.Y - center.Y);
                 var magnitude = (float)Math.Sqrt(
                     direction.X * direction.X +
-                    direction.Y + direction.Y);
+                    direction.Y * direction.Y);
                 var normalized = new PointF(
                     direction.X / magnitude,
                     direction.Y / magnitude);
@@ -127,11 +138,13 @@ namespace Rainbow
                     normalized.Y * step);
                 Birdy.Location = Birdy.Location.Offset(scaled.X, scaled.Y);
 
-                if (magnitude < step * 2)
+                if (step * 2 >= magnitude) TryTakeTarget();
+
+                void TryTakeTarget()
                 {
                     if (Birdy._target.IsInControl)
                     {
-                        Birdy.TargetAcquired?.Invoke(Birdy._target);
+                        Birdy.TargetTaken?.Invoke(Birdy._target);
                         Birdy._target.TryGetController(out var controller);
                         Birdy._targetController = controller;
                         Birdy.SetState(Birdy._leavingState);
@@ -166,6 +179,7 @@ namespace Rainbow
                     _finishX = Game.Screen.Right + Game.TileWidth;
                     _reachedFinish = () => Birdy.Location.X >= _finishX;
                 }
+                Birdy._lineToTarget.Dispose();
             }
 
             public override void OnUpdate()

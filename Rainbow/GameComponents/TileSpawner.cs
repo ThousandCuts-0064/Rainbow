@@ -34,6 +34,8 @@ namespace Rainbow
         private State _state;
         private Tile _lastSpawned;
 
+        public event Action<Tile, int> TileSpawned;
+
         public TileSpawner(IColorModel colorModel, GameModifiers gameModifiers, int level)
         {
             _colorModel = colorModel;
@@ -46,7 +48,10 @@ namespace Rainbow
             _chessState = new ChessState(this);
             _rainbowState = new RainbowState(this);
             SetState(_normalState);
+        }
 
+        public void OnStart()
+        {
             //First Spawn. Spawner needs one spawn to chain spawn.
             Spawn(Game.Random.Next(_level), RandomColor());
         }
@@ -94,6 +99,7 @@ namespace Rainbow
         private void Spawn(int channelIndex, ColorCode colorCode, int lives = 1, bool noClick = false)
         {
             _lastSpawned = new Tile(_colorModel, colorCode, _gameModifiers, channelIndex, lives, noClick);
+            TileSpawned?.Invoke(_lastSpawned, channelIndex);
         }
 
         private ColorCode RandomColor() => (ColorCode)(Game.Random.Next((int)ColorCode.All) + 1);
@@ -125,7 +131,6 @@ namespace Rainbow
             {
                 //Hack: Compensates for some pixel stuttering, background will flicker less between touching tiles in the same column.
                 if (Spawner._lastSpawned.Location.Y < - 1) return;
-                //if ((int)Game.Ticks * Game.DELTA_TIME * Game.TileUnitsPerSecond % Game.TILE_HIGHT_UNITS != 0) return;
 
                 int chanceCap = 100;
                 int chanceCurrent = Game.Random.Next(chanceCap);

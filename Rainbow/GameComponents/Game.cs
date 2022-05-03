@@ -17,7 +17,7 @@ namespace Rainbow
         private const float UNIT_HIGHT_RATIO = 0.01f;
         private static readonly Color _colorBoarder = Color.Black;
         private static Dictionary<Layer, List<IDrawable>> _layerToList;
-        private static HashSet<Update> _updates; // TODO: make Linked list
+        private static HashSet<Update> _updates;
         private static Channel[] _channels;
         private static Timer _timer;
         private static Stats _stats;
@@ -82,6 +82,7 @@ namespace Rainbow
 
             _timer = new Timer { Interval = (int)(DELTA_TIME * 1000) };
             _inputManager = new InputManager(level);
+            _tileSpawner = new TileSpawner(colorModel, gameModifiers, level);
 
             //Calculation
             var screen = formPlay.ClientRectangle;
@@ -134,14 +135,10 @@ namespace Rainbow
             _stats = new Stats(colorModel, level);
 
             if (gameModifiers.HasFlag(GameModifiers.Birdy))
+            {
                 _birdyManager = new BirdyManager();
-
-            //Hack: tile spawner spawns in constructor, these events must be here
-            Tile.Created += (tile, index) => _channels[index].TileListAddFirst(tile);
-            if (_birdyManager != null) Tile.Created += (tile, index) => _birdyManager.OnTargetAppear(tile);
-
-            _tileSpawner = new TileSpawner(colorModel, gameModifiers, level);
-
+                _tileSpawner.TileSpawned += (tile, index) => _birdyManager.OnTargetAppear(tile);
+            }
 
             if (gameModifiers.HasFlag(GameModifiers.ColorWheel))
                 _colorDiagram = new GameImage(
@@ -153,6 +150,7 @@ namespace Rainbow
             _timer.Tick += GameTick;
             _inputManager.ShotgunPressed += _stats.OnShotgunPressed;
             _inputManager.ColorInput += (colorCode, column) => _channels[column].OnColorInput(colorCode);
+            _tileSpawner.TileSpawned += (tile, index) => _channels[index].TileListAddFirst(tile);
             foreach (var channel in _channels)
             {
                 _stats.ShotgunUsed += channel.OnShotgunUsed;
@@ -165,6 +163,9 @@ namespace Rainbow
 
             //Start Game
             _timer.Start();
+
+            //Start calls
+            _tileSpawner.OnStart();
 
             //Local functions
             RectangleF CalculateColorWheelRectangle() =>

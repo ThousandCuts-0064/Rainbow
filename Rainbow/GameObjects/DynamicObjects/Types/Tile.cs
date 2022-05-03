@@ -61,7 +61,6 @@ namespace Rainbow
         }
         public bool IsInControl { get; private set; } = true;
 
-        public static event Action<Tile, int> Created;
         public event Action<Tile> Disposing;
         public event Action<Tile> ControlLost;
 
@@ -86,10 +85,21 @@ namespace Rainbow
             if (gameModifiers.HasFlag(GameModifiers.ColorDistortion))
             {
                 //TODO: CMY 0 is black
+                var colorMin = colorModel.CodeToColor(ColorCode.None);
+                var colorMax = colorModel.CodeToColor(ColorCode.All);
+
                 _colorDistortion = Color.FromArgb(
                     Game.Random.Next(128),
                     Game.Random.Next(128),
                     Game.Random.Next(128));
+
+                if (colorMax.ToArgb() < colorMin.ToArgb())
+                {
+                    _colorDistortion = Color.FromArgb(
+                        byte.MaxValue - _colorDistortion.R,
+                        byte.MaxValue - _colorDistortion.G,
+                        byte.MaxValue - _colorDistortion.B);
+                }
             }
 
             if (gameModifiers.HasFlag(GameModifiers.HintButtons))
@@ -103,8 +113,6 @@ namespace Rainbow
 
             _penBoarder.Color = IsNoClick ? _colorBorderNoClick : _colorBorderNormal;
             _colorStart = _brushFill.Color;
-
-            Created?.Invoke(this, column);
         }
 
         public override PointF GetCenter() => _rectangleFill.GetCenter();

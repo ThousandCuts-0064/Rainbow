@@ -44,7 +44,7 @@ namespace Rainbow
             this.buttonResume.TabIndex = 0;
             this.buttonResume.Text = "Resume";
             this.buttonResume.UseVisualStyleBackColor = false;
-            this.buttonResume.Click += new System.EventHandler(this.buttonResume_Click);
+            this.buttonResume.Click += new System.EventHandler(this.ButtonResume_Click);
             // 
             // buttonSettings
             // 
@@ -56,6 +56,7 @@ namespace Rainbow
             this.buttonSettings.TabIndex = 1;
             this.buttonSettings.Text = "Settings";
             this.buttonSettings.UseVisualStyleBackColor = false;
+            this.buttonSettings.Click += new System.EventHandler(this.ButtonSettings_Click);
             // 
             // buttonQuit
             // 
@@ -67,7 +68,7 @@ namespace Rainbow
             this.buttonQuit.TabIndex = 2;
             this.buttonQuit.Text = "Quit";
             this.buttonQuit.UseVisualStyleBackColor = false;
-            this.buttonQuit.Click += new System.EventHandler(this.buttonQuit_Click);
+            this.buttonQuit.Click += new System.EventHandler(this.ButtonQuit_Click);
             // 
             // FormPause
             // 

@@ -29,7 +29,7 @@ namespace Rainbow
         Birdy =             1 << 13,
         Empty6 =            1 << 14,
                             
-        ShotgunTiles =      1 << 15,
+        ShotgunEvent =      1 << 15,
         DiamondEvent =      1 << 16,
         ChessEvent =        1 << 17,
         RainbowEvent =      1 << 18,

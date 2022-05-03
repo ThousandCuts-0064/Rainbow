@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace Rainbow
 {
+    /// <summary>
+    /// Loads files from Resources folder.
+    /// All arrays are returned as copies
+    /// </summary>
     public static class Resources
     {
         private static readonly string _folder;

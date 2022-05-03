@@ -26,10 +26,17 @@ namespace Rainbow
         }
 
         private void FormPause_Load(object sender, EventArgs e) => CenterToParent();
-        private void buttonResume_Click(object sender, EventArgs e) => _formDim.Close();
-        private void buttonQuit_Click(object sender, EventArgs e) => Application.Exit();
+        private void ButtonResume_Click(object sender, EventArgs e) => _formDim.Close();
+        private void ButtonSettings_Click(object sender, EventArgs e)
+        {
+            Hide();
+            new FormSettings(this).Show();
+        }
+        private void ButtonQuit_Click(object sender, EventArgs e) => Application.Exit();
         private void FormPause_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Owner = null;
+            _formDim.Close();
             if (!Game.IsLoaded) return;
             Game.IsPaused = false;
             Game.FocusFormPlay();
@@ -38,7 +45,7 @@ namespace Rainbow
         private void FormPause_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
-                _formDim.Close();
+                Close();
         }
     }
 }

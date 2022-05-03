@@ -15,12 +15,26 @@ namespace Rainbow
         public RectangleF Rectangle { get; set; }
         public bool IsFlipped { get; set; }
 
+        /// <summary>
+        /// Simple animation that cant be flipped and changing IsFlipped will throw an error
+        /// </summary>
+        /// <param name="images"></param>
+        /// <param name="rectangle"></param>
+        /// <param name="layer"></param>
         public Animation(Image[] images, RectangleF rectangle, Layer layer) : base(layer)
         {
             _images = images;
             Rectangle = rectangle;
         }
 
+        /// <summary>
+        /// Using this constructors signals that the animation can bi flipped.
+        /// If flipped is null, it will be calcualted from images flipping pixels on the X axis
+        /// </summary>
+        /// <param name="images"></param>
+        /// <param name="flipped"></param>
+        /// <param name="rectangle"></param>
+        /// <param name="layer"></param>
         public Animation(Image[] images, Image[] flipped, RectangleF rectangle, Layer layer) : this (images, rectangle, layer)
         {
             if (flipped == null)

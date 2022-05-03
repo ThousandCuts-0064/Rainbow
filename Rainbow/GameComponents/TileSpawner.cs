@@ -15,7 +15,7 @@ namespace Rainbow
         private const int TRIPLE_CLICK_TILES_CHANCE = 10; // % chance in standart state
         private const int NO_COLOR_TILES_CHANCE = 15; // % chance in standart state
 
-        private const int SHOTGUN_TILES_CHANCE = 5; // % chance for event trigger
+        private const int SHOTGUN_EVENT_CHANCE = 5; // % chance for event trigger
         private const int DIAMOND_EVENT_CHANCE = 5; // % chance for event trigger
         private const int CHESS_EVENT_CHANCE = 5; // % chance for event trigger
         private const int RAINBOW_EVENT_CHANCE = 5; // % chance for event trigger
@@ -58,7 +58,7 @@ namespace Rainbow
                 int chanceCap = 100;
                 int chanceCurrent = Game.Random.Next(chanceCap);
 
-                if (TryChanceModifier(GameModifiers.ShotgunTiles, ref chanceCurrent, SHOTGUN_TILES_CHANCE, chanceCap))
+                if (TryChanceModifier(GameModifiers.ShotgunEvent, ref chanceCurrent, SHOTGUN_EVENT_CHANCE, chanceCap))
                     SetState(_shotgunState);
 
                 if (TryChanceModifier(GameModifiers.DiamondEvent, ref chanceCurrent, DIAMOND_EVENT_CHANCE, chanceCap))

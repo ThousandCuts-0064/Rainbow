@@ -51,7 +51,7 @@ namespace Rainbow
             this.radioButtonRGB = new System.Windows.Forms.RadioButton();
             this.panelLevels = new System.Windows.Forms.Panel();
             this.checkBoxColorWheel = new System.Windows.Forms.CheckBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.checkShotgunEvent = new System.Windows.Forms.CheckBox();
             this.checkBoxDoubleClickTiles = new System.Windows.Forms.CheckBox();
             this.checkBox6 = new System.Windows.Forms.CheckBox();
             this.panelColorModels = new System.Windows.Forms.Panel();
@@ -420,21 +420,21 @@ namespace Rainbow
             this.checkBoxColorWheel.UseVisualStyleBackColor = false;
             this.checkBoxColorWheel.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
-            // checkBox4
+            // checkShotgunEvent
             // 
-            this.checkBox4.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox4.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.checkBox4.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox4.Location = new System.Drawing.Point(510, 10);
-            this.checkBox4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(100, 100);
-            this.checkBox4.TabIndex = 18;
-            this.checkBox4.Text = "Shotgun Tiles";
-            this.checkBox4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox4.UseVisualStyleBackColor = false;
-            this.checkBox4.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
+            this.checkShotgunEvent.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkShotgunEvent.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.checkShotgunEvent.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkShotgunEvent.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkShotgunEvent.Location = new System.Drawing.Point(510, 10);
+            this.checkShotgunEvent.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.checkShotgunEvent.Name = "checkShotgunEvent";
+            this.checkShotgunEvent.Size = new System.Drawing.Size(100, 100);
+            this.checkShotgunEvent.TabIndex = 18;
+            this.checkShotgunEvent.Text = "Shotgun Event";
+            this.checkShotgunEvent.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkShotgunEvent.UseVisualStyleBackColor = false;
+            this.checkShotgunEvent.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // checkBoxDoubleClickTiles
             // 
@@ -501,6 +501,7 @@ namespace Rainbow
             // 
             this.checkBox1.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBox1.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.checkBox1.Enabled = false;
             this.checkBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox1.Location = new System.Drawing.Point(510, 110);
@@ -549,6 +550,7 @@ namespace Rainbow
             // 
             this.checkBoxRainbowEvent.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBoxRainbowEvent.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.checkBoxRainbowEvent.Enabled = false;
             this.checkBoxRainbowEvent.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxRainbowEvent.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBoxRainbowEvent.Location = new System.Drawing.Point(510, 310);
@@ -642,7 +644,7 @@ namespace Rainbow
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.panelColorModels);
             this.Controls.Add(this.checkBoxColorWheel);
-            this.Controls.Add(this.checkBox4);
+            this.Controls.Add(this.checkShotgunEvent);
             this.Controls.Add(this.checkBoxDoubleClickTiles);
             this.Controls.Add(this.checkBox6);
             this.Controls.Add(this.checkBoxColorDistortion);
@@ -694,7 +696,7 @@ namespace Rainbow
         private System.Windows.Forms.RadioButton radioButtonRGB;
         private System.Windows.Forms.Panel panelLevels;
         private System.Windows.Forms.CheckBox checkBoxColorWheel;
-        private System.Windows.Forms.CheckBox checkBox4;
+        private System.Windows.Forms.CheckBox checkShotgunEvent;
         private System.Windows.Forms.CheckBox checkBoxDoubleClickTiles;
         private System.Windows.Forms.CheckBox checkBox6;
         private System.Windows.Forms.Panel panelColorModels;

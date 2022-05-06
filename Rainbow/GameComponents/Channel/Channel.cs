@@ -91,10 +91,11 @@ namespace Rainbow
         {
             if (_tileList.Count == 0) return;
 
-            var lastTile = _tileList.Last.Value;
+            var lastTileNode = _tileList.Last;
+            var lastTile = lastTileNode.Value;
             while (lastTile.Location.Y + Game.TileHeight >= Finish.Point1.Y)
             {
-                var previousNode = _tileToNode[lastTile].Previous;
+                var previousNode = lastTileNode.Previous;
 
                 if (lastTile.ColorCode == colorCode)
                 {
@@ -105,7 +106,8 @@ namespace Rainbow
                 }
 
                 if (previousNode == null) return;
-                lastTile = previousNode.Value;
+                lastTileNode = previousNode;
+                lastTile = lastTileNode.Value;
             }
         }
 

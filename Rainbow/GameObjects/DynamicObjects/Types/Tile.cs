@@ -23,7 +23,6 @@ namespace Rainbow
         private readonly GameModifiers _gameModifiers;
         private readonly Color _colorStart;
         private readonly Color _colorDistortion;
-        private readonly ulong _tickSpawned;
         private RectangleF _rectangleFill;
         private int _lives;
         public IReadOnlyChannel Channel { get; }
@@ -68,7 +67,6 @@ namespace Rainbow
             int lives = 1, bool isNoClick = false, Layer layer = Layer.Gameplay) :
             base(layer)
         {
-            _tickSpawned = Game.Ticks;
             _colorModel = colorModel;
             _gameModifiers = gameModifiers;
             ColorCode = colorCode;
@@ -84,7 +82,6 @@ namespace Rainbow
 
             if (gameModifiers.HasFlag(GameModifiers.ColorDistortion))
             {
-                //TODO: CMY 0 is black
                 var colorMin = colorModel.CodeToColor(ColorCode.None);
                 var colorMax = colorModel.CodeToColor(ColorCode.All);
 
@@ -161,7 +158,7 @@ namespace Rainbow
         {
             if (!IsInControl) return;
 
-            _controller.Move(0, Game.TileUnitsPerSecond * Game.Unit * Game.DELTA_TIME);
+            _controller.Move(0, Game.TileSpeed);
             
             //Color calculations
             _brushFill.Color = _colorStart;

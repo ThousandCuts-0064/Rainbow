@@ -60,6 +60,7 @@ namespace Rainbow
         public static float UIElementWidth { get; private set; }
         public static float TileWidth { get; private set; }
         public static float TileHeight { get; private set; }
+        public static float TileSpeed { get; private set; }
         public static int TileUnitsPerSecond { get; private set; } = 10;
         public static int Level { get; private set; }
         public static bool IsLoaded { get; private set; }
@@ -196,6 +197,7 @@ namespace Rainbow
         private static void GameTick(object sender, EventArgs e)
         {
             Ticks++;
+            TileSpeed = TileUnitsPerSecond * Unit * DELTA_TIME;
             _inputManager.OnTick();
             foreach (var update in _updates.ToList()) update();
             foreach (var channel in _channels) channel.OnTick();

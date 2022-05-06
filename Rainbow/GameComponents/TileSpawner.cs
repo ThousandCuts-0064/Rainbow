@@ -16,7 +16,7 @@ namespace Rainbow
         private const int NO_COLOR_TILES_CHANCE = 15; // % chance in standart state
 
         private const int SHOTGUN_EVENT_CHANCE = 5; // % chance for event trigger
-        private const int DIAMOND_EVENT_CHANCE = 5; // % chance for event trigger
+        private const int DIAMOND_EVENT_CHANCE = 50; // % chance for event trigger
         private const int CHESS_EVENT_CHANCE = 5; // % chance for event trigger
         private const int RAINBOW_EVENT_CHANCE = 5; // % chance for event trigger
 
@@ -32,7 +32,7 @@ namespace Rainbow
         /// Should only be set using the SetState method.
         /// </summary>
         private State _state;
-        private Tile _lastSpawned;
+        private ulong _lastSpawnTick;
 
         public event Action<Tile, int> TileSpawned;
 
@@ -96,10 +96,13 @@ namespace Rainbow
 
         private void SetState(State state) => _state = state.OnSet();
 
+        private bool WaitedTileSpace(int spaces) =>
+            Game.Ticks - _lastSpawnTick > (Game.TileHeight * ++spaces - Game.TileSpeed) / Game.TileSpeed;
+
         private void Spawn(int channelIndex, ColorCode colorCode, int lives = 1, bool noClick = false)
         {
-            _lastSpawned = new Tile(_colorModel, colorCode, _gameModifiers, channelIndex, lives, noClick);
-            TileSpawned?.Invoke(_lastSpawned, channelIndex);
+            _lastSpawnTick = Game.Ticks;
+            TileSpawned?.Invoke(new Tile(_colorModel, colorCode, _gameModifiers, channelIndex, lives, noClick), channelIndex);
         }
 
         private ColorCode RandomColor() => (ColorCode)(Game.Random.Next((int)ColorCode.All) + 1);
@@ -129,16 +132,10 @@ namespace Rainbow
 
             public override void OnTick()
             {
-                //Hack: Compensates for some pixel stuttering, background will flicker less between touching tiles in the same column.
-                if (Spawner._lastSpawned.Location.Y < - 1) return;
+                if (!Spawner.WaitedTileSpace(0)) return;
 
                 int chanceCap = 100;
                 int chanceCurrent = Game.Random.Next(chanceCap);
-
-                if (Spawner.TryChanceModifier(GameModifiers.NoClickTiles, ref chanceCurrent, NO_CLICK_TILES_CHANCE, chanceCap))
-                {
-                    Spawner.Spawn(Game.Random.Next(Spawner._level), Spawner.RandomColor(), 1, true);
-                }
 
                 if (Spawner.TryChanceModifier(GameModifiers.DoubleTiles, ref chanceCurrent, DOUBLE_TILES_CHANCE, chanceCap))
                 {
@@ -163,6 +160,9 @@ namespace Rainbow
                     Spawner.Spawn(index3, Spawner.RandomColor());
                 }
 
+                if (Spawner.TryChanceModifier(GameModifiers.NoClickTiles, ref chanceCurrent, NO_CLICK_TILES_CHANCE, chanceCap))
+                    Spawner.Spawn(Game.Random.Next(Spawner._level), Spawner.RandomColor(), noClick: true);
+
                 if (Spawner.TryChanceModifier(GameModifiers.DoubleClickTiles, ref chanceCurrent, DOUBLE_CLICK_TILES_CHANCE, chanceCap))
                     Spawner.Spawn(Game.Random.Next(Spawner._level), Spawner.RandomColor(), 2);
 
@@ -181,22 +181,24 @@ namespace Rainbow
             protected override void OnStateSet() { }
         }
 
-        private class ShotgunState : State
+        private abstract class SpecialState : State
         {
+            private int _rowIndex;
             private bool _waitSpace;
-            private bool _finishedCycle;
-            private int _rowCount;
+            private bool _finishedSpawning;
+            protected int TotalRowSpawns { get; set; }
 
-            public ShotgunState(TileSpawner spawner) : base(spawner) { }
+            public SpecialState(TileSpawner spawner, int totalRowSpawns = 0) : base(spawner) =>
+                TotalRowSpawns = totalRowSpawns;
 
-            public override void OnTick()
+            public sealed override void OnTick()
             {
                 if (_waitSpace &&
-                    Spawner._lastSpawned.Location.Y < Game.TileHeight * 3)
+                    !Spawner.WaitedTileSpace(3))
                     return;
                 else
                 {
-                    if (_finishedCycle)
+                    if (_finishedSpawning)
                     {
                         AllowSwap = true;
                         return;
@@ -205,109 +207,79 @@ namespace Rainbow
                     _waitSpace = false;
                 }
 
-                if (Spawner._lastSpawned.Location.Y < -1) return;
-                for (int i = 0; i < Spawner._level; i++)
-                {
-                    ColorCode colorCode;
-                    switch (_rowCount)
-                    {
-                        case 0:
-                            colorCode = ColorCode.I;
-                            break;
+                if (!Spawner.WaitedTileSpace(0)) return;
+                OnSpawnTick(_rowIndex);
+                _rowIndex++;
 
-                        case 1:
-                            colorCode = ColorCode.II;
-                            break;
-
-                        case 2:
-                            colorCode = ColorCode.III;
-                            break;
-
-                        default:
-                            _waitSpace = true;
-                            _finishedCycle = true;
-                            return;
-                    }
-                    Spawner.Spawn(i, colorCode, 1);
-                }
-                _rowCount++;
+                if (_rowIndex != TotalRowSpawns) return;
+                _finishedSpawning = true;
+                _waitSpace = true;
             }
+
+            protected abstract void OnSpawnTick(int rowIndex);
 
             protected override void OnStateSet()
             {
+                _rowIndex = 0;
                 _waitSpace = true;
-                _finishedCycle = false;
-                _rowCount = 0;
+                _finishedSpawning = false;
             }
         }
 
-        private class DiamondState : State
+        private class ShotgunState : SpecialState
         {
+            public ShotgunState(TileSpawner spawner) : base(spawner, 3) { }
+
+            protected override void OnSpawnTick(int rowIndex)
+            {
+                for (int i = 0; i < Spawner._level; i++)
+                    Spawner.Spawn(i, (ColorCode)Math.Pow(2, rowIndex));
+            }
+        }
+
+        private class DiamondState : SpecialState
+        {
+            private int _centerColumn;
+            private int _centerRow;
+
             public DiamondState(TileSpawner spawner) : base(spawner) { }
 
-            public override void OnTick()
+            protected override void OnSpawnTick(int rowIndex)
             {
-                throw new NotImplementedException();
+                for (
+                    int i = _centerColumn - Math.Abs(rowIndex - _centerRow); 
+                    i < 1 + rowIndex * 2; 
+                    i++)
+                {
+                    Spawner.Spawn(i, Spawner.RandomColor());
+                }
             }
 
             protected override void OnStateSet()
             {
-                throw new NotImplementedException();
+                base.OnStateSet();
+                TotalRowSpawns = 5;
+                _centerRow = TotalRowSpawns / 2;
+                _centerColumn = Spawner._level / 2;
             }
         }
 
-        private class ChessState : State
+        private class ChessState : SpecialState
         {
-            private bool _waitSpace;
-            private bool _finishedCycle;
-            private int _rowCount;
+            public ChessState(TileSpawner spawner) : base(spawner, spawner._level) { }
 
-            public ChessState(TileSpawner spawner) : base(spawner) { }
-
-            public override void OnTick()
+            protected override void OnSpawnTick(int rowIndex)
             {
-                if (_waitSpace &&
-                    Spawner._lastSpawned.Location.Y < Game.TileHeight * 3)
-                    return;
-                else
-                {
-                    if (_finishedCycle)
-                    {
-                        AllowSwap = true;
-                        return;
-                    }
-
-                    _waitSpace = false;
-                }
-
-                if (Spawner._lastSpawned.Location.Y < -1) return;
                 for (int i = 0; i < Spawner._level; i++)
-                    Spawner.Spawn(i,
-                        i % 2 == _rowCount % 2
-                        ? ColorCode.All
-                        : ColorCode.None,
-                        1);
-                _rowCount++;
-                if (_rowCount == Spawner._level)
-                {
-                    _waitSpace = true;
-                    _finishedCycle = true;
-                }
-            }
-
-            protected override void OnStateSet()
-            {
-                _waitSpace = true;
-                _finishedCycle = false;
-                _rowCount = 0;
+                    Spawner.Spawn(i, (i + rowIndex) % 2 == 0 ? ColorCode.All : ColorCode.None);
             }
         }
 
-        private class RainbowState : State
+        private class RainbowState : SpecialState
         {
-            public RainbowState(TileSpawner spawner) : base(spawner) { }
+            public RainbowState(TileSpawner spawner) : base(spawner, 0) { }
 
-            public override void OnTick()
+            protected override void OnSpawnTick(int rowIndex)
             {
                 throw new NotImplementedException();
             }

@@ -17,7 +17,7 @@ namespace Rainbow
         private static readonly string _folder;
         private static readonly Image[] _birdyAnimation;
         public static Image ColorWheel { get; }
-        public static Image Birdy { get; }
+        public static Image Birdy { get; } //Todo: potentialy remove
         public static Image[] BirdyAnimation => _birdyAnimation.ToArray();
 
         static Resources()

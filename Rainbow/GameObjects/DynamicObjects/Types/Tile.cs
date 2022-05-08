@@ -15,6 +15,7 @@ namespace Rainbow
         private static readonly Color _colorBlend = Color.Gray;
         private static readonly Color _colorBorderNormal = Color.Black;
         private static readonly Color _colorBorderNoClick = Color.White;
+        private readonly float[] _penBoarderDashPattern;
         private readonly IColorModel _colorModel;
         private readonly GameString _gameString;
         private readonly SolidBrush _brushFill;
@@ -48,12 +49,9 @@ namespace Rainbow
                         _penBoarder.DashStyle = DashStyle.Solid;
                         break;
 
-                    case 2:
-                        _penBoarder.DashStyle = DashStyle.Dash;
-                        break;
-
-                    case 3:
-                        _penBoarder.DashStyle = DashStyle.Dot;
+                    default:
+                        _penBoarderDashPattern[0] = 12f / (2 * value);
+                        _penBoarder.DashPattern = _penBoarderDashPattern;
                         break;
                 }
             }
@@ -70,6 +68,7 @@ namespace Rainbow
             _colorModel = colorModel;
             _gameModifiers = gameModifiers;
             ColorCode = colorCode;
+            if (lives > 1) _penBoarderDashPattern = new float[2] { 0, 1 };
             Lives = lives;
             IsNoClick = isNoClick;
             Channel = Game.Channels[column];
@@ -159,7 +158,7 @@ namespace Rainbow
             if (!IsInControl) return;
 
             _controller.Move(0, Game.TileSpeed);
-            
+
             //Color calculations
             _brushFill.Color = _colorStart;
 
@@ -184,7 +183,7 @@ namespace Rainbow
 
             if (_gameModifiers.HasFlag(GameModifiers.FadingColors))
             {
-                _brushFill.Color = _brushFill.Color.Blend(_colorBlend, 
+                _brushFill.Color = _brushFill.Color.Blend(_colorBlend,
                     Math2.Clamp((Location.Y - Channel.BoarderLeft.Point1.Y) / (Channel.Finish.Point1.Y - Channel.BoarderLeft.Point1.Y), 0, 1));
             }
         }

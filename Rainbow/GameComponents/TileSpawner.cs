@@ -16,7 +16,7 @@ namespace Rainbow
         private const int NO_COLOR_TILES_CHANCE = 15; // % chance in standart state
 
         private const int SHOTGUN_EVENT_CHANCE = 5; // % chance for event trigger
-        private const int DIAMOND_EVENT_CHANCE = 50; // % chance for event trigger
+        private const int DIAMOND_EVENT_CHANCE = 500; // % chance for event trigger
         private const int CHESS_EVENT_CHANCE = 5; // % chance for event trigger
         private const int RAINBOW_EVENT_CHANCE = 5; // % chance for event trigger
 
@@ -52,7 +52,6 @@ namespace Rainbow
 
         public void OnStart()
         {
-            //First Spawn. Spawner needs one spawn to chain spawn.
             Spawn(Game.Random.Next(_level), RandomColor());
         }
 
@@ -97,7 +96,7 @@ namespace Rainbow
         private void SetState(State state) => _state = state.OnSet();
 
         private bool WaitedTileSpace(int spaces) =>
-            Game.Ticks - _lastSpawnTick > (Game.TileHeight * ++spaces - Game.TileSpeed) / Game.TileSpeed;
+            Game.Ticks - _lastSpawnTick > (Game.TileHeight * (spaces + 1) - Game.TileSpeed) / Game.TileSpeed;
 
         private void Spawn(int channelIndex, ColorCode colorCode, int lives = 1, bool noClick = false)
         {
@@ -187,25 +186,26 @@ namespace Rainbow
             private bool _waitSpace;
             private bool _finishedSpawning;
             protected int TotalRowSpawns { get; set; }
+            protected int Space { get; set; }
 
-            public SpecialState(TileSpawner spawner, int totalRowSpawns = 0) : base(spawner) =>
+            public SpecialState(TileSpawner spawner, int totalRowSpawns = 0, int space = 3) : base(spawner)
+            {
                 TotalRowSpawns = totalRowSpawns;
+                Space = space;
+            }
 
             public sealed override void OnTick()
             {
                 if (_waitSpace &&
-                    !Spawner.WaitedTileSpace(3))
+                    !Spawner.WaitedTileSpace(Space))
                     return;
-                else
-                {
-                    if (_finishedSpawning)
-                    {
-                        AllowSwap = true;
-                        return;
-                    }
 
-                    _waitSpace = false;
+                if (_finishedSpawning)
+                {
+                    AllowSwap = true;
+                    return;
                 }
+                _waitSpace = false;
 
                 if (!Spawner.WaitedTileSpace(0)) return;
                 OnSpawnTick(_rowIndex);
@@ -239,28 +239,43 @@ namespace Rainbow
 
         private class DiamondState : SpecialState
         {
+            private static readonly int[] _sizes = { 3, 5, 7, 9 }; // Number of rows
+            private readonly int[] _weightedIndexes; // For size
             private int _centerColumn;
             private int _centerRow;
 
-            public DiamondState(TileSpawner spawner) : base(spawner) { }
+            public DiamondState(TileSpawner spawner) : base(spawner)
+            {
+                int maxSize = (Spawner._level - 1) / 2;
+                _weightedIndexes = new int[Function(maxSize)];
+                for (int i = 0; i < maxSize; i++)
+                    for (int y = i; y < maxSize; y++)
+                        _weightedIndexes[i * maxSize - Function(i) + y] = i;
+
+                int Function(int n) => (int)((1 + n) / 2f * n);
+            }
 
             protected override void OnSpawnTick(int rowIndex)
             {
                 for (
-                    int i = _centerColumn - Math.Abs(rowIndex - _centerRow); 
-                    i < 1 + rowIndex * 2; 
+                    int i = Math.Abs(_centerRow - rowIndex) - _centerRow;
+                    i <= _centerRow - Math.Abs(_centerRow - rowIndex);
                     i++)
-                {
-                    Spawner.Spawn(i, Spawner.RandomColor());
-                }
+                    Spawner.Spawn(
+                        _centerColumn + i, 
+                        Spawner.RandomColor(),
+                        TotalRowSpawns - _centerRow - Math.Abs(i) - Math.Abs(_centerRow - rowIndex));
             }
 
             protected override void OnStateSet()
             {
                 base.OnStateSet();
-                TotalRowSpawns = 5;
+                int rndIndex = _weightedIndexes[Game.Random.Next(_weightedIndexes.Length)];
+                int size = _sizes[rndIndex];
+                TotalRowSpawns = size;
+                Space = rndIndex;
+                _centerColumn = Game.Random.Next(size - 1, Spawner._level - 1 - rndIndex); // min not tested
                 _centerRow = TotalRowSpawns / 2;
-                _centerColumn = Spawner._level / 2;
             }
         }
 

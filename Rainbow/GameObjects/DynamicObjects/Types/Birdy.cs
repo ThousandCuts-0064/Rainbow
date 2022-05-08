@@ -169,10 +169,10 @@ namespace Rainbow
             public override void OnSet()
             {
                 _directionLeave = Birdy._target.Column <= Game.Level / 2
-                ? Direction.Left
-                : Game.Level % 2 == 1 && Birdy._target.Column == Game.Level / 2 + 1
-                ? (Direction)(Game.Random.Next(2) * 2 - 1) // this will be 1 or -1
-                : Direction.Right;
+                    ? Direction.Left
+                    : Game.Level % 2 == 1 && Birdy._target.Column == Game.Level / 2 + 1
+                    ? (Direction)(Game.Random.Next(2) * 2 - 1) // this will be 1 or -1
+                    : Direction.Right;
                 if (_directionLeave == Direction.Left)
                 {
                     _finishX = Game.Screen.Left - Game.TileWidth;

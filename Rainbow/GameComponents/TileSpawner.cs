@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,9 +17,9 @@ namespace Rainbow
         private const int NO_COLOR_TILES_CHANCE = 15; // % chance in standart state
 
         private const int SHOTGUN_EVENT_CHANCE = 5; // % chance for event trigger
-        private const int DIAMOND_EVENT_CHANCE = 500; // % chance for event trigger
+        private const int DIAMOND_EVENT_CHANCE = 5; // % chance for event trigger
         private const int CHESS_EVENT_CHANCE = 5; // % chance for event trigger
-        private const int RAINBOW_EVENT_CHANCE = 5; // % chance for event trigger
+        private const int RAINBOW_EVENT_CHANCE = 500; // % chance for event trigger
 
         private readonly NormalState _normalState;
         private readonly ShotgunState _shotgunState;
@@ -243,6 +244,7 @@ namespace Rainbow
             private readonly int[] _weightedIndexes; // For size
             private int _centerColumn;
             private int _centerRow;
+            private ColorCode colorCode;
 
             public DiamondState(TileSpawner spawner) : base(spawner)
             {
@@ -262,8 +264,8 @@ namespace Rainbow
                     i <= _centerRow - Math.Abs(_centerRow - rowIndex);
                     i++)
                     Spawner.Spawn(
-                        _centerColumn + i, 
-                        Spawner.RandomColor(),
+                        _centerColumn + i,
+                        colorCode,
                         TotalRowSpawns - _centerRow - Math.Abs(i) - Math.Abs(_centerRow - rowIndex));
             }
 
@@ -274,8 +276,9 @@ namespace Rainbow
                 int size = _sizes[rndIndex];
                 TotalRowSpawns = size;
                 Space = rndIndex;
-                _centerColumn = Game.Random.Next(size - 1, Spawner._level - 1 - rndIndex); // min not tested
+                _centerColumn = Game.Random.Next(size / 2, Spawner._level - size / 2);
                 _centerRow = TotalRowSpawns / 2;
+                colorCode = Spawner.RandomColor();
             }
         }
 
@@ -292,16 +295,62 @@ namespace Rainbow
 
         private class RainbowState : SpecialState
         {
-            public RainbowState(TileSpawner spawner) : base(spawner, 0) { }
+            private readonly ColorCode[] _rainbow = new ColorCode[6];
+            private readonly int _size;
+            private readonly int _period;
+            private int _spawnIndex;
+            private bool _tryChain;
+
+            public RainbowState(TileSpawner spawner) : base(spawner)
+            {
+                _size = Spawner._level - _rainbow.Length;
+                _period = 4 * _size + 1;
+                TotalRowSpawns =_period;
+                _rainbow = new ColorCode[]
+                {
+                    ColorCode.I,
+                    ColorCode.I_II,
+                    ColorCode.II,
+                    ColorCode.II_III,
+                    ColorCode.III,
+                    ColorCode.I_III
+                }
+                .OrderBy(cc =>
+                    {
+                        var c = Spawner._colorModel.CodeToColor(cc);
+                        return // byte * 2 = 8 + 1 = 9 bits
+                            ((c.R > c.B * 2 && c.B > c.G ? (ulong)(c.R * 2 - c.B) : 0) << 9 * 3) +  // Magenta to red
+                            ((c.G >= c.B ? (ulong)(byte.MaxValue + c.R - c.G) : 0) << 9 * 2) +      // Red to green
+                            ((c.B >= c.R ? (ulong)(byte.MaxValue + c.G - c.B) : 0) << 9) +          // Green to blue
+                            (c.R >= c.G ? (ulong)(byte.MaxValue + c.B - c.R) : 0);                  // Blue to red (magenta)
+                    })
+                .ToArray();
+            }
 
             protected override void OnSpawnTick(int rowIndex)
             {
-                throw new NotImplementedException();
+                double epsilon = 0.000000000001; // Fixes small inaccuracy that causes numbers to have fractional part very close to .5 but less
+                if (Spawner._level != _rainbow.Length)
+                {
+                    rowIndex %= _period;
+                    _spawnIndex = (int)Math.Round(
+                        _size * (Math.Cos(rowIndex * Math.PI / (2 * _size) + Math.PI) + 1) / 2 + epsilon, // Wave function
+                        MidpointRounding.AwayFromZero);
+                }
+
+                for (int i = 0; i < _rainbow.Length; i++)
+                    Spawner.Spawn(_spawnIndex + i, _rainbow[i]);
+
+                if (_tryChain && Game.Random.Next(10) > 0) 
+                    TotalRowSpawns++; // 90% chance to chain
+                else _tryChain = false;
             }
 
             protected override void OnStateSet()
             {
-                throw new NotImplementedException();
+                base.OnStateSet();
+                _spawnIndex = 0;
+                _tryChain = true;
             }
         }
     }

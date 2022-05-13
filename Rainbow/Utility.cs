@@ -11,6 +11,17 @@ namespace Rainbow
 {
     public static class Utility
     {
+        public static TSource MaxBy<TSource, TComparable>(this IEnumerable<TSource> source, Func<TSource, TComparable> selector) 
+            where TComparable : IComparable<TComparable> =>
+            source.Select(s => (element: s, value: selector(s))).Aggregate((max, next) => max.value.CompareTo(next.value) < 0 ? next : max).element;
+
+        public static TSource MinBy<TSource, TComparable>(this IEnumerable<TSource> source, Func<TSource, TComparable> selector)
+            where TComparable : IComparable<TComparable> =>
+            source.Select(s => (element: s, value: selector(s))).Aggregate((min, next) => min.value.CompareTo(next.value) > 0 ? next : min).element;
+
+        public static bool HasAnyFlag(this Enum @enum, Enum flags) =>
+            (Convert.ToInt64(@enum) & Convert.ToInt64(flags)) != 0;
+
         public static void DrawRectangle(this Graphics graphics, Pen pen, RectangleF rectangle) =>
             graphics.DrawRectangle(pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 

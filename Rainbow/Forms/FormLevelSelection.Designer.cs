@@ -53,17 +53,18 @@ namespace Rainbow
             this.checkBoxColorWheel = new System.Windows.Forms.CheckBox();
             this.checkShotgunEvent = new System.Windows.Forms.CheckBox();
             this.checkBoxDoubleClickTiles = new System.Windows.Forms.CheckBox();
-            this.checkBox6 = new System.Windows.Forms.CheckBox();
+            this.checkBoxBirdy = new System.Windows.Forms.CheckBox();
             this.panelColorModels = new System.Windows.Forms.Panel();
             this.radioButtonARC = new System.Windows.Forms.RadioButton();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.checkBoxDiamondEvent = new System.Windows.Forms.CheckBox();
+            this.checkBoxChessEvent = new System.Windows.Forms.CheckBox();
             this.checkBoxFlashingColors = new System.Windows.Forms.CheckBox();
             this.checkBoxRainbowEvent = new System.Windows.Forms.CheckBox();
             this.checkBoxNoColorTiles = new System.Windows.Forms.CheckBox();
             this.checkBoxTripleClickTiles = new System.Windows.Forms.CheckBox();
             this.checkBoxNoClickTiles = new System.Windows.Forms.CheckBox();
             this.checkBoxHintColumns = new System.Windows.Forms.CheckBox();
+            this.checkBoxColorfulBackground = new System.Windows.Forms.CheckBox();
             this.panelLevels.SuspendLayout();
             this.panelColorModels.SuspendLayout();
             this.SuspendLayout();
@@ -167,7 +168,7 @@ namespace Rainbow
             this.checkBoxShowButtons.BackColor = System.Drawing.SystemColors.ControlLight;
             this.checkBoxShowButtons.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxShowButtons.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxShowButtons.Location = new System.Drawing.Point(410, 210);
+            this.checkBoxShowButtons.Location = new System.Drawing.Point(410, 310);
             this.checkBoxShowButtons.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.checkBoxShowButtons.Name = "checkBoxShowButtons";
             this.checkBoxShowButtons.Size = new System.Drawing.Size(100, 100);
@@ -452,21 +453,21 @@ namespace Rainbow
             this.checkBoxDoubleClickTiles.UseVisualStyleBackColor = false;
             this.checkBoxDoubleClickTiles.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
-            // checkBox6
+            // checkBoxBirdy
             // 
-            this.checkBox6.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox6.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.checkBox6.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox6.Location = new System.Drawing.Point(410, 310);
-            this.checkBox6.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.checkBox6.Name = "checkBox6";
-            this.checkBox6.Size = new System.Drawing.Size(100, 100);
-            this.checkBox6.TabIndex = 16;
-            this.checkBox6.Text = "Birdy";
-            this.checkBox6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox6.UseVisualStyleBackColor = false;
-            this.checkBox6.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
+            this.checkBoxBirdy.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBoxBirdy.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.checkBoxBirdy.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkBoxBirdy.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxBirdy.Location = new System.Drawing.Point(410, 410);
+            this.checkBoxBirdy.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.checkBoxBirdy.Name = "checkBoxBirdy";
+            this.checkBoxBirdy.Size = new System.Drawing.Size(100, 100);
+            this.checkBoxBirdy.TabIndex = 16;
+            this.checkBoxBirdy.Text = "Birdy";
+            this.checkBoxBirdy.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBoxBirdy.UseVisualStyleBackColor = false;
+            this.checkBoxBirdy.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // panelColorModels
             // 
@@ -497,37 +498,37 @@ namespace Rainbow
             this.radioButtonARC.UseVisualStyleBackColor = false;
             this.radioButtonARC.CheckedChanged += new System.EventHandler(this.RadioButtonColorModel_CheckedChanged);
             // 
-            // checkBox1
+            // checkBoxDiamondEvent
             // 
-            this.checkBox1.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox1.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.checkBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox1.Location = new System.Drawing.Point(510, 110);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(100, 100);
-            this.checkBox1.TabIndex = 25;
-            this.checkBox1.Text = "Diamond Event";
-            this.checkBox1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox1.UseVisualStyleBackColor = false;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
+            this.checkBoxDiamondEvent.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBoxDiamondEvent.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.checkBoxDiamondEvent.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkBoxDiamondEvent.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxDiamondEvent.Location = new System.Drawing.Point(510, 110);
+            this.checkBoxDiamondEvent.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.checkBoxDiamondEvent.Name = "checkBoxDiamondEvent";
+            this.checkBoxDiamondEvent.Size = new System.Drawing.Size(100, 100);
+            this.checkBoxDiamondEvent.TabIndex = 25;
+            this.checkBoxDiamondEvent.Text = "Diamond Event";
+            this.checkBoxDiamondEvent.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBoxDiamondEvent.UseVisualStyleBackColor = false;
+            this.checkBoxDiamondEvent.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
-            // checkBox2
+            // checkBoxChessEvent
             // 
-            this.checkBox2.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox2.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.checkBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox2.Location = new System.Drawing.Point(510, 210);
-            this.checkBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(100, 100);
-            this.checkBox2.TabIndex = 26;
-            this.checkBox2.Text = "Chess Event";
-            this.checkBox2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox2.UseVisualStyleBackColor = false;
-            this.checkBox2.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
+            this.checkBoxChessEvent.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBoxChessEvent.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.checkBoxChessEvent.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkBoxChessEvent.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxChessEvent.Location = new System.Drawing.Point(510, 210);
+            this.checkBoxChessEvent.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.checkBoxChessEvent.Name = "checkBoxChessEvent";
+            this.checkBoxChessEvent.Size = new System.Drawing.Size(100, 100);
+            this.checkBoxChessEvent.TabIndex = 26;
+            this.checkBoxChessEvent.Text = "Chess Event";
+            this.checkBoxChessEvent.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBoxChessEvent.UseVisualStyleBackColor = false;
+            this.checkBoxChessEvent.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
             // checkBoxFlashingColors
             // 
@@ -549,7 +550,6 @@ namespace Rainbow
             // 
             this.checkBoxRainbowEvent.Appearance = System.Windows.Forms.Appearance.Button;
             this.checkBoxRainbowEvent.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.checkBoxRainbowEvent.Enabled = false;
             this.checkBoxRainbowEvent.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxRainbowEvent.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBoxRainbowEvent.Location = new System.Drawing.Point(510, 310);
@@ -616,7 +616,7 @@ namespace Rainbow
             this.checkBoxHintColumns.BackColor = System.Drawing.SystemColors.ControlLight;
             this.checkBoxHintColumns.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkBoxHintColumns.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxHintColumns.Location = new System.Drawing.Point(410, 110);
+            this.checkBoxHintColumns.Location = new System.Drawing.Point(410, 210);
             this.checkBoxHintColumns.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.checkBoxHintColumns.Name = "checkBoxHintColumns";
             this.checkBoxHintColumns.Size = new System.Drawing.Size(100, 100);
@@ -626,6 +626,22 @@ namespace Rainbow
             this.checkBoxHintColumns.UseVisualStyleBackColor = false;
             this.checkBoxHintColumns.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
             // 
+            // checkBoxColorfulBackground
+            // 
+            this.checkBoxColorfulBackground.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBoxColorfulBackground.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.checkBoxColorfulBackground.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkBoxColorfulBackground.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxColorfulBackground.Location = new System.Drawing.Point(410, 110);
+            this.checkBoxColorfulBackground.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.checkBoxColorfulBackground.Name = "checkBoxColorfulBackground";
+            this.checkBoxColorfulBackground.Size = new System.Drawing.Size(100, 100);
+            this.checkBoxColorfulBackground.TabIndex = 33;
+            this.checkBoxColorfulBackground.Text = "Colorful Back";
+            this.checkBoxColorfulBackground.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBoxColorfulBackground.UseVisualStyleBackColor = false;
+            this.checkBoxColorfulBackground.CheckedChanged += new System.EventHandler(this.CheckBoxGameModifier_CheckedChanged);
+            // 
             // FormLevelSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -633,19 +649,20 @@ namespace Rainbow
             this.BackColor = System.Drawing.Color.Gray;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(720, 520);
+            this.Controls.Add(this.checkBoxColorfulBackground);
             this.Controls.Add(this.checkBoxHintColumns);
             this.Controls.Add(this.checkBoxNoClickTiles);
             this.Controls.Add(this.checkBoxTripleClickTiles);
             this.Controls.Add(this.checkBoxNoColorTiles);
             this.Controls.Add(this.checkBoxRainbowEvent);
             this.Controls.Add(this.checkBoxFlashingColors);
-            this.Controls.Add(this.checkBox2);
-            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.checkBoxChessEvent);
+            this.Controls.Add(this.checkBoxDiamondEvent);
             this.Controls.Add(this.panelColorModels);
             this.Controls.Add(this.checkBoxColorWheel);
             this.Controls.Add(this.checkShotgunEvent);
             this.Controls.Add(this.checkBoxDoubleClickTiles);
-            this.Controls.Add(this.checkBox6);
+            this.Controls.Add(this.checkBoxBirdy);
             this.Controls.Add(this.checkBoxColorDistortion);
             this.Controls.Add(this.checkBoxTripleTiles);
             this.Controls.Add(this.checkBoxInvertedColors);
@@ -697,16 +714,17 @@ namespace Rainbow
         private System.Windows.Forms.CheckBox checkBoxColorWheel;
         private System.Windows.Forms.CheckBox checkShotgunEvent;
         private System.Windows.Forms.CheckBox checkBoxDoubleClickTiles;
-        private System.Windows.Forms.CheckBox checkBox6;
+        private System.Windows.Forms.CheckBox checkBoxBirdy;
         private System.Windows.Forms.Panel panelColorModels;
         private System.Windows.Forms.RadioButton radioButtonARC;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.CheckBox checkBoxDiamondEvent;
+        private System.Windows.Forms.CheckBox checkBoxChessEvent;
         private System.Windows.Forms.CheckBox checkBoxFlashingColors;
         private System.Windows.Forms.CheckBox checkBoxRainbowEvent;
         private System.Windows.Forms.CheckBox checkBoxNoColorTiles;
         private System.Windows.Forms.CheckBox checkBoxTripleClickTiles;
         private System.Windows.Forms.CheckBox checkBoxNoClickTiles;
         private System.Windows.Forms.CheckBox checkBoxHintColumns;
+        private System.Windows.Forms.CheckBox checkBoxColorfulBackground;
     }
 }

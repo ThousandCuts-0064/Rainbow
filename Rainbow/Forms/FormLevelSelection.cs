@@ -29,6 +29,8 @@ namespace Rainbow
 
         private void RadioButtonColorModel_CheckedChanged(object sender, EventArgs e)
         {
+            if (!((RadioButton)sender).Checked) return;
+
             if (radioButtonRGB.Checked)
                 _colorModel = new RGB();
             else if (radioButtonCMY.Checked)
@@ -47,14 +49,18 @@ namespace Rainbow
         private void ButtonStart_Click(object sender, EventArgs e)
         {
             if (_selectedLevel == 0 || _colorModel == null) return;
-            if (_selectedLevel == 1)
+            if (_selectedLevel < 2 && _gameModifiers.HasAnyFlag(
+                GameModifiers.DoubleTiles | GameModifiers.ChessEvent)) return;
+            if (_selectedLevel < 3 && _gameModifiers.HasAnyFlag(
+                GameModifiers.TripleTiles | GameModifiers.DiamondEvent)) return;
+            if (_selectedLevel < 6 && _gameModifiers.HasAnyFlag(
+                GameModifiers.DiamondEvent)) return;
+            
+            new FormPlay(_colorModel, _gameModifiers, _selectedLevel) 
             {
-                if (_gameModifiers.HasFlag(GameModifiers.DoubleTiles)) return;
-                if (_gameModifiers.HasFlag(GameModifiers.ChessEvent)) return;
-            }
-            if (_selectedLevel <= 2 && _gameModifiers.HasFlag(GameModifiers.TripleTiles)) return;
-            //FormPlay.Owner = this.Owner
-            new FormPlay(_colorModel, _gameModifiers, _selectedLevel) { Owner = Owner }.Show();
+                //FormPlay.Owner = this.Owner
+                Owner = Owner
+            }.Show();
             Close();
         }
     }

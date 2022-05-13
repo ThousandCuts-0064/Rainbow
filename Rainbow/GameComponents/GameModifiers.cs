@@ -24,10 +24,10 @@ namespace Rainbow
         FlashingColors =    1 << 9,
                             
         ColorWheel =        1 << 10,
-        HintColumns =       1 << 11,
-        HintButtons =       1 << 12,
-        Birdy =             1 << 13,
-        Empty6 =            1 << 14,
+        ColorfulBack =      1 << 11,
+        HintColumns =       1 << 12,
+        HintButtons =       1 << 13,
+        Birdy =             1 << 14,
                             
         ShotgunEvent =      1 << 15,
         DiamondEvent =      1 << 16,

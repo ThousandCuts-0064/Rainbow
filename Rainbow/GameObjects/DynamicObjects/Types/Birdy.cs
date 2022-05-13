@@ -161,7 +161,7 @@ namespace Rainbow
         private class LeavingState : State
         {
             private Func<bool> _reachedFinish;
-            private Direction _directionLeave;
+            private int _directionLeave; // -1 or 1
             private float _finishX;
 
             public LeavingState(Birdy birdy) : base(birdy) { }
@@ -169,11 +169,11 @@ namespace Rainbow
             public override void OnSet()
             {
                 _directionLeave = Birdy._target.Column <= Game.Level / 2
-                    ? Direction.Left
+                    ? -1
                     : Game.Level % 2 == 1 && Birdy._target.Column == Game.Level / 2 + 1
-                    ? (Direction)(Game.Random.Next(2) * 2 - 1) // this will be 1 or -1
-                    : Direction.Right;
-                if (_directionLeave == Direction.Left)
+                    ? Game.Random.Next(2) * 2 - 1 // this will be -1 or 1
+                    : 1;
+                if (_directionLeave == -1)
                 {
                     _finishX = Game.Screen.Left - Game.TileWidth;
                     _reachedFinish = () => Birdy.Location.X <= _finishX;
@@ -188,7 +188,7 @@ namespace Rainbow
 
             public override void OnUpdate()
             {
-                Move(Speed * (int)_directionLeave, 0);
+                Move(Speed * _directionLeave, 0);
                 if (_reachedFinish()) Birdy.Dispose();
             }
 
@@ -196,12 +196,6 @@ namespace Rainbow
             {
                 Birdy.Location = Birdy.Location.Offset(x, y);
                 Birdy._targetController.Move(x, y);
-            }
-
-            private enum Direction
-            {
-                Left = -1,
-                Right = 1
             }
         }
     }

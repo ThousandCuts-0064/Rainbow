@@ -50,7 +50,7 @@ namespace Rainbow
                         break;
 
                     default:
-                        _penBoarderDashPattern[0] = 12f / (2 * value);
+                        _penBoarderDashPattern[0] = 6f / value;
                         _penBoarder.DashPattern = _penBoarderDashPattern;
                         break;
                 }

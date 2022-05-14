@@ -8,15 +8,17 @@ namespace Rainbow
 {
     public readonly struct ColorColumn
     {
-        private const string EMPTY_COLOR_TO_STRING = "_";
-        private static readonly IReadOnlyDictionary<ColorColumn, string> _toInput;
+        public const string NO_COLOR_STRING = "_";
+        public const string EMPTY_STRING = " ";
+        public const int NO_COLUMN = -1;
+        private static readonly IReadOnlyMap<ColorColumn, string> _mapChars;
 
         public ColorCode ColorCode { get; }
         public int Column { get; }
 
         static ColorColumn()
         {
-            var toInput = new Dictionary<ColorColumn, string>()
+            var toInput = new Map<ColorColumn, string>()
             {
                 { (ColorCode.I, 0), "Q" }, { (ColorCode.II, 0), "A" }, { (ColorCode.III, 0), "Z" },
                 { (ColorCode.I, 1), "W" }, { (ColorCode.II, 1), "S" }, { (ColorCode.III, 1), "X" },
@@ -32,33 +34,33 @@ namespace Rainbow
 
             for (int i = 0; i < 10; i++)
             {
-                toInput.Add(
-                    (ColorCode.None, i),
-                    EMPTY_COLOR_TO_STRING);
+                //toInput.Add(
+                //    (ColorCode.None, i),
+                //    EMPTY_COLOR_TO_STRING);
 
                 toInput.Add(
                     (ColorCode.I_II, i),
-                    toInput[(ColorCode.I, i)] +
-                        toInput[(ColorCode.II, i)]);
+                    toInput.Forward[(ColorCode.I, i)] +
+                        toInput.Forward[(ColorCode.II, i)]);
 
                 toInput.Add(
                     (ColorCode.I_III, i),
-                    toInput[(ColorCode.I, i)] +
-                        toInput[(ColorCode.III, i)]);
+                    toInput.Forward[(ColorCode.I, i)] +
+                        toInput.Forward[(ColorCode.III, i)]);
 
                 toInput.Add(
                     (ColorCode.II_III, i),
-                    toInput[(ColorCode.II, i)] +
-                        toInput[(ColorCode.III, i)]);
+                    toInput.Forward[(ColorCode.II, i)] +
+                        toInput.Forward[(ColorCode.III, i)]);
 
                 toInput.Add(
                     (ColorCode.All, i),
-                    toInput[(ColorCode.I, i)] +
-                        toInput[(ColorCode.II, i)] +
-                        toInput[(ColorCode.III, i)]);
+                    toInput.Forward[(ColorCode.I, i)] +
+                        toInput.Forward[(ColorCode.II, i)] +
+                        toInput.Forward[(ColorCode.III, i)]);
             }
 
-            _toInput = toInput;
+            _mapChars = toInput;
         }
 
         public ColorColumn(ColorCode colorCode, int column)
@@ -67,9 +69,13 @@ namespace Rainbow
             Column = column;
         }
 
-        public string ToInput() => _toInput[this];
+        public static ColorColumn FromInput(string str, int defaultColumn = NO_COLUMN) =>
+            str == EMPTY_STRING || str == NO_COLOR_STRING
+                ? new ColorColumn(ColorCode.None, defaultColumn)
+                : _mapChars.Reverse[str];
+        public string ToInput() => ColorCode == ColorCode.None ? NO_COLOR_STRING : _mapChars.Forward[this];
 
-        public static implicit operator ColorColumn((ColorCode code, int column) tuple) => 
+        public static implicit operator ColorColumn((ColorCode code, int column) tuple) =>
             new ColorColumn(tuple.code, tuple.column);
     }
 }

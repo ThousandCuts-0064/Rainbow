@@ -146,10 +146,9 @@ namespace Rainbow
 
                 void TryTakeTarget()
                 {
-                    if (Birdy._target.IsInControl)
+                    if (Birdy._target.TryGetController(out var controller))
                     {
                         Birdy.TargetTaken?.Invoke(Birdy._target);
-                        Birdy._target.TryGetController(out var controller);
                         Birdy._targetController = controller;
                         Birdy.SetState(Birdy._leavingState);
                     }

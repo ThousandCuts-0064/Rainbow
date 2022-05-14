@@ -17,11 +17,13 @@ namespace Rainbow
         private const int NO_COLOR_TILES_CHANCE = 15; // % chance in standart state
 
         private const int SHOTGUN_EVENT_CHANCE = 5; // % chance for event trigger
+        private const int MESSAGE_EVENT_CHANCE = 500; // % chance for event trigger
         private const int DIAMOND_EVENT_CHANCE = 5; // % chance for event trigger
         private const int CHESS_EVENT_CHANCE = 5; // % chance for event trigger
-        private const int RAINBOW_EVENT_CHANCE = 500; // % chance for event trigger
+        private const int RAINBOW_EVENT_CHANCE = 5; // % chance for event trigger
 
         private readonly NormalState _normalState;
+        private readonly MessageState _messageState;
         private readonly ShotgunState _shotgunState;
         private readonly DiamondState _diamondState;
         private readonly ChessState _chessState;
@@ -44,6 +46,7 @@ namespace Rainbow
             _level = level;
 
             _normalState = new NormalState(this);
+            _messageState = new MessageState(this);
             _shotgunState = new ShotgunState(this);
             _diamondState = new DiamondState(this);
             _chessState = new ChessState(this);
@@ -62,6 +65,9 @@ namespace Rainbow
             {
                 int chanceCap = 100;
                 int chanceCurrent = Game.Random.Next(chanceCap);
+
+                if (TryChanceModifier(GameModifiers.MessageEvent, ref chanceCurrent, MESSAGE_EVENT_CHANCE, chanceCap))
+                    SetState(_messageState);
 
                 if (TryChanceModifier(GameModifiers.ShotgunEvent, ref chanceCurrent, SHOTGUN_EVENT_CHANCE, chanceCap))
                     SetState(_shotgunState);
@@ -227,6 +233,39 @@ namespace Rainbow
             }
         }
 
+        private class MessageState : SpecialState
+        {
+            private static readonly string[] _messages = new string[]
+            {
+                "Loading..........",
+                "I love spawning tiles",
+                "Dont look at my tiles",
+                "Here they come",
+                "This is my favorite event",
+                "My time has come",
+                "Its time to shine",
+                "Pssst, I love you",
+                "MUHAHAHA",
+                "The secret is RAINTILE"
+            }.Select(str => str.ToUpper()).ToArray();
+            private string _message;
+
+            public MessageState(TileSpawner spawner) : base(spawner, space: 1) { }
+
+            protected override void OnSpawnTick(int rowIndex)
+            {
+                ColorColumn cc = ColorColumn.FromInput(_message[rowIndex].ToString(), Game.Random.Next(Spawner._level));
+                Spawner.Spawn(cc.Column, cc.ColorCode);
+            }
+
+            protected override void OnStateSet()
+            {
+                base.OnStateSet();
+                _message = _messages[Game.Random.Next(_messages.Length)];
+                TotalRowSpawns = _message.Length;
+            }
+        }
+
         private class ShotgunState : SpecialState
         {
             public ShotgunState(TileSpawner spawner) : base(spawner, 3) { }
@@ -305,7 +344,7 @@ namespace Rainbow
             {
                 _size = Spawner._level - _rainbow.Length;
                 _period = 4 * _size + 1;
-                TotalRowSpawns =_period;
+                TotalRowSpawns = _period;
                 _rainbow = new ColorCode[]
                 {
                     ColorCode.I,
@@ -315,16 +354,16 @@ namespace Rainbow
                     ColorCode.III,
                     ColorCode.I_III
                 }
-                .OrderBy(cc =>
-                    {
-                        var c = Spawner._colorModel.CodeToColor(cc);
-                        return // byte * 2 = 8 + 1 = 9 bits
-                            ((c.R > c.B * 2 && c.B > c.G ? (ulong)(c.R * 2 - c.B) : 0) << 9 * 3) +  // Magenta to red
-                            ((c.G >= c.B ? (ulong)(byte.MaxValue + c.R - c.G) : 0) << 9 * 2) +      // Red to green
-                            ((c.B >= c.R ? (ulong)(byte.MaxValue + c.G - c.B) : 0) << 9) +          // Green to blue
-                            (c.R >= c.G ? (ulong)(byte.MaxValue + c.B - c.R) : 0);                  // Blue to red (magenta)
-                    })
-                .ToArray();
+                    .OrderBy(cc =>
+                        {
+                            var c = Spawner._colorModel.CodeToColor(cc);
+                            return // byte * 2 = 8 + 1 = 9 bits
+                                ((c.R > c.B * 2 && c.B > c.G ? (ulong)(c.R * 2 - c.B) : 0) << 9 * 3) +  // Magenta to red
+                                ((c.G >= c.B ? (ulong)(byte.MaxValue + c.R - c.G) : 0) << 9 * 2) +      // Red to green
+                                ((c.B >= c.R ? (ulong)(byte.MaxValue + c.G - c.B) : 0) << 9) +          // Green to blue
+                                (c.R >= c.G ? (ulong)(byte.MaxValue + c.B - c.R) : 0);                  // Blue to red (magenta)
+                        })
+                    .ToArray();
             }
 
             protected override void OnSpawnTick(int rowIndex)
@@ -341,7 +380,7 @@ namespace Rainbow
                 for (int i = 0; i < _rainbow.Length; i++)
                     Spawner.Spawn(_spawnIndex + i, _rainbow[i]);
 
-                if (_tryChain && Game.Random.Next(10) > 0) 
+                if (_tryChain && Game.Random.Next(10) > 0)
                     TotalRowSpawns++; // 90% chance to chain
                 else _tryChain = false;
             }

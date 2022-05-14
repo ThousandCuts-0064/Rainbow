@@ -120,7 +120,7 @@ namespace Rainbow
         }
 
         /// <summary>
-        /// Reduces tile's lives with 1.
+        /// Reduces tile's lives by 1.
         /// </summary>
         public void Click()
         {

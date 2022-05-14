@@ -19,7 +19,6 @@ namespace Rainbow
         private static Dictionary<Layer, List<IDrawable>> _layerToList;
         private static HashSet<Update> _updates;
         private static Channel[] _channels;
-        private static Color[] _backColors;
         private static Timer _timer;
         private static Stats _stats;
         private static InputManager _inputManager;
@@ -75,7 +74,7 @@ namespace Rainbow
             _gameModifiers = gameModifiers;
             Level = level;
             IsLoaded = true;
-
+            if ((ColorCode.I, 0) == (ColorCode.I, 1)) throw new Exception();
             //Direct object Creation
             _updates = new HashSet<Update>();
             _layerToList = new Dictionary<Layer, List<IDrawable>>();
@@ -148,18 +147,6 @@ namespace Rainbow
                     CalculateColorWheelRectangle(),
                     Layer.UI);
 
-            if (gameModifiers.HasFlag(GameModifiers.ColorfulBack))
-            {
-                _backColors = new Color[]
-                {
-                    colorModel.CodeToColor(ColorCode.I),
-                    colorModel.CodeToColor(ColorCode.I_II),
-                    colorModel.CodeToColor(ColorCode.II),
-                    colorModel.CodeToColor(ColorCode.II_III),
-                    colorModel.CodeToColor(ColorCode.III),
-                    colorModel.CodeToColor(ColorCode.I_III),
-                };
-            }
 
             //Events
             _timer.Tick += GameTick;
@@ -172,9 +159,27 @@ namespace Rainbow
                 channel.TilePassed += _stats.OnTakeTile;
                 channel.NoClickTileClicked += _stats.OnTakeNoClickTile;
                 if (_birdyManager != null) channel.TileRemoved += _birdyManager.OnTargetDisappear;
+                if (gameModifiers.HasFlag(GameModifiers.ColorfulBack))
+                {
+                    _tileSpawner.TileSpawned += OneTimeTrackSpawner;
+
+                    channel.TileRemoved += tile =>
+                    {
+                        var lastTileNode = _channels.MaxBy(ch => ch.TileNodeLast?.Value.Location.Y ?? -TileHeight * 2).TileNodeLast;
+                        if (lastTileNode == null) _tileSpawner.TileSpawned += OneTimeTrackSpawner; // In case somehow there isn't any tile on the screen
+                        else _formPlay.BackColor = colorModel.CodeToColor(lastTileNode.Value.ColorCode); // More often than not there will be at least one tile on the screen
+                    };   
+                    
+                    void OneTimeTrackSpawner(Tile t, int index)
+                    {
+                        _formPlay.BackColor = colorModel.CodeToColor(t.ColorCode);
+                        _tileSpawner.TileSpawned -= OneTimeTrackSpawner;
+                    }
+                }
             }
             formPlay.KeyDown += _inputManager.OnKeyDown;
             formPlay.KeyUp += _inputManager.OnKeyUp;
+
 
             //Start Game
             _timer.Start();
@@ -218,14 +223,7 @@ namespace Rainbow
             _stats.OnTick();
             _tileSpawner.OnTick();
             _birdyManager?.OnTick();
-            if (_gameModifiers.HasFlag(GameModifiers.ColorfulBack)) _formPlay.BackColor = InterpolateAt(Ticks);
             _formPlay.Invalidate();
-
-            Color InterpolateAt(ulong step)
-            {
-                float ratio = step / (float)byte.MaxValue;
-                return _backColors[(int)ratio % _backColors.Length].Blend(_backColors[(int)(ratio + 1) % _backColors.Length], ratio % 1);
-            }
         }
     }
 }

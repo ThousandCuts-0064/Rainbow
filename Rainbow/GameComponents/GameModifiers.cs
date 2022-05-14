@@ -29,10 +29,10 @@ namespace Rainbow
         HintButtons =       1 << 13,
         Birdy =             1 << 14,
                             
-        ShotgunEvent =      1 << 15,
-        DiamondEvent =      1 << 16,
-        ChessEvent =        1 << 17,
-        RainbowEvent =      1 << 18,
-        Empty9 =            1 << 19,
+        MessageEvent =      1 << 15,
+        ShotgunEvent =      1 << 16,
+        DiamondEvent =      1 << 17,
+        ChessEvent =        1 << 18,
+        RainbowEvent =      1 << 19,
     }
 }

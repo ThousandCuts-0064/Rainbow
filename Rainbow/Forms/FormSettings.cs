@@ -16,11 +16,10 @@ namespace Rainbow
         private const string ON = "On";
         private const string OFF = "Off";
         private static readonly TextRenderingHint[] _textRenderingHints;
-        private static readonly HashSet<char> _uppercase;
         private static Settings _settingsOld = DefaultSettings;
         private readonly FormPause _formPause;
         private Settings _settingsNew;
-        public static readonly Settings DefaultSettings = new Settings()
+        public static Settings DefaultSettings { get; } = new Settings()
         {
             AntiAliasing = false,
             PixelOffset = false,
@@ -33,7 +32,6 @@ namespace Rainbow
         {
             SettingsChanged += settings => _settingsOld = settings;
             _textRenderingHints = Enum.GetValues(typeof(TextRenderingHint)).Cast<TextRenderingHint>().ToArray();
-            _uppercase = Enumerable.Range('A', 'Z' - 'A').Select(i => (char)i).ToHashSet();
         }
 
         public FormSettings(FormPause formPause)
@@ -120,6 +118,12 @@ namespace Rainbow
             VisualizeSettings();
         }
 
+        private void ButtonDefault_Click(object sender, EventArgs e)
+        {
+            _settingsNew = DefaultSettings;
+            VisualizeSettings();
+        }
+
         private void ButtonBack_Click(object sender, EventArgs e)
         {
             Close();
@@ -146,7 +150,7 @@ namespace Rainbow
             List<char> chars = @enum.ToString().ToList();
             for (int i = 1; i < chars.Count; i++)
             {
-                if (!_uppercase.Contains(chars[i])) continue;
+                if (!char.IsUpper(chars[i])) continue;
 
                 chars.Insert(i, ' ');
                 i++;

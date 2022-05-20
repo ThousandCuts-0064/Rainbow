@@ -15,7 +15,9 @@ namespace Rainbow
         /// % of screen height. Range: [0, 1].
         /// </summary>
         private const float UNIT_HIGHT_RATIO = 0.01f;
+        private static readonly string _directoryName;
         private static readonly Color _colorBoarder = Color.Black;
+        private static Record _record;
         private static Dictionary<Layer, List<IDrawable>> _layerToList;
         private static HashSet<Update> _updates;
         private static Channel[] _channels;
@@ -61,10 +63,17 @@ namespace Rainbow
         public static float TileWidth { get; private set; }
         public static float TileHeight { get; private set; }
         public static float TileSpeed { get; private set; }
-        public static int TileUnitsPerSecond { get; private set; } = 10;
+        public static int TileUnitsPerSecond { get; private set; } = 100;
         public static int Level { get; private set; }
-        public static bool IsLoaded { get; private set; }
+        public static bool IsActive { get; private set; }
         public static bool IsPaused { get => !_timer.Enabled; set => _timer.Enabled = !value; }
+
+        static Game()
+        {
+            _directoryName = System.Data.Entity.Design.PluralizationServices.PluralizationService
+                .CreateService(new System.Globalization.CultureInfo("en-US", false))
+                .Pluralize(nameof(Record));
+        }
 
         public static void Initialize(FormPlay formPlay, IColorModel colorModel, GameModifiers gameModifiers, int level)
         {
@@ -73,8 +82,14 @@ namespace Rainbow
             _colorModel = colorModel;
             _gameModifiers = gameModifiers;
             Level = level;
-            IsLoaded = true;
-            if ((ColorCode.I, 0) == (ColorCode.I, 1)) throw new Exception();
+            _record = new Record
+            {
+                ColorModelName = colorModel.Name,
+                GameModifiers = gameModifiers,
+                Level = Level
+            };
+            IsActive = true;
+
             //Direct object Creation
             _updates = new HashSet<Update>();
             _layerToList = new Dictionary<Layer, List<IDrawable>>();
@@ -147,17 +162,31 @@ namespace Rainbow
                     CalculateColorWheelRectangle(),
                     Layer.UI);
 
-
             //Events
             _timer.Tick += GameTick;
             _inputManager.ShotgunPressed += _stats.OnShotgunPressed;
             _inputManager.ColorInput += (colorCode, column) => _channels[column].OnColorInput(colorCode);
             _tileSpawner.TileSpawned += (tile, index) => _channels[index].TileListAddFirst(tile);
+            _tileSpawner.TileSpawned += (tile, index) => tile.Popped += () => _record.TilesPopped++;
+            _stats.Death += () =>
+            {
+                if (!Save.DirectoryExists(_directoryName))
+                    Save.CreateDirectory(_directoryName);
+                Save.Serialize(
+                    Path.Combine(_directoryName, DateTime.Now.ToString().Replace('/', '-').Replace(':', '-')) + ".dat",
+                    new ReadOnlyRecord(_record));
+                _record.TimeSpan = TimeSpan.FromSeconds((double)Ticks * DELTA_TIME);
+                new FormDeath(formPlay, new ReadOnlyRecord(_record)).Show();
+                IsActive = false;
+                IsPaused = true;
+            };
             foreach (var channel in _channels)
             {
                 _stats.ShotgunUsed += channel.OnShotgunUsed;
+                channel.TileClicked += tile => _record.TilesClicked++;
+                channel.TilePassed += tile => _record.TilesPassed++;
                 channel.TilePassed += _stats.OnTakeTile;
-                channel.NoClickTileClicked += _stats.OnTakeNoClickTile;
+                channel.NoClickTilePopped += _stats.OnTakeNoClickTile;
                 if (_birdyManager != null) channel.TileRemoved += _birdyManager.OnTargetDisappear;
                 if (gameModifiers.HasFlag(GameModifiers.ColorfulBack))
                 {
@@ -166,10 +195,10 @@ namespace Rainbow
                     channel.TileRemoved += tile =>
                     {
                         var lastTileNode = _channels.MaxBy(ch => ch.TileNodeLast?.Value.Location.Y ?? -TileHeight * 2).TileNodeLast;
-                        if (lastTileNode == null) _tileSpawner.TileSpawned += OneTimeTrackSpawner; // In case somehow there isn't any tile on the screen
-                        else _formPlay.BackColor = colorModel.CodeToColor(lastTileNode.Value.ColorCode); // More often than not there will be at least one tile on the screen
-                    };   
-                    
+                        if (lastTileNode == null) _tileSpawner.TileSpawned += OneTimeTrackSpawner; // If somehow there aren't any tiles on the screen
+                        else _formPlay.BackColor = colorModel.CodeToColor(lastTileNode.Value.ColorCode);
+                    };
+
                     void OneTimeTrackSpawner(Tile t, int index)
                     {
                         _formPlay.BackColor = colorModel.CodeToColor(t.ColorCode);
@@ -224,6 +253,33 @@ namespace Rainbow
             _tileSpawner.OnTick();
             _birdyManager?.OnTick();
             _formPlay.Invalidate();
+        }
+
+        [Serializable]
+        public class Record
+        {
+            public TimeSpan TimeSpan { get; set; }
+            public GameModifiers GameModifiers { get; set; }
+            public string ColorModelName { get; set; }
+            public int Level { get; set; }
+            public int TilesClicked { get; set; }
+            public int TilesPopped { get; set; }
+            public int TilesPassed { get; set; }
+        }
+
+        [Serializable]
+        public class ReadOnlyRecord
+        {
+            private readonly Record _record;
+            public TimeSpan TimeSpan => _record.TimeSpan;
+            public GameModifiers GameModifiers => _record.GameModifiers;
+            public string ColorModelName => _record.ColorModelName;
+            public int Level => _record.Level;
+            public int TilesClicked => _record.TilesClicked;
+            public int TilesPopped => _record.TilesPopped;
+            public int TilesPassed => _record.TilesPassed;
+
+            public ReadOnlyRecord(Record record) => _record = record;
         }
     }
 }

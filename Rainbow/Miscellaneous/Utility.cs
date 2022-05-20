@@ -22,11 +22,25 @@ namespace Rainbow
         public static bool HasAnyFlag(this Enum @enum, Enum flags) =>
             (Convert.ToInt64(@enum) & Convert.ToInt64(flags)) != 0;
 
+        public static int CountBits(this int i)
+        {
+            int count = 0;
+            while (i != 0)
+            {
+                count += i & 1;
+                i >>= 1;
+            }
+            return count;
+        }
+
         public static void DrawRectangle(this Graphics graphics, Pen pen, RectangleF rectangle) =>
             graphics.DrawRectangle(pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 
-        public static PointF Offset(this PointF point, float x, float y) =>
+        public static PointF OffsetNew(this PointF point, float x, float y) =>
             new PointF(point.X + x, point.Y + y);
+
+        public static Point OffsetNew(this Point point, int x, int y) =>
+            new Point(point.X + x, point.Y + y);
 
         public static PointF GetCenter(this RectangleF rectangle) =>
             new PointF(rectangle.X + rectangle.Width * 0.5f, rectangle.Y + rectangle.Height * 0.5f);

@@ -16,8 +16,8 @@ namespace Rainbow
         private const int TRIPLE_CLICK_TILES_CHANCE = 10; // % chance in standart state
         private const int NO_COLOR_TILES_CHANCE = 15; // % chance in standart state
 
+        private const int MESSAGE_EVENT_CHANCE = 5; // % chance for event trigger
         private const int SHOTGUN_EVENT_CHANCE = 5; // % chance for event trigger
-        private const int MESSAGE_EVENT_CHANCE = 500; // % chance for event trigger
         private const int DIAMOND_EVENT_CHANCE = 5; // % chance for event trigger
         private const int CHESS_EVENT_CHANCE = 5; // % chance for event trigger
         private const int RAINBOW_EVENT_CHANCE = 5; // % chance for event trigger
@@ -368,7 +368,7 @@ namespace Rainbow
 
             protected override void OnSpawnTick(int rowIndex)
             {
-                double epsilon = 0.000000000001; // Fixes small inaccuracy that causes numbers to have fractional part very close to .5 but less
+                double epsilon = 1e-15; // Fixes small inaccuracy that causes numbers to have fractional part very close to .5 but less
                 if (Spawner._level != _rainbow.Length)
                 {
                     rowIndex %= _period;

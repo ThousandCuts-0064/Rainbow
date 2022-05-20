@@ -14,23 +14,21 @@ namespace Rainbow
     /// </summary>
     public static class Resources
     {
-        private static readonly string _folder;
+        private static readonly string _directoryName;
         private static readonly Image[] _birdyAnimation;
         public static Image ColorWheel { get; }
-        public static Image Birdy { get; } //Todo: potentialy remove
         public static Image[] BirdyAnimation => _birdyAnimation.ToArray();
 
         static Resources()
         {
-            _folder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName + $"\\{nameof(Resources)}\\";
+            _directoryName = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName + $"\\{nameof(Resources)}\\";
 
             ColorWheel = LoadImage($"{nameof(ColorWheel)}.png");
-            Birdy = LoadImage($"{nameof(Birdy)}.jpg");
             _birdyAnimation = BirdyImageToAnimation(LoadImage($"{nameof(BirdyAnimation)}.png"));
         }
 
         private static Image LoadImage(string name) =>
-            Image.FromFile(_folder + name);
+            Image.FromFile(_directoryName + name);
 
         private static Image[] BirdyImageToAnimation(Image image)
         {

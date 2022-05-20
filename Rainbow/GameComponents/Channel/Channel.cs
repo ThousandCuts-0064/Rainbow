@@ -30,8 +30,9 @@ namespace Rainbow
         public IReadOnlyLine Finish => _finish;
 
         public event Action<Tile> TilePassed;
-        public event Action<Tile> NoClickTileClicked;
+        public event Action<Tile> NoClickTilePopped;
         public event Action<Tile> TileRemoved;
+        public event Action<Tile> TileClicked;
 
         public Channel(RectangleF rectangle, GameModifiers gameModifiers, float boarderWidth, int index)
         {
@@ -71,9 +72,11 @@ namespace Rainbow
         public void TileListAddFirst(Tile tile)
         {
             _tileToNode.Add(tile, _tileList.AddFirst(tile));
-            tile.Disposing += TileListRemove;
-            tile.ControlLost += TileListRemove;
-            tile.ControlLost += t => t.Disposing -= TileListRemove;
+            tile.Disposing += RemoveFromList;
+            tile.ControlLost += RemoveFromList;
+            tile.ControlLost += () => tile.Disposing -= RemoveFromList;
+
+            void RemoveFromList() => TileListRemove(tile);
         }
 
         public void OnTick()
@@ -100,9 +103,10 @@ namespace Rainbow
                 if (lastTile.ColorCode == colorCode)
                 {
                     lastTile.Click();
+                    TileClicked?.Invoke(lastTile);
                     if (lastTile.Lives <= 0 &&
                         lastTile.IsNoClick)
-                        NoClickTileClicked?.Invoke(lastTile);
+                        NoClickTilePopped?.Invoke(lastTile);
                 }
 
                 if (previousNode == null) return;

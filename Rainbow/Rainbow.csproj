@@ -53,6 +53,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity.Design" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -65,12 +66,19 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\FormDeath.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormDeath.Designer.cs">
+      <DependentUpon>FormDeath.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormSettings.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormSettings.Designer.cs">
       <DependentUpon>FormSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameComponents\Save.cs" />
     <Compile Include="GameObjects\OtherTypes\Animation.cs" />
     <Compile Include="GameComponents\BirdyManager.cs" />
     <Compile Include="Colors\ColorColumn.cs" />
@@ -84,9 +92,9 @@
     <Compile Include="GameObjects\OtherTypes\GameImage.cs" />
     <Compile Include="GameObjects\OtherTypes\GameString.cs" />
     <Compile Include="HashedLinkedList\HashedLinkedList.cs" />
-    <Compile Include="Math2.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Utility.cs" />
+    <Compile Include="Miscellaneous\Math2.cs" />
+    <Compile Include="GameComponents\Settings.cs" />
+    <Compile Include="Miscellaneous\Utility.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="GameComponents\GameModifiers.cs" />
     <Compile Include="Colors\ColorCode.cs" />
@@ -141,6 +149,9 @@
     <Compile Include="GameComponents\Stats.cs" />
     <Compile Include="GameObjects\DynamicObjects\Update.cs" />
     <Compile Include="GameObjects\DynamicObjects\Types\Tile.cs" />
+    <EmbeddedResource Include="Forms\FormDeath.resx">
+      <DependentUpon>FormDeath.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormDim.resx">
       <DependentUpon>FormDim.cs</DependentUpon>
     </EmbeddedResource>

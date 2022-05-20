@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Rainbow
 {
+    [Serializable]
     public struct Settings
     {
         private static readonly StringBuilder _stringBuilder = new StringBuilder();
@@ -14,18 +15,24 @@ namespace Rainbow
         public bool PixelOffset { get; set; }
         public TextRenderingHint TextRenderingHint { get; set; }
 
-        public override bool Equals(object obj) => 
+        public override bool Equals(object obj) =>
             obj is Settings settings && settings == this;
 
         public override int GetHashCode() =>
             ((AntiAliasing ^ PixelOffset) ? 10 : 1) * (int)TextRenderingHint;
 
-        public override string ToString() =>
-            _stringBuilder.Clear()
-            .Append(nameof(AntiAliasing)).Append(": ").Append(AntiAliasing).Append("; ")    
-            .Append(nameof(PixelOffset)).Append(": ").Append(PixelOffset).Append("; ")
-            .Append(nameof(TextRenderingHint)).Append(": ").Append(TextRenderingHint).Append("; ")
-            .ToString();
+        public override string ToString()
+        {
+            try
+            {
+                return _stringBuilder
+                    .Append(nameof(AntiAliasing)).Append(": ").Append(AntiAliasing).Append("; ")
+                    .Append(nameof(PixelOffset)).Append(": ").Append(PixelOffset).Append("; ")
+                    .Append(nameof(TextRenderingHint)).Append(": ").Append(TextRenderingHint).Append("; ")
+                    .ToString();
+            }
+            finally { _stringBuilder.Clear(); }
+        }
 
         public static bool operator ==(Settings l, Settings r) =>
             l.AntiAliasing == r.AntiAliasing &&

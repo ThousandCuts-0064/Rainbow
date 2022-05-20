@@ -12,32 +12,31 @@ namespace Rainbow
 {
     public partial class FormPause : Form
     {
-        private readonly FormDim _formDim;
-
         public FormPause(Form owner)
         {
             InitializeComponent();
-            _formDim = new FormDim();
-            _formDim.KeyDown += FormPause_KeyDown;
-            _formDim.Owner = owner;
-            _formDim.Show();
-            Owner = _formDim;
-            if (Game.IsLoaded) Game.IsPaused = true;
+            Owner = new FormDim() { Owner = owner };
+            Owner.KeyDown += FormPause_KeyDown;
+            Owner.Show();
+            if (Game.IsActive) Game.IsPaused = true;
         }
 
         private void FormPause_Load(object sender, EventArgs e) => CenterToParent();
-        private void ButtonResume_Click(object sender, EventArgs e) => _formDim.Close();
+        private void ButtonResume_Click(object sender, EventArgs e) => Close();
+        private void ButtonQuit_Click(object sender, EventArgs e) => Application.Exit();
+
         private void ButtonSettings_Click(object sender, EventArgs e)
         {
             Hide();
             new FormSettings(this).Show();
         }
-        private void ButtonQuit_Click(object sender, EventArgs e) => Application.Exit();
+
         private void FormPause_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Owner = null;
-            _formDim.Close();
-            if (!Game.IsLoaded) return;
+            if (e.CloseReason != CloseReason.FormOwnerClosing)
+                Owner.Close();
+
+            if (!Game.IsActive) return;
             Game.IsPaused = false;
             Game.FocusFormPlay();
         }

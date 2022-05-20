@@ -140,7 +140,7 @@ namespace Rainbow
                 var scaled = new PointF(
                     normalized.X * step,
                     normalized.Y * step);
-                Birdy.Location = Birdy.Location.Offset(scaled.X, scaled.Y);
+                Birdy.Location = Birdy.Location.OffsetNew(scaled.X, scaled.Y);
 
                 if (step * 2 >= magnitude) TryTakeTarget();
 
@@ -193,7 +193,7 @@ namespace Rainbow
 
             private void Move(float x, float y)
             {
-                Birdy.Location = Birdy.Location.Offset(x, y);
+                Birdy.Location = Birdy.Location.OffsetNew(x, y);
                 Birdy._targetController.Move(x, y);
             }
         }

@@ -42,7 +42,7 @@ namespace Rainbow
                 switch (value)
                 {
                     case 0:
-                        Dispose();
+                        Popped();
                         break;
 
                     case 1:
@@ -58,8 +58,9 @@ namespace Rainbow
         }
         public bool IsInControl { get; private set; } = true;
 
-        public event Action<Tile> Disposing;
-        public event Action<Tile> ControlLost;
+        public event Action Disposing;
+        public event Action ControlLost;
+        public event Action Popped;
 
         public Tile(IColorModel colorModel, ColorCode colorCode, GameModifiers gameModifiers, int column,
             int lives = 1, bool isNoClick = false, Layer layer = Layer.Gameplay) :
@@ -109,6 +110,8 @@ namespace Rainbow
 
             _penBoarder.Color = IsNoClick ? _colorBorderNoClick : _colorBorderNormal;
             _colorStart = _brushFill.Color;
+
+            Popped += Dispose;
         }
 
         public override PointF GetCenter() => _rectangleFill.GetCenter();
@@ -139,14 +142,14 @@ namespace Rainbow
             if (IsInControl == false) return false;
 
             IsInControl = false;
-            ControlLost?.Invoke(this);
+            ControlLost?.Invoke();
             controller = _controller;
             return true;
         }
 
         public override void Dispose()
         {
-            Disposing?.Invoke(this);
+            Disposing?.Invoke();
             base.Dispose();
             _brushFill.Dispose();
             _penBoarder.Dispose();
@@ -196,7 +199,7 @@ namespace Rainbow
 
             public void Move(float x, float y)
             {
-                _tile.Location = _tile.Location.Offset(x, y);
+                _tile.Location = _tile.Location.OffsetNew(x, y);
                 _tile._rectangleFill.Offset(x, y);
                 if (_tile._gameString != null)
                     _tile._gameString.Rectangle = _tile._rectangleFill;

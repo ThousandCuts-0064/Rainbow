@@ -19,6 +19,7 @@ namespace Rainbow
         private readonly Bar _barShotgun;
         private readonly int _level;
 
+        public event Action Death;
         public event Action ShotgunUsed;
 
         public Stats(IColorModel colorModel, int level)
@@ -59,11 +60,9 @@ namespace Rainbow
                     new SizeF(width, height)),
                 DEFAULT_MAX_SHOTGUNS);
 
-            //Hack: Game is just paused on Game Over
-            var a = new Action(() => Game.IsPaused = true);
-            _lifeI.Resource.Empty += a;
-            _lifeII.Resource.Empty += a;
-            _lifeIII.Resource.Empty += a;
+            _lifeI.Resource.Empty += () => Death?.Invoke();
+            _lifeII.Resource.Empty += () => Death?.Invoke();
+            _lifeIII.Resource.Empty += () => Death?.Invoke();
         }
 
         public void OnTick()

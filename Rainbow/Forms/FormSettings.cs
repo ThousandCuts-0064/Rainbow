@@ -13,13 +13,17 @@ namespace Rainbow
 {
     public partial class FormSettings : Form
     {
+        private const string _fileName = nameof(Settings) + ".dat";
         private const string ON = "On";
         private const string OFF = "Off";
         private static readonly TextRenderingHint[] _textRenderingHints;
-        private static Settings _settingsOld = DefaultSettings;
-        private readonly FormPause _formPause;
+        private static Settings SettingsOld
+        {
+            get => (Settings)Save.Deserialize(_fileName);
+            set => Save.Serialize(_fileName, value);
+        }
         private Settings _settingsNew;
-        public static Settings DefaultSettings { get; } = new Settings()
+        public static Settings SettingsDefault { get; } = new Settings()
         {
             AntiAliasing = false,
             PixelOffset = false,
@@ -30,16 +34,16 @@ namespace Rainbow
 
         static FormSettings()
         {
-            SettingsChanged += settings => _settingsOld = settings;
+            if (!Save.FileExists(_fileName)) SettingsOld = SettingsDefault;
+            SettingsChanged += settings => SettingsOld = settings;
             _textRenderingHints = Enum.GetValues(typeof(TextRenderingHint)).Cast<TextRenderingHint>().ToArray();
         }
 
         public FormSettings(FormPause formPause)
         {
             InitializeComponent();
-            _formPause = formPause;
             Owner = formPause;
-            _settingsNew = _settingsOld;
+            _settingsNew = SettingsOld;
             VisualizeSettings();
         }
 
@@ -56,7 +60,7 @@ namespace Rainbow
                     break;
 
                 case MouseButtons.Middle:
-                    _settingsNew.AntiAliasing = DefaultSettings.AntiAliasing;
+                    _settingsNew.AntiAliasing = SettingsDefault.AntiAliasing;
                     buttonAntiAliasing.Text = BoolToText(_settingsNew.AntiAliasing);
                     break;
             }
@@ -73,7 +77,7 @@ namespace Rainbow
                     break;
 
                 case MouseButtons.Middle:
-                    _settingsNew.PixelOffset = DefaultSettings.PixelOffset;
+                    _settingsNew.PixelOffset = SettingsDefault.PixelOffset;
                     buttonPixelOffset.Text = BoolToText(_settingsNew.PixelOffset);
                     break;
             }
@@ -100,40 +104,37 @@ namespace Rainbow
                     break;
 
                 case MouseButtons.Middle:
-                    _settingsNew.TextRenderingHint = DefaultSettings.TextRenderingHint;
+                    _settingsNew.TextRenderingHint = SettingsDefault.TextRenderingHint;
                     buttonTextRenderingHint.Text = EnumToText(_settingsNew.TextRenderingHint);
                     break;
             }
         }
 
-        private void ButtonSave_Click(object sender, EventArgs e)
-        {
-            if (_settingsNew != _settingsOld)
-                SettingsChanged(_settingsNew);
-        }
+        private void ButtonSave_Click(object sender, EventArgs e) => 
+            SettingsChanged(_settingsNew);
 
         private void ButtonReset_Click(object sender, EventArgs e)
         {
-            _settingsNew = _settingsOld;
+            _settingsNew = SettingsOld;
             VisualizeSettings();
         }
 
         private void ButtonDefault_Click(object sender, EventArgs e)
         {
-            _settingsNew = DefaultSettings;
+            _settingsNew = SettingsDefault;
             VisualizeSettings();
         }
 
         private void ButtonBack_Click(object sender, EventArgs e)
         {
+            Owner.Show();
             Close();
-            _formPause.Show();
         }
 
         private void FormSettings_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
-                _formPause.Close();
+                Owner.Close();
         }
 
         private void VisualizeSettings()

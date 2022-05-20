@@ -15,7 +15,7 @@ namespace Rainbow
     public partial class FormPlay : Form
     {
         
-        private Settings _settings = FormSettings.DefaultSettings;
+        private Settings _settings = FormSettings.SettingsDefault;
         private PixelOffsetMode _pixelOffsetMode;
         private SmoothingMode _smoothingMode;
 

@@ -38,5 +38,18 @@ namespace Rainbow
                 obj = _formatter.Deserialize(stream);
             return obj;
         }
+
+        public static void DeleteFileInDirectory(string directoryName, int index) => 
+            new DirectoryInfo(_directoryName + directoryName).GetFiles()[index].Delete();
+
+        public static object[] DeserializeDirectory(string directoryName)
+        {
+            var files = new DirectoryInfo(_directoryName + directoryName).GetFiles();
+            object[] deserialized = new object[files.Length];
+            for (int i = 0; i < files.Length; i++)
+                using (var stream = files[i].OpenRead())
+                    deserialized[i] = _formatter.Deserialize(stream);
+            return deserialized;
+        }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Rainbow
 {
     [Flags]
-    public enum GameModifiers
+    public enum GameModifiers // Note: ShortString version must be added to new modifiers (Utility.cs)
     {
         None = 0,
 

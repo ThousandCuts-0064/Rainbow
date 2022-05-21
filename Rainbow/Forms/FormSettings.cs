@@ -131,11 +131,11 @@ namespace Rainbow
             Close();
         }
 
-        private void FormSettings_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Escape)
-                Owner.Close();
-        }
+        private void FormSettings_KeyDown(object sender, KeyEventArgs e) => ButtonBack_Click(sender, e);
+            // Alternative:
+            //if (e.KeyCode == Keys.Escape)
+            //    Owner.Close();
+            
 
         private void VisualizeSettings()
         {

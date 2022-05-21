@@ -273,7 +273,7 @@ namespace Rainbow
             protected override void OnSpawnTick(int rowIndex)
             {
                 for (int i = 0; i < Spawner._level; i++)
-                    Spawner.Spawn(i, (ColorCode)Math.Pow(2, rowIndex));
+                    Spawner.Spawn(i, (ColorCode)(1 << rowIndex));
             }
         }
 
@@ -328,7 +328,7 @@ namespace Rainbow
             protected override void OnSpawnTick(int rowIndex)
             {
                 for (int i = 0; i < Spawner._level; i++)
-                    Spawner.Spawn(i, (i + rowIndex) % 2 == 0 ? ColorCode.All : ColorCode.None);
+                    Spawner.Spawn(i, (i + rowIndex) % 2 == 0 ? ColorCode.All : ColorCode.None, noClick: i != 0 && i != Spawner._level - 1 && rowIndex != 0 && rowIndex != TotalRowSpawns - 1);
             }
         }
 

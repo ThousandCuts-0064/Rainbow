@@ -67,7 +67,12 @@ namespace Rainbow
 
         public void OnTick()
         {
+            if (Game.Ticks % 1000 != 0) return;
 
+            _barShotgun.Resource.Current++;
+            _lifeI.Resource.Current++;
+            _lifeII.Resource.Current++;
+            _lifeIII.Resource.Current++;
         }
 
         public void OnShotgunPressed()

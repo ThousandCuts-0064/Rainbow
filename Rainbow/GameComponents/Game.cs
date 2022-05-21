@@ -15,22 +15,22 @@ namespace Rainbow
         /// % of screen height. Range: [0, 1].
         /// </summary>
         private const float UNIT_HIGHT_RATIO = 0.01f;
-        private static readonly string _directoryName;
+        private const int START_TILE_UNITS_PER_SECOND = 10;
         private static readonly Color _colorBoarder = Color.Black;
-        private static Record _record;
         private static Dictionary<Layer, List<IDrawable>> _layerToList;
         private static HashSet<Update> _updates;
-        private static Channel[] _channels;
+        private static Channel[] _channels; // Pass ReadOnly to Channels Property
+        private static IColorModel _colorModel;
         private static Timer _timer;
         private static Stats _stats;
         private static InputManager _inputManager;
         private static TileSpawner _tileSpawner;
         private static BirdyManager _birdyManager;
+        private static Record _record;
         private static FormPlay _formPlay;
         private static Line _boarderLeft;
         private static Line _boarderRight;
         private static GameImage _colorDiagram;
-        private static IColorModel _colorModel;
         private static GameModifiers _gameModifiers;
         /// <summary>
         /// Time interval between ticks in seconds
@@ -48,13 +48,14 @@ namespace Rainbow
         /// Number of units
         /// </summary>
         public const int TILE_HIGHT_UNITS = 10;
-        public static IReadOnlyList<IReadOnlyChannel> Channels => _channels;
-        public static IReadOnlyLine BoarderRight => _boarderRight;
-        public static IReadOnlyLine BoarderLeft => _boarderLeft;
+        public static ILine BoarderRight => _boarderRight;
+        public static ILine BoarderLeft => _boarderLeft;
         public static Random Random { get; } = new Random();
+        public static string RecordsDirectoryName { get; }
+        public static IReadOnlyList<IChannel> Channels { get; private set; }
         public static RectangleF PlayArea { get; private set; }
         public static Rectangle Screen { get; private set; }
-        public static ulong Ticks { get; private set; } = 0; // This will overflow after approximately 9,359,078,677 years with 16ms delta time
+        public static ulong Ticks { get; private set; } // This will overflow after approximately 9,359,078,677 years with 16ms delta time
         public static float Unit { get; private set; }
         public static float HalfUnit { get; private set; }
         public static float MapLineWidth { get; private set; }
@@ -63,21 +64,23 @@ namespace Rainbow
         public static float TileWidth { get; private set; }
         public static float TileHeight { get; private set; }
         public static float TileSpeed { get; private set; }
-        public static int TileUnitsPerSecond { get; private set; } = 100;
+        public static float TileUnitsPerSecond { get; private set; }
         public static int Level { get; private set; }
         public static bool IsActive { get; private set; }
         public static bool IsPaused { get => !_timer.Enabled; set => _timer.Enabled = !value; }
 
         static Game()
         {
-            _directoryName = System.Data.Entity.Design.PluralizationServices.PluralizationService
+            RecordsDirectoryName = System.Data.Entity.Design.PluralizationServices.PluralizationService
                 .CreateService(new System.Globalization.CultureInfo("en-US", false))
                 .Pluralize(nameof(Record));
         }
 
-        public static void Initialize(FormPlay formPlay, IColorModel colorModel, GameModifiers gameModifiers, int level)
+        public static void Initialize(FormPlay formPlay, IColorModel colorModel, GameModifiers gameModifiers, int level) // Possible Reinitialization
         {
             //Direct initialization
+            Ticks = 0;
+            TileUnitsPerSecond = START_TILE_UNITS_PER_SECOND;
             _formPlay = formPlay;
             _colorModel = colorModel;
             _gameModifiers = gameModifiers;
@@ -137,6 +140,7 @@ namespace Rainbow
 
             //Channels
             _channels = new Channel[level];
+            Channels = Array.AsReadOnly(_channels);
             for (int i = 0; i < level; i++)
             {
                 var rectangleF = new RectangleF(
@@ -170,13 +174,16 @@ namespace Rainbow
             _tileSpawner.TileSpawned += (tile, index) => tile.Popped += () => _record.TilesPopped++;
             _stats.Death += () =>
             {
-                if (!Save.DirectoryExists(_directoryName))
-                    Save.CreateDirectory(_directoryName);
+                if (!IsActive) return; // Ensures single invoke
+
+                _record.TimeSpan = TimeSpan.FromMilliseconds(Ticks / DELTA_TIME);
+                ReadOnlyRecord readOnlyRecord = new ReadOnlyRecord(_record);
+                if (!Save.DirectoryExists(RecordsDirectoryName))
+                    Save.CreateDirectory(RecordsDirectoryName);
                 Save.Serialize(
-                    Path.Combine(_directoryName, DateTime.Now.ToString().Replace('/', '-').Replace(':', '-')) + ".dat",
-                    new ReadOnlyRecord(_record));
-                _record.TimeSpan = TimeSpan.FromSeconds((double)Ticks * DELTA_TIME);
-                new FormDeath(formPlay, new ReadOnlyRecord(_record)).Show();
+                    Path.Combine(RecordsDirectoryName, DateTime.Now.ToString().Replace('/', '-').Replace(':', '-')) + ".dat",
+                    readOnlyRecord);
+                new FormRecord(formPlay, readOnlyRecord, true).Show();
                 IsActive = false;
                 IsPaused = true;
             };
@@ -242,6 +249,18 @@ namespace Rainbow
                     item.Draw(graphics);
         }
 
+        /// <summary>
+        /// Tries to return ReadOnlyRecord with current values.
+        /// </summary>
+        /// <returns>ReadOnlyRecord with current value or null if game is not active.</returns>
+        public static ReadOnlyRecord RequestCurrentRecord()
+        {
+            if (!IsActive) return null;
+
+            _record.TimeSpan = TimeSpan.FromMilliseconds(Ticks / DELTA_TIME);
+            return new ReadOnlyRecord(_record);
+        }
+
         private static void GameTick(object sender, EventArgs e)
         {
             Ticks++;
@@ -253,6 +272,7 @@ namespace Rainbow
             _tileSpawner.OnTick();
             _birdyManager?.OnTick();
             _formPlay.Invalidate();
+            TileUnitsPerSecond += Ticks % 100 == 0 ? 0.1f : 0;
         }
 
         [Serializable]
@@ -263,7 +283,7 @@ namespace Rainbow
             public string ColorModelName { get; set; }
             public int Level { get; set; }
             public int TilesClicked { get; set; }
-            public int TilesPopped { get; set; }
+            public int TilesPopped { get; set; } // Shotgun doesn't pop tiles
             public int TilesPassed { get; set; }
         }
 
@@ -271,6 +291,7 @@ namespace Rainbow
         public class ReadOnlyRecord
         {
             private readonly Record _record;
+
             public TimeSpan TimeSpan => _record.TimeSpan;
             public GameModifiers GameModifiers => _record.GameModifiers;
             public string ColorModelName => _record.ColorModelName;
@@ -280,6 +301,30 @@ namespace Rainbow
             public int TilesPassed => _record.TilesPassed;
 
             public ReadOnlyRecord(Record record) => _record = record;
+
+            public object CreateShort() => ShortString.From(this);
+
+            private class ShortString
+            {
+                private static readonly StringBuilder _stringBuilder = new StringBuilder();
+                private string _str;
+
+                public static object From(ReadOnlyRecord record)
+                {
+                    var @short = new ShortString();
+                    _stringBuilder
+                        .Append(record.Level)
+                        .Append('\t')
+                        .Append(record.ColorModelName)
+                        .Append('\t')
+                        .Append(record.TimeSpan.ToString("G").TrimEnd(4));
+                    @short._str = _stringBuilder.ToString();
+                    _stringBuilder.Clear();
+                    return @short;
+                }
+
+                public override string ToString() => _str;
+            }
         }
     }
 }

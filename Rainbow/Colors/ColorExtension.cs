@@ -23,9 +23,8 @@ namespace Rainbow
 
         public static ColorComplexity ToComplexity(this ColorCode code)
         {
-            if (code < ColorCode.I || code > ColorCode.All) return ColorComplexity.None;
-            //1 bit is set
-            if ((code & (code - 1)) != 0) return ColorComplexity.Primary;
+            if (code < ColorCode.I || code > ColorCode.All) return ColorComplexity.None;       
+            if ((code & (code - 1)) != 0) return ColorComplexity.Primary; // 1 bit is set
             if (code == ColorCode.All) return ColorComplexity.All;
             return ColorComplexity.Secondary;
         }

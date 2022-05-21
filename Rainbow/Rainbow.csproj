@@ -66,11 +66,17 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Forms\FormDeath.cs">
+    <Compile Include="Forms\FormRecord.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormDeath.Designer.cs">
-      <DependentUpon>FormDeath.cs</DependentUpon>
+    <Compile Include="Forms\FormRecord.Designer.cs">
+      <DependentUpon>FormRecord.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormRecordsViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormRecordsViewer.Designer.cs">
+      <DependentUpon>FormRecordsViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FormSettings.cs">
       <SubType>Form</SubType>
@@ -83,7 +89,7 @@
     <Compile Include="GameComponents\BirdyManager.cs" />
     <Compile Include="Colors\ColorColumn.cs" />
     <Compile Include="GameComponents\Channel\Channel.cs" />
-    <Compile Include="GameComponents\Channel\IReadOnlyChannel.cs" />
+    <Compile Include="GameComponents\Channel\IChannel.cs" />
     <Compile Include="GameComponents\Resources.cs" />
     <Compile Include="Colors\IColorModel\ARC.cs" />
     <Compile Include="GameObjects\DynamicObjects\Types\Birdy.cs" />
@@ -91,11 +97,9 @@
     <Compile Include="GameObjects\Layer.cs" />
     <Compile Include="GameObjects\OtherTypes\GameImage.cs" />
     <Compile Include="GameObjects\OtherTypes\GameString.cs" />
-    <Compile Include="HashedLinkedList\HashedLinkedList.cs" />
     <Compile Include="Miscellaneous\Math2.cs" />
     <Compile Include="GameComponents\Settings.cs" />
     <Compile Include="Miscellaneous\Utility.cs" />
-    <Compile Include="Map\Map.cs" />
     <Compile Include="GameComponents\GameModifiers.cs" />
     <Compile Include="Colors\ColorCode.cs" />
     <Compile Include="Colors\ColorComplexity.cs" />
@@ -129,11 +133,10 @@
       <DependentUpon>FormPlay.cs</DependentUpon>
     </Compile>
     <Compile Include="GameObjects\DynamicObjects\DynamicObject.cs" />
-    <Compile Include="GameObjects\OtherTypes\Line\IReadOnlyLine.cs" />
+    <Compile Include="GameObjects\OtherTypes\Line\ILine.cs" />
     <Compile Include="GameObjects\OtherTypes\Line\Line.cs" />
     <Compile Include="GameComponents\Game.cs" />
     <Compile Include="GameComponents\InputManager.cs" />
-    <Compile Include="Map\IReadOnlyMap.cs" />
     <Compile Include="GameComponents\Resource.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -149,8 +152,8 @@
     <Compile Include="GameComponents\Stats.cs" />
     <Compile Include="GameObjects\DynamicObjects\Update.cs" />
     <Compile Include="GameObjects\DynamicObjects\Types\Tile.cs" />
-    <EmbeddedResource Include="Forms\FormDeath.resx">
-      <DependentUpon>FormDeath.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\FormRecord.resx">
+      <DependentUpon>FormRecord.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormDim.resx">
       <DependentUpon>FormDim.cs</DependentUpon>
@@ -163,6 +166,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormPlay.resx">
       <DependentUpon>FormPlay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRecordsViewer.resx">
+      <DependentUpon>FormRecordsViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormSettings.resx">
       <DependentUpon>FormSettings.cs</DependentUpon>
@@ -205,6 +211,11 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\CustomCollections\CustomCollections.csproj">
+      <Project>{536ba702-8b40-49cd-93e6-bfc4d68b4987}</Project>
+      <Name>CustomCollections</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

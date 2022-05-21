@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CustomCollections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace Rainbow
         private const int CHAIN_TICKS_WINDOW = 3;
         private readonly HashSet<Keys> _pressedKeys = new HashSet<Keys>();
         private readonly Column[] _columns;
-        public static IReadOnlyMap<Keys, ColorColumn> MapKeys { get; } = new Map<Keys, ColorColumn>()
+        public static ReadOnlyMap<Keys, ColorColumn> MapKeys { get; } = new Map<Keys, ColorColumn>()
         {
             { Keys.Q, (ColorCode.I, 0) }, { Keys.A, (ColorCode.II, 0) }, { Keys.Z, (ColorCode.III, 0) },
             { Keys.W, (ColorCode.I, 1) }, { Keys.S, (ColorCode.II, 1) }, { Keys.X, (ColorCode.III, 1) },
@@ -24,7 +25,7 @@ namespace Rainbow
             { Keys.I, (ColorCode.I, 7) }, { Keys.K, (ColorCode.II, 7) }, { Keys.Oemcomma, (ColorCode.III, 7) },
             { Keys.O, (ColorCode.I, 8) }, { Keys.L, (ColorCode.II, 8) }, { Keys.OemPeriod, (ColorCode.III, 8) },
             { Keys.P, (ColorCode.I, 9) }, { Keys.Oem1, (ColorCode.II, 9) }, { Keys.OemQuestion,(ColorCode.III, 9) } // Oem1 = ';'   OemQuestion = '/'
-        };
+        }.ToReadOnly();
 
         public event Action<ColorCode, int> ColorInput;
         public event Action ShotgunPressed;

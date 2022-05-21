@@ -10,7 +10,7 @@ namespace Rainbow
 {
     public class Birdy : DynamicObject
     {
-        private static float Speed => Game.TileUnitsPerSecond * Game.Unit * Game.DELTA_TIME * 2f;
+        private static float Speed => Game.TileSpeed * 2f;
         private readonly BirdyManager _birdyManager;
         private readonly IdleState _idleState;
         private readonly ChaseState _chaseState;

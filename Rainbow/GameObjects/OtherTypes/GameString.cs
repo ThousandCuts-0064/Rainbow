@@ -24,7 +24,7 @@ namespace Rainbow
 
         public GameString(string @string, RectangleF rectangle, Color color, Layer layer) : base(layer)
         {
-            _format = _defaultFormat;
+            _format = (StringFormat)_defaultFormat.Clone();
             String = @string;
             Rectangle = rectangle;
             _brush = new SolidBrush(color);
@@ -35,5 +35,13 @@ namespace Rainbow
 
         public override void Draw(Graphics graphics) =>
             graphics.DrawString(String, _font, _brush, Rectangle, _format);
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _format.Dispose();
+            _font.Dispose();
+            _brush.Dispose();
+        }
     }
 }

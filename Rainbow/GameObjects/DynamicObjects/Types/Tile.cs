@@ -26,7 +26,7 @@ namespace Rainbow
         private readonly Color _colorDistortion;
         private RectangleF _rectangleFill;
         private int _lives;
-        public IReadOnlyChannel Channel { get; }
+        public IChannel Channel { get; }
         public ColorCode ColorCode { get; }
         public int Column => Channel.Index;
         public bool IsNoClick { get; }

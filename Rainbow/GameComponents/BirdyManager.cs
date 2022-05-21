@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CustomCollections;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -57,7 +58,7 @@ namespace Rainbow
         }
 
         /// <summary>
-        /// Gets the tile that is closest to the finish line.
+        /// Gets the closest tile to the finish line.
         /// </summary>
         /// <param name="target"></param>
         /// <returns>True if there is spawned tile, otherwise false.</returns>

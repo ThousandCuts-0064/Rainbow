@@ -12,23 +12,30 @@ namespace Rainbow
 {
     public partial class FormPause : Form
     {
-        public FormPause(Form owner)
+        public FormPause(Form owner, bool showRecord = true)
         {
             InitializeComponent();
             Owner = new FormDim() { Owner = owner };
             Owner.KeyDown += FormPause_KeyDown;
             Owner.Show();
             if (Game.IsActive) Game.IsPaused = true;
+            buttonRecord.Enabled = showRecord;
         }
 
         private void FormPause_Load(object sender, EventArgs e) => CenterToParent();
         private void ButtonResume_Click(object sender, EventArgs e) => Close();
         private void ButtonQuit_Click(object sender, EventArgs e) => Application.Exit();
 
+        private void ButtonRecord_Click(object sender, EventArgs e)
+        {
+            new FormRecord(this, Game.RequestCurrentRecord(), false).Show();
+            Hide();
+        }
+
         private void ButtonSettings_Click(object sender, EventArgs e)
         {
-            Hide();
             new FormSettings(this).Show();
+            Hide();
         }
 
         private void FormPause_FormClosed(object sender, FormClosedEventArgs e)
@@ -44,7 +51,10 @@ namespace Rainbow
         private void FormPause_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
+            {
+                Owner.Owner.Focus(); // Correctly focuses FormRecord if it is open and deactivates buttonRecord if this is reopened
                 Close();
+            }
         }
     }
 }

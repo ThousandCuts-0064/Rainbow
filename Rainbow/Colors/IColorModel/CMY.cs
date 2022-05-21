@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CustomCollections;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Rainbow
 {
     class CMY : IColorModel
     {
-        private static readonly IReadOnlyMap<ColorCode, Color> _mapColor = new Map<ColorCode, Color>()
+        private static readonly ReadOnlyMap<ColorCode, Color> _mapColor = new Map<ColorCode, Color>()
         {
             { ColorCode.None, Color.White },
 
@@ -22,7 +23,7 @@ namespace Rainbow
             { ColorCode.II_III, Color.Red },
 
             { ColorCode.All, Color.Black },
-        };
+        }.ToReadOnly();
 
         public string Name => nameof(CMY);
 

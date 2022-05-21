@@ -19,6 +19,9 @@ namespace Rainbow
             where TComparable : IComparable<TComparable> =>
             source.Select(s => (element: s, value: selector(s))).Aggregate((min, next) => min.value.CompareTo(next.value) > 0 ? next : min).element;
 
+        public static string TrimEnd(this string str, int count) =>
+            str.Substring(0, str.Length - count);
+
         public static bool HasAnyFlag(this Enum @enum, Enum flags) =>
             (Convert.ToInt64(@enum) & Convert.ToInt64(flags)) != 0;
 
@@ -31,6 +34,17 @@ namespace Rainbow
                 i >>= 1;
             }
             return count;
+        }
+
+        public static List<int> AddBitsToList(this int i, List<int> list)
+        {
+            list = list ?? new List<int>();
+            for (int y = 0; i != 0; i >>= 1)
+            {
+                if ((i & 1) == 1) list.Add(1 << y);
+                y++;
+            }
+            return list;
         }
 
         public static void DrawRectangle(this Graphics graphics, Pen pen, RectangleF rectangle) =>
@@ -68,6 +82,34 @@ namespace Rainbow
             }
 
             return destImage;
+        }
+
+        public static string ToShortString(this GameModifiers modifier)
+        {
+            switch (modifier) // Note: 4 chars max
+            {
+                case GameModifiers.NoClickTiles: return "NClT";
+                case GameModifiers.DoubleTiles: return "DT";
+                case GameModifiers.TripleTiles: return "TT";
+                case GameModifiers.DoubleClickTiles: return "DCT";
+                case GameModifiers.TripleClickTiles: return "TCT";
+                case GameModifiers.NoColorTiles: return "NCoT";
+                case GameModifiers.ColorDistortion: return "CD";
+                case GameModifiers.InvertedColors: return "IC";
+                case GameModifiers.FadingColors: return "FaC";
+                case GameModifiers.FlashingColors: return "FlC";
+                case GameModifiers.ColorWheel: return "CW";
+                case GameModifiers.ColorfulBack: return "CB";
+                case GameModifiers.HintColumns: return "HC";
+                case GameModifiers.HintButtons: return "HB";
+                case GameModifiers.Birdy: return "B";
+                case GameModifiers.MessageEvent: return "ME";
+                case GameModifiers.ShotgunEvent: return "SE";
+                case GameModifiers.DiamondEvent: return "DE";
+                case GameModifiers.ChessEvent: return "CE";
+                case GameModifiers.RainbowEvent: return "RE";
+                default: throw new ArgumentException($"{modifier} is not supported");
+            }
         }
     }
 }

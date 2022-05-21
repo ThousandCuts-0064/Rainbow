@@ -6,9 +6,9 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rainbow
+namespace CustomCollections
 {
-    class HashedLinkedList<T> : ICollection<T>, IReadOnlyCollection<T>
+    public class HashedLinkedList<T> : ICollection<T>, IReadOnlyCollection<T>
     {
         private readonly LinkedList<T> _list = new LinkedList<T>();
         private readonly Dictionary<T, LinkedListNode<T>> _dictionary = new Dictionary<T, LinkedListNode<T>>();

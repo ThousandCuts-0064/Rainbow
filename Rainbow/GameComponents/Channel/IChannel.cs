@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Rainbow
 {
-    public interface IReadOnlyChannel
+    public interface IChannel
     {
-        IReadOnlyLine BoarderRight { get; }
-        IReadOnlyLine BoarderLeft { get; }
-        IReadOnlyLine Finish { get; }
+        ILine BoarderRight { get; }
+        ILine BoarderLeft { get; }
+        ILine Finish { get; }
         PointF PointSpawn { get; }
         RectangleF Rectangle { get; }
         int Index { get; }

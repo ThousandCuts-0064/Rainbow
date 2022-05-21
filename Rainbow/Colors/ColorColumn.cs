@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CustomCollections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,14 +12,14 @@ namespace Rainbow
         public const string NO_COLOR_STRING = "_";
         public const string EMPTY_STRING = " ";
         public const int NO_COLUMN = -1;
-        private static readonly IReadOnlyMap<ColorColumn, string> _mapChars;
+        private static readonly ReadOnlyMap<ColorColumn, string> _mapChars;
 
         public ColorCode ColorCode { get; }
         public int Column { get; }
 
         static ColorColumn()
         {
-            var toInput = new Map<ColorColumn, string>()
+            var mapChars = new Map<ColorColumn, string>()
             {
                 { (ColorCode.I, 0), "Q" }, { (ColorCode.II, 0), "A" }, { (ColorCode.III, 0), "Z" },
                 { (ColorCode.I, 1), "W" }, { (ColorCode.II, 1), "S" }, { (ColorCode.III, 1), "X" },
@@ -34,33 +35,29 @@ namespace Rainbow
 
             for (int i = 0; i < 10; i++)
             {
-                //toInput.Add(
-                //    (ColorCode.None, i),
-                //    EMPTY_COLOR_TO_STRING);
-
-                toInput.Add(
+                mapChars.Add(
                     (ColorCode.I_II, i),
-                    toInput.Forward[(ColorCode.I, i)] +
-                        toInput.Forward[(ColorCode.II, i)]);
+                    mapChars.Forward[(ColorCode.I, i)] +
+                        mapChars.Forward[(ColorCode.II, i)]);
 
-                toInput.Add(
+                mapChars.Add(
                     (ColorCode.I_III, i),
-                    toInput.Forward[(ColorCode.I, i)] +
-                        toInput.Forward[(ColorCode.III, i)]);
+                    mapChars.Forward[(ColorCode.I, i)] +
+                        mapChars.Forward[(ColorCode.III, i)]);
 
-                toInput.Add(
+                mapChars.Add(
                     (ColorCode.II_III, i),
-                    toInput.Forward[(ColorCode.II, i)] +
-                        toInput.Forward[(ColorCode.III, i)]);
+                    mapChars.Forward[(ColorCode.II, i)] +
+                        mapChars.Forward[(ColorCode.III, i)]);
 
-                toInput.Add(
+                mapChars.Add(
                     (ColorCode.All, i),
-                    toInput.Forward[(ColorCode.I, i)] +
-                        toInput.Forward[(ColorCode.II, i)] +
-                        toInput.Forward[(ColorCode.III, i)]);
+                    mapChars.Forward[(ColorCode.I, i)] +
+                        mapChars.Forward[(ColorCode.II, i)] +
+                        mapChars.Forward[(ColorCode.III, i)]);
             }
 
-            _mapChars = toInput;
+            _mapChars = mapChars.ToReadOnly();
         }
 
         public ColorColumn(ColorCode colorCode, int column)

@@ -1,19 +1,28 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rainbow
+namespace CustomCollections
 {
-    public class Map<T1, T2> : IReadOnlyMap<T1, T2>, IEnumerable<KeyValuePair<T1, T2>>
+    public class Map<T1, T2> : IEnumerable<KeyValuePair<T1, T2>>
     {
         private readonly Dictionary<T1, T2> _forward = new Dictionary<T1, T2>();
         private readonly Dictionary<T2, T1> _reverse = new Dictionary<T2, T1>();
 
-        public IReadOnlyDictionary<T1, T2> Forward => _forward;
-        public IReadOnlyDictionary<T2, T1> Reverse => _reverse;
+        public ReadOnlyDictionary<T1, T2> Forward { get; }
+        public ReadOnlyDictionary<T2, T1> Reverse { get; }
+
+        public Map()
+        {
+            Forward = new ReadOnlyDictionary<T1, T2>(_forward);
+            Reverse = new ReadOnlyDictionary<T2, T1>(_reverse);
+        }
+
+        public ReadOnlyMap<T1, T2> ToReadOnly() => new ReadOnlyMap<T1, T2>(this);
 
         public void Add(T1 t1, T2 t2)
         {

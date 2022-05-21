@@ -48,15 +48,58 @@ namespace Rainbow
 
         private void ButtonStart_Click(object sender, EventArgs e)
         {
-            if (_selectedLevel == 0 || _colorModel == null) return;
-            if (_selectedLevel < 2 && _gameModifiers.HasAnyFlag(
-                GameModifiers.DoubleTiles | GameModifiers.ChessEvent)) return;
-            if (_selectedLevel < 3 && _gameModifiers.HasAnyFlag(
-                GameModifiers.TripleTiles | GameModifiers.DiamondEvent)) return;
-            if (_selectedLevel < 6 && _gameModifiers.HasAnyFlag(
-                GameModifiers.DiamondEvent)) return;
-            
-            new FormPlay(_colorModel, _gameModifiers, _selectedLevel) 
+            if (_selectedLevel == 0)
+            {
+                MessageBox.Show("Level can't be 0", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (_colorModel == null)
+            {
+                MessageBox.Show("Color Model must be chosen", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (_selectedLevel < 2)
+            {
+                if (_gameModifiers.HasFlag(GameModifiers.DoubleTiles))
+                {
+                    MessageBox.Show("Double Tiles requires at least level 2", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                if (_gameModifiers.HasFlag(GameModifiers.ChessEvent))
+                {
+                    MessageBox.Show("Chess Event requires at least level 2", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            if (_selectedLevel < 3)
+            {
+                if (_gameModifiers.HasFlag(GameModifiers.TripleTiles))
+                {
+                    MessageBox.Show("Triple Tiles requires at least level 3", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                if (_gameModifiers.HasFlag(GameModifiers.DiamondEvent))
+                {
+                    MessageBox.Show("Diamond Event requires at least level 3", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            if (_selectedLevel < 6)
+            {
+                if (_gameModifiers.HasFlag(GameModifiers.RainbowEvent))
+                {
+                    MessageBox.Show("Rainbow Event requires at least level 3", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            new FormPlay(_colorModel, _gameModifiers, _selectedLevel)
             {
                 //FormPlay.Owner = this.Owner
                 Owner = Owner

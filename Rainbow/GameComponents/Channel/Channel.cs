@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Rainbow
 {
-    public class Channel : IReadOnlyChannel
+    public class Channel : IChannel
     {
         private static readonly Color _colorBorder = Color.Black;
         private static readonly Color _colorFinish = Color.Black;
@@ -25,9 +25,9 @@ namespace Rainbow
         public PointF PointSpawn { get; }
         public RectangleF Rectangle { get; }
         public int Index { get; }
-        public IReadOnlyLine BoarderRight => _boarderRight;
-        public IReadOnlyLine BoarderLeft => _boarderLeft;
-        public IReadOnlyLine Finish => _finish;
+        public ILine BoarderRight => _boarderRight;
+        public ILine BoarderLeft => _boarderLeft;
+        public ILine Finish => _finish;
 
         public event Action<Tile> TilePassed;
         public event Action<Tile> NoClickTilePopped;
